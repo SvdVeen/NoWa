@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "NoWa.Console": {
+      "commandName": "Project",
+      "commandLineArgs": "./test.wag"
+    }
+  }
+}

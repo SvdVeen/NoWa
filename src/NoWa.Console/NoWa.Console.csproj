@@ -12,4 +12,10 @@
     <ProjectReference Include="..\NoWa.Converter\NoWa.Converter.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="test.wag" Condition="'$(Configuration)'=='Debug'">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

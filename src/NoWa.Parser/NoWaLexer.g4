@@ -8,4 +8,4 @@ fragment DIGIT: [0-9] ;
 PROD: '=' ;
 TERM: ';' ;
 SYM: UPPERCASE+ ;
-WS: [ \t\r\n]+ -> skip ; // skip whitespaces
+WS: [ \t\r\n]+ -> skip ; // skip whitespace
