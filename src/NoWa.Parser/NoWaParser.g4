@@ -3,4 +3,10 @@ options { tokenVocab = NoWaLexer; }
 
 grammar_: rules=rule+ EOF ;
 
-rule: SYM+ PROD SYM+ TERM ;
+rule: name=nonterminal PRODUCES pattern+=symbol (OR pattern+=symbol)* TERMINATOR ;
+
+symbol: terminal | nonterminal ;
+
+nonterminal: ALPHA ;
+
+terminal: QUOTE value=ALPHA QUOTE ;
