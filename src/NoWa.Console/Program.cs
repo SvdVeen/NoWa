@@ -1,19 +1,21 @@
-﻿using NoWa.Converter;
+﻿using NoWa.Common;
+using NoWa.Converter;
+using NoWa.Parser;
 
-string validArguments = @" Usage: NoWa.exe <path>
+string helpInfo = @" Usage: NoWa.exe <path>
     path: the path to the grammar file to parse.";
 
 
 if (args.Length == 0)
 {
     Console.WriteLine("Invalid arguments!");
-    Console.WriteLine(validArguments);
+    Console.WriteLine(helpInfo);
     return 1;
 }
 
 if (args[0] == "-help")
 {
-    Console.WriteLine(validArguments);
+    Console.WriteLine(helpInfo);
     return 0;
 }
 
@@ -24,6 +26,8 @@ if (!Path.Exists(path))
     return 1; // Could not find file
 }
 
-NoWaConverter.Convert(path);
+NoWaParser parser = new NoWaParser();
+Grammar grammar = parser.Parse(path);
+NoWaConverter.Convert(grammar);
 
 return 0;

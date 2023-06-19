@@ -5,15 +5,17 @@ VisualStudioVersion = 17.6.33723.286
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoWa.Console", "src\NoWa.Console\NoWa.Console.csproj", "{B3F8E0BF-31E6-4B45-A63E-188AC61EB683}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NoWa.Converter", "src\NoWa.Converter\NoWa.Converter.csproj", "{56958ECC-6F58-48F5-BFD3-09C4E2C79088}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoWa.Converter", "src\NoWa.Converter\NoWa.Converter.csproj", "{56958ECC-6F58-48F5-BFD3-09C4E2C79088}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NoWa.Parser", "src\NoWa.Parser\NoWa.Parser.csproj", "{33FA8BC6-B775-4EB1-AE25-F4EC78DB7F0E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoWa.Parser", "src\NoWa.Parser\NoWa.Parser.csproj", "{33FA8BC6-B775-4EB1-AE25-F4EC78DB7F0E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{639AB533-58E7-45EA-B2EC-B9F7F1A0B279}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
 		README.md = README.md
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NoWa.Common", "src\Nowa.Common\NoWa.Common.csproj", "{A328D166-DC07-423A-8057-7CB6531EA5F9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{33FA8BC6-B775-4EB1-AE25-F4EC78DB7F0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{33FA8BC6-B775-4EB1-AE25-F4EC78DB7F0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{33FA8BC6-B775-4EB1-AE25-F4EC78DB7F0E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A328D166-DC07-423A-8057-7CB6531EA5F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A328D166-DC07-423A-8057-7CB6531EA5F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A328D166-DC07-423A-8057-7CB6531EA5F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A328D166-DC07-423A-8057-7CB6531EA5F9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

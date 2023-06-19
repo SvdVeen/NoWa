@@ -5,12 +5,12 @@ fragment LOWERCASE: [a-z] ;
 fragment DIGIT:		[0-9] ;
 
 // Single-character terminals
-SPACE:		' '  ;
+WS:		' '  ;
 QUOTE:		'\'' ;
 PRODUCES:	'='  ;
 TERMINATOR: ';'  ;
 OR:			'|'  ;
 
 
-ALPHA: (UPPERCASE | LOWERCASE | DIGIT | ' ')+ ;
-WS: [ \t\r\n]+ -> skip ; // skip whitespace
+ALPHA: (UPPERCASE | LOWERCASE | DIGIT)+ ; // Any alphanumeric character
+NEWLINE: [\r\n]+ -> skip ; // skip line breaks

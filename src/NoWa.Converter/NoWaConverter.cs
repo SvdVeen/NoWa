@@ -1,4 +1,4 @@
-﻿using NoWa.Parser;
+﻿using NoWa.Common;
 
 namespace NoWa.Converter;
 
@@ -7,10 +7,12 @@ namespace NoWa.Converter;
 /// </summary>
 public class NoWaConverter
 {
-
-    public static void Convert(string path)
+    /// <summary>
+    /// Convert a given grammar to CNF.
+    /// </summary>
+    /// <param name="grammar">The grammar to convert.</param>
+    public static void Convert(Grammar grammar)
     {
-        NoWaParser parser = new NoWaParser();
-        parser.Parse(path);
+        Console.WriteLine(grammar.ToString());
     }
 }

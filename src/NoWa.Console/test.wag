@@ -1,1 +1,2 @@
-﻿YES = AAA | BBB | 'ccc' ;
+﻿AAA = AAA | BBB ;
+BBB = 'terminal' 'yes' ;
