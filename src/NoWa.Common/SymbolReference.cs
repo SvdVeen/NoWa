@@ -58,4 +58,10 @@ internal class SymbolReference
     {
         _symbol = symbol;
     }
+
+    /// <inheritdoc/>
+    public override string ToString()
+    {
+        return _symbol.ToString()!;
+    }
 }
