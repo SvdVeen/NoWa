@@ -12,6 +12,16 @@ public class Grammar
     private readonly List<Rule> _rules = new();
 
     /// <summary>
+    /// Gets the number of nonterminals in the grammar.
+    /// </summary>
+    public int NonterminalCount { get => _nonterminals.Count; }
+
+    /// <summary>
+    /// Gets the number of rules in the grammar.
+    /// </summary>
+    public int RuleCount { get => _rules.Count; }
+
+    /// <summary>
     /// Adds a nonterminal to the grammar.
     /// </summary>
     /// <param name="nonterminal">The nonterminal to add to the grammar.</param>
@@ -33,11 +43,25 @@ public class Grammar
     }
 
     /// <summary>
+    /// Get a nonterminal in the grammar.
+    /// </summary>
+    /// <param name="index">The index of the nonterminal to get.</param>
+    /// <returns>The nonterminal with the given index.</returns>
+    public Nonterminal GetNonterminal(int index) => _nonterminals.Values.ElementAt(index);
+
+    /// <summary>
     /// Gets a nonterminal in the grammar.
     /// </summary>
     /// <param name="value">The value of the nonterminal to get.</param>
     /// <returns>The nonterminal with the corresponding value.</returns>
     public Nonterminal GetNonterminal(string value) => _nonterminals[value];
+
+    /// <summary>
+    /// Gets a rule with the given index.
+    /// </summary>
+    /// <param name="index">The index of the rule to get.</param>
+    /// <returns>The rule with the given index.</returns>
+    public Rule GetRule(int index) => _rules[index];
 
     /// <summary>
     /// Gets the rule associated with a given nonterminal.
@@ -53,13 +77,26 @@ public class Grammar
     /// <returns>The rule associated with the given nonterminal.</returns>
     public Rule GetRule(Nonterminal nonterminal) => _rulesByNonterminal[nonterminal];
 
+    /// <summary>
+    /// Inserts a rule into the grammar with the given index.
+    /// </summary>
+    /// <param name="index">The index to insert the rule at.</param>
+    /// <param name="rule">The rule to insert.</param>
+    /// <returns><see langword="true"/> if the rule could be inserted, otherwise <see langword="false"/></returns>
+    public bool InsertRule(int index,  Rule rule)
+    {
+        if (index >= _rules.Count) return false;
+        _rules.Insert(index, rule);
+        return true;
+    }
+
     /// <inheritdoc/>
     public override string ToString()
     {
         if (_rules.Count == 0)
             return ""; // This is actually not supposed to happen.
 
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new();
         foreach (Rule rule in _rules)
             _ = sb.AppendLine($"{rule}");
         return sb.ToString();

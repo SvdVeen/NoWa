@@ -21,10 +21,10 @@ internal class NoWaListener : NoWaParserBaseListener
     {
         Nonterminal nonterminal = Grammar.GetNonterminal(context.name.value.Text);
 
-        List<Expression> expressions = new List<Expression>(context._exprs.Count);
+        List<Expression> expressions = new(context._exprs.Count);
         foreach (var expr in context._exprs)
         {
-            Expression newExpr = new Expression();
+            Expression newExpr = new();
             foreach (var sym in expr._symbols)
             {
                 if (sym.t != null)
@@ -37,7 +37,7 @@ internal class NoWaListener : NoWaParserBaseListener
             expressions.Add(newExpr);
         }
 
-        Rule rule = new Rule(nonterminal, expressions);
+        Rule rule = new(nonterminal, expressions.ToArray());
         Grammar.AddRule(nonterminal, rule);
     }
 

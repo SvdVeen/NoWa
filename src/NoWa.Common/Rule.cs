@@ -22,7 +22,7 @@ public class Rule
     /// </summary>
     /// <param name="nonterminal">The nonterminal the rule is associated with.</param>
     /// <param name="expressions">The expressions the nonterminal translates to.</param>
-    public Rule(Nonterminal nonterminal, IEnumerable<Expression> expressions)
+    public Rule(Nonterminal nonterminal, params Expression[] expressions)
     {
         Nonterminal = nonterminal;
         Expressions = new List<Expression>(expressions);
@@ -35,7 +35,7 @@ public class Rule
         if (Expressions.Count == 0)
             throw new InvalidOperationException($"Rule {Nonterminal} contains no expressions.");
 
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new();
         _ = sb.Append($"{Nonterminal} ::= {Expressions[0]}");
         for (int i = 1; i < Expressions.Count; i++)
             _ = sb.Append($" | {Expressions[i]}");
