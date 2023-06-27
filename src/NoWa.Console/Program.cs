@@ -3,8 +3,13 @@ using NoWa.Converter;
 using NoWa.Parser;
 
 string helpInfo = @" Usage: NoWa.exe <path>
-    path: the path to the grammar file to parse.";
+    path: the path to the grammar file to parse.
 
+    Converts the given grammer to Chomsky Normal Form.
+    The first rule in the grammar is assumed to be the start rule.";
+
+Console.WriteLine("NoWa: a Chomsky Normal Form converter for Weighted Attribute Grammars.");
+Console.WriteLine("06-2023, Suzanne van der Veen, University of Twente");
 
 if (args.Length == 0)
 {

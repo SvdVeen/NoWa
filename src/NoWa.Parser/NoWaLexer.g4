@@ -5,7 +5,7 @@ fragment LOWERCASE: [a-z] ;
 fragment DIGIT:		[0-9] ;
 
 // Single-character terminals
-WS:		' '  ;
+WS:			' '  ;
 QUOTE:		'\'' ;
 PRODUCES:	'='  ;
 TERMINATOR: ';'  ;
