@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Data;
+using System.Text;
 
 namespace NoWa.Common;
 
@@ -7,14 +8,11 @@ namespace NoWa.Common;
 /// </summary>
 public class Grammar
 {
-    private readonly Dictionary<string, Nonterminal> _nonterminals = new();
+    private readonly List<ISymbol> _symbols = new();
+    private readonly Dictionary<string, int> _nonterminals = new();
+    private readonly Dictionary<string, int> _terminals = new();
     private readonly Dictionary<Nonterminal, Rule> _rulesByNonterminal = new();
     private readonly List<Rule> _rules = new();
-
-    /// <summary>
-    /// Gets the number of nonterminals in the grammar.
-    /// </summary>
-    public int NonterminalCount { get => _nonterminals.Count; }
 
     /// <summary>
     /// Gets the number of rules in the grammar.
@@ -22,39 +20,96 @@ public class Grammar
     public int RuleCount { get => _rules.Count; }
 
     /// <summary>
-    /// Adds a nonterminal to the grammar.
+    /// Gets or creates a nonterminal with the given value.
     /// </summary>
-    /// <param name="nonterminal">The nonterminal to add to the grammar.</param>
-    public void AddNonterminal(Nonterminal nonterminal) => _ = _nonterminals.TryAdd(nonterminal.Value, nonterminal);
-
-    /// <summary>
-    /// Adds a rule to the grammar if no rule for its nonterminal exists yet.
-    /// </summary>
-    /// <param name="nonterminal">The nonterinal the rule corresponds to.</param>
-    /// <param name="rule">The rule for the given nonterminal.</param>
-    /// <exception cref="InvalidOperationException">The given nonterminal already has a rule associated with it.</exception>
-    public void AddRule(Nonterminal nonterminal, Rule rule)
+    /// <param name="value">The value of the nonterminal.</param>
+    /// <returns>Either a preexisting nonterminal with the given value, or a newly created one.</returns>
+    /// <exception cref="InvalidOperationException">The stored symbol at the found index is not of the right type.</exception>
+    public Nonterminal GetOrCreateNonterminal(string value)
     {
-        if (!_rulesByNonterminal.TryAdd(nonterminal, rule))
-            throw new InvalidOperationException($"Could not add rule {nonterminal} because there is already a rule associated with it.");
-
-        _ = _nonterminals.TryAdd(nonterminal.Value, nonterminal);
-        _rules.Add(rule);
+        if (!_nonterminals.TryGetValue(value, out int index))
+        {
+            Nonterminal newNonterminal = new(value);
+            _symbols.Add(newNonterminal);
+            _nonterminals[value] = _symbols.Count - 1;
+            return newNonterminal;
+        }
+        if (_symbols[index] is not Nonterminal nonterminal)
+            throw new InvalidOperationException($"Expected symbol \"{value}\" to be a nonterminal when it was not.");
+        return nonterminal;
     }
 
     /// <summary>
-    /// Get a nonterminal in the grammar.
+    /// Gets or creates a terminal with the given value.
     /// </summary>
-    /// <param name="index">The index of the nonterminal to get.</param>
-    /// <returns>The nonterminal with the given index.</returns>
-    public Nonterminal GetNonterminal(int index) => _nonterminals.Values.ElementAt(index);
+    /// <param name="value">The value of the terminal.</param>
+    /// <returns>Either a preexisting terminal with the given value, or a newly created one.</returns>
+    /// <exception cref="InvalidOperationException">The stored symbol at the found index is not of the right type.</exception>
+    public Terminal GetOrCreateTerminal(string value)
+    {
+        if (!_terminals.TryGetValue(value, out int index))
+        {
+            Terminal newTerminal = new(value);
+            _symbols.Add(newTerminal);
+            _terminals[value] = _symbols.Count - 1;
+            return newTerminal;
+        }
+        if (_symbols[index] is not Terminal terminal)
+            throw new InvalidOperationException($"Expected symbol \"{value}\" to be a terminal when it was not.");
+        return terminal;
+    }
 
     /// <summary>
-    /// Gets a nonterminal in the grammar.
+    /// Creates a new expression without symbols.
     /// </summary>
-    /// <param name="value">The value of the nonterminal to get.</param>
-    /// <returns>The nonterminal with the corresponding value.</returns>
-    public Nonterminal GetNonterminal(string value) => _nonterminals[value];
+    /// <returns>The newly created expression.</returns>
+    public Expression CreateExpression()
+    {
+        return new Expression(this);
+    }
+
+    public Expression CreateExpression(params ISymbol[] symbols)
+    {
+        return new Expression(this, symbols.Select(GetSymbolIndex).ToArray());
+    }
+
+    /// <summary>
+    /// Create a new rule in the grammar.
+    /// </summary>
+    /// <param name="nonterminal">The value of the nonterminal corresponding to the rule.</param>
+    /// <param name="exprs">The expressions the nonterminal translates to.</param>
+    /// <returns></returns>
+    /// <exception cref="InvalidOperationException">There is already a rule associated with the given nonterminal.</exception>
+    public Rule CreateRule(string nonterminal, params Expression[] exprs)
+    {
+        Nonterminal nt = GetOrCreateNonterminal(nonterminal);
+        Rule rule = new(this, _nonterminals[nonterminal], new List<Expression>(exprs));
+        if (!_rulesByNonterminal.TryAdd(nt, rule))
+            throw new InvalidOperationException($"Could not add rule {nonterminal} because there is already a rule associated with it.");
+        _rules.Add(rule);
+        return rule;
+    }
+
+    /// <summary>
+    /// Gets a symbol in the grammar by its index.
+    /// </summary>
+    /// <param name="index">The index of the symbol.</param>
+    /// <returns>The symbol at the given index.</returns>
+    internal ISymbol GetSymbol(int index)
+    {
+        return _symbols[index];
+    }
+
+    /// <summary>
+    /// Gets the index of a symbol in the grammar.
+    /// </summary>
+    /// <param name="symbol">The symbol to get the index of.</param>
+    /// <returns>The index of the given symbol</returns>
+    internal int GetSymbolIndex(ISymbol symbol)
+    { 
+        // This is potentially slow.
+        return _symbols.IndexOf(symbol);
+    }
 
     /// <summary>
     /// Gets a rule with the given index.
@@ -63,31 +118,9 @@ public class Grammar
     /// <returns>The rule with the given index.</returns>
     public Rule GetRule(int index) => _rules[index];
 
-    /// <summary>
-    /// Gets the rule associated with a given nonterminal.
-    /// </summary>
-    /// <param name="nonterminal">The value of the nonterminal to get the rule for.</param>
-    /// <returns>The rule associated with the given nonterminal.</returns>
-    public Rule GetRule(string nonterminal) => _rulesByNonterminal[_nonterminals[nonterminal]];
-
-    /// <summary>
-    /// Gets the rule associated with a given nonterminal.
-    /// </summary>
-    /// <param name="nonterminal">The nonterminal to get the rule for.</param>
-    /// <returns>The rule associated with the given nonterminal.</returns>
-    public Rule GetRule(Nonterminal nonterminal) => _rulesByNonterminal[nonterminal];
-
-    /// <summary>
-    /// Inserts a rule into the grammar with the given index.
-    /// </summary>
-    /// <param name="index">The index to insert the rule at.</param>
-    /// <param name="rule">The rule to insert.</param>
-    /// <returns><see langword="true"/> if the rule could be inserted, otherwise <see langword="false"/></returns>
-    public bool InsertRule(int index,  Rule rule)
+    public void ReplaceSymbol(ISymbol original, ISymbol replacement)
     {
-        if (index >= _rules.Count) return false;
-        _rules.Insert(index, rule);
-        return true;
+        _symbols[GetSymbolIndex(original)] = replacement;
     }
 
     /// <inheritdoc/>

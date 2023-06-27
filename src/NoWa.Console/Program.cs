@@ -10,6 +10,7 @@ The first rule in the grammar is assumed to be the start rule.";
 
 Console.WriteLine("NoWa: a Chomsky Normal Form converter for Weighted Attribute Grammars.");
 Console.WriteLine("06-2023, Suzanne van der Veen, University of Twente");
+Console.WriteLine();
 
 if (args.Length == 0)
 {

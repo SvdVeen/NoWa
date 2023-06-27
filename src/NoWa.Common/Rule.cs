@@ -7,10 +7,21 @@ namespace NoWa.Common;
 /// </summary>
 public class Rule
 {
+    private readonly Grammar _grammar;
+    private readonly int _nonterminal;
+
     /// <summary>
     /// Gets or sets the nonterminal this rule is associated with.
     /// </summary>
-    public Nonterminal Nonterminal { get; set; }
+    public Nonterminal Nonterminal 
+    { 
+        get 
+        {
+            if (_grammar.GetSymbol(_nonterminal) is not Nonterminal nonterminal)
+                throw new InvalidOperationException($"Rule nonterminal is not a nonterminal.");
+            return nonterminal;
+        } 
+    }
 
     /// <summary>
     /// Gets the list of expressions this nonterminal translates to.
@@ -18,14 +29,16 @@ public class Rule
     public IList<Expression> Expressions { get; }
 
     /// <summary>
-    /// Creates a new instance of a rule with the given nonterminal.
+    /// Creates a new instance of a rule.
     /// </summary>
-    /// <param name="nonterminal">The nonterminal the rule is associated with.</param>
-    /// <param name="expressions">The expressions the nonterminal translates to.</param>
-    public Rule(Nonterminal nonterminal, params Expression[] expressions)
+    /// <param name="grammar">The grammar this rule belongs to.</param>
+    /// <param name="nonterminal">The index of the nonterminal this rule is associated with.</param>
+    /// <param name="exprs">The expressions the nonterminal translates to.</param>
+    internal Rule(Grammar grammar, int nonterminal, IList<Expression> exprs)
     {
-        Nonterminal = nonterminal;
-        Expressions = new List<Expression>(expressions);
+        _grammar = grammar;
+        _nonterminal = nonterminal;
+        Expressions = exprs;
     }
 
     /// <inheritdoc/>
@@ -34,6 +47,8 @@ public class Rule
     {
         if (Expressions.Count == 0)
             throw new InvalidOperationException($"Rule {Nonterminal} contains no expressions.");
+        if (Expressions.Count == 0)
+            throw new InvalidOperationException($"First expression in rule {Nonterminal} contains no symbols.");
 
         StringBuilder sb = new();
         _ = sb.Append($"{Nonterminal} ::= {Expressions[0]}");

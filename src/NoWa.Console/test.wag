@@ -1,2 +1,3 @@
-﻿AAA = AAA | BBB ;
-BBB = 'terminal' 'yes' ;
+﻿S = S | A ;
+A = 'terminal' | 'terminal2' | B
+B = 'A' 'B' 'C' 'D' ;
