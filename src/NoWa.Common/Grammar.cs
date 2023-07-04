@@ -1,5 +1,4 @@
-﻿using System.Data;
-using System.Text;
+﻿using System.Text;
 
 namespace NoWa.Common;
 
@@ -8,10 +7,8 @@ namespace NoWa.Common;
 /// </summary>
 public class Grammar
 {
-    private readonly List<ISymbol> _symbols = new();
-    private readonly Dictionary<string, int> _nonterminals = new();
-    private readonly Dictionary<string, int> _terminals = new();
-    private readonly Dictionary<Nonterminal, Rule> _rulesByNonterminal = new();
+    private readonly Dictionary<string, Nonterminal> _nonterminals = new();
+    private readonly Dictionary<string, Terminal> _terminals = new();
     private readonly List<Rule> _rules = new();
 
     /// <summary>
@@ -20,22 +17,55 @@ public class Grammar
     public int RuleCount { get => _rules.Count; }
 
     /// <summary>
+    /// Adds an existing <see cref="Rule"/> to the list of rules in this grammar.
+    /// </summary>
+    /// <param name="rule">The <see cref="Rule"/> to add to the grammar.</param>
+    public void AddRule(Rule rule) => _rules.Add(rule);
+
+    /// <summary>
+    /// Adds a new <see cref="Rule"/> to the list of rules in this grammar.
+    /// </summary>
+    /// <param name="nonterminal">The value of the nonterminal associated with the rule.</param>
+    /// <returns>The newly added <see cref="Rule"/>.</returns>
+    public Rule AddRule(string nonterminal)
+    {
+        Rule rule = new(GetOrCreateNonterminal(nonterminal));
+        AddRule(rule);
+        return rule;
+    }
+
+    /// <summary>
+    /// Inserts an existing <see cref="Rule"/> into the list of rules in this grammar.
+    /// </summary>
+    /// <param name="index">The index to insert the <see cref="Rule"/> at</param>
+    /// <param name="rule">The <see cref="Rule"/> to insert.</param>
+    public void InsertRule(int index, Rule rule) => _rules.Insert(index, rule);
+
+    /// <summary>
+    /// Inserts a new <see cref="Rule"/> into the list of rules in this grammar at the specified index.
+    /// </summary>
+    /// <param name="index">The index to insert the rule at.</param>
+    /// <param name="nonterminal">The value of the nonterminal associated with the rule.</param>
+    /// <returns></returns>
+    public Rule InsertRule(int index, string nonterminal)
+    {
+        Rule rule = new(GetOrCreateNonterminal(nonterminal));
+        InsertRule(index, rule);
+        return rule;
+    }
+
+    /// <summary>
     /// Gets or creates a nonterminal with the given value.
     /// </summary>
     /// <param name="value">The value of the nonterminal.</param>
     /// <returns>Either a preexisting nonterminal with the given value, or a newly created one.</returns>
-    /// <exception cref="InvalidOperationException">The stored symbol at the found index is not of the right type.</exception>
     public Nonterminal GetOrCreateNonterminal(string value)
     {
-        if (!_nonterminals.TryGetValue(value, out int index))
+        if (!_nonterminals.TryGetValue(value, out Nonterminal? nonterminal))
         {
-            Nonterminal newNonterminal = new(value);
-            _symbols.Add(newNonterminal);
-            _nonterminals[value] = _symbols.Count - 1;
-            return newNonterminal;
+            nonterminal = new(value);
+            _nonterminals[value] = nonterminal;
         }
-        if (_symbols[index] is not Nonterminal nonterminal)
-            throw new InvalidOperationException($"Expected symbol \"{value}\" to be a nonterminal when it was not.");
         return nonterminal;
     }
 
@@ -44,71 +74,14 @@ public class Grammar
     /// </summary>
     /// <param name="value">The value of the terminal.</param>
     /// <returns>Either a preexisting terminal with the given value, or a newly created one.</returns>
-    /// <exception cref="InvalidOperationException">The stored symbol at the found index is not of the right type.</exception>
     public Terminal GetOrCreateTerminal(string value)
     {
-        if (!_terminals.TryGetValue(value, out int index))
+        if (!_terminals.TryGetValue(value, out Terminal? terminal))
         {
-            Terminal newTerminal = new(value);
-            _symbols.Add(newTerminal);
-            _terminals[value] = _symbols.Count - 1;
-            return newTerminal;
+            terminal = new(value);
+            _terminals[value] = terminal;
         }
-        if (_symbols[index] is not Terminal terminal)
-            throw new InvalidOperationException($"Expected symbol \"{value}\" to be a terminal when it was not.");
         return terminal;
-    }
-
-    /// <summary>
-    /// Creates a new expression without symbols.
-    /// </summary>
-    /// <returns>The newly created expression.</returns>
-    public Expression CreateExpression()
-    {
-        return new Expression(this);
-    }
-
-    public Expression CreateExpression(params ISymbol[] symbols)
-    {
-        return new Expression(this, symbols.Select(GetSymbolIndex).ToArray());
-    }
-
-    /// <summary>
-    /// Create a new rule in the grammar.
-    /// </summary>
-    /// <param name="nonterminal">The value of the nonterminal corresponding to the rule.</param>
-    /// <param name="exprs">The expressions the nonterminal translates to.</param>
-    /// <returns></returns>
-    /// <exception cref="InvalidOperationException">There is already a rule associated with the given nonterminal.</exception>
-    public Rule CreateRule(string nonterminal, params Expression[] exprs)
-    {
-        Nonterminal nt = GetOrCreateNonterminal(nonterminal);
-        Rule rule = new(this, _nonterminals[nonterminal], new List<Expression>(exprs));
-        if (!_rulesByNonterminal.TryAdd(nt, rule))
-            throw new InvalidOperationException($"Could not add rule {nonterminal} because there is already a rule associated with it.");
-        _rules.Add(rule);
-        return rule;
-    }
-
-    /// <summary>
-    /// Gets a symbol in the grammar by its index.
-    /// </summary>
-    /// <param name="index">The index of the symbol.</param>
-    /// <returns>The symbol at the given index.</returns>
-    internal ISymbol GetSymbol(int index)
-    {
-        return _symbols[index];
-    }
-
-    /// <summary>
-    /// Gets the index of a symbol in the grammar.
-    /// </summary>
-    /// <param name="symbol">The symbol to get the index of.</param>
-    /// <returns>The index of the given symbol</returns>
-    internal int GetSymbolIndex(ISymbol symbol)
-    { 
-        // This is potentially slow.
-        return _symbols.IndexOf(symbol);
     }
 
     /// <summary>
@@ -118,20 +91,39 @@ public class Grammar
     /// <returns>The rule with the given index.</returns>
     public Rule GetRule(int index) => _rules[index];
 
-    public void ReplaceSymbol(ISymbol original, ISymbol replacement)
+    /// <summary>
+    /// Replace a symbol in the grammar with another.
+    /// </summary>
+    /// <param name="original">The original symbol.</param>
+    /// <param name="replacement">The symbol that should replace it.</param>
+    /// <param name="removeOriginal"><see langword="true"/> to have the original symbol deleted entirely from the grammar, otherwise <see langword="false"/>.</param>
+    public void ReplaceSymbol(Terminal original, Nonterminal replacement, bool removeOriginal = true)
     {
-        _symbols[GetSymbolIndex(original)] = replacement;
+        if (removeOriginal)
+        {
+            _ = _terminals.Remove(original.Value);
+        }
+        _ = _nonterminals.TryAdd(replacement.Value, replacement);
+        foreach (var expr in _rules.SelectMany(rule => rule.Expressions))
+        {
+            for (int i = 0; i < expr.Count; i++)
+            {
+                if (expr[i] == original)
+                {
+                    expr[i] = replacement;
+                }
+            }
+        }
     }
 
     /// <inheritdoc/>
     public override string ToString()
     {
         if (_rules.Count == 0)
-            return ""; // This is actually not supposed to happen.
+        {
+            return "Empty grammar";
+        }
 
-        StringBuilder sb = new();
-        foreach (Rule rule in _rules)
-            _ = sb.AppendLine($"{rule}");
-        return sb.ToString();
+        return new StringBuilder().AppendJoin(Environment.NewLine, _rules).ToString();
     }
 }

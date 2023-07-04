@@ -1,105 +1,105 @@
-﻿using System.Text;
+﻿using System.Collections;
+using System.Text;
 
 namespace NoWa.Common;
 
 /// <summary>
 /// Represents a combination of symbols.
 /// </summary>
-public class Expression
+public class Expression : IList<ISymbol>
 {
-    private readonly Grammar _grammar;
-    private readonly IList<int> _symbols;
-
-    /// <summary>
-    /// Access symbols in the expression by their index.
-    /// </summary>
-    /// <param name="i">The index of a symbol.</param>
-    /// <returns>The symbol at the given index.</returns>
-    public ISymbol this[int i]
-    {
-        get => GetSymbol(i);
-    }
-
-    /// <summary>
-    /// Gets the number of symbols in the expression.
-    /// </summary>
-    public int Count
-    { 
-        get => _symbols.Count; 
-    }
-
-    /// <summary>
-    /// Gets the enumerator over the symbols in this expression.
-    /// </summary>
-    public IEnumerable<ISymbol> Symbols
-    {
-        get
-        {
-            for (int i = 0; i < _symbols.Count; i++)
-                yield return _grammar.GetSymbol(i);
-        }
-    }
-
-    /// <summary>
-    /// Creates a new instance of the <see cref="Expression"/> class.
-    /// </summary>
-    /// <param name="grammar">The <see cref="Grammar"/> this <see cref="Expression"/> belongs to.</param>
-    internal Expression(Grammar grammar)
-    {
-        _grammar = grammar;
-        _symbols = new List<int>();
-    }
-
-
-    /// <summary>
-    /// Creates a new instance of the <see cref="Expression"/> class.
-    /// </summary>
-    /// <param name="grammar">The <see cref="Grammar"/> this <see cref="Expression"/> belongs to.</param>
-    /// <param name="symbols">The indices of the symbols in this <see cref="Expression"/>.</param>
-    internal Expression(Grammar grammar, params int[] symbols)
-    {
-        _grammar = grammar;
-        _symbols = new List<int>(symbols);
-    }
-
-    /// <summary>
-    /// Adds a nonterminal to the expression.
-    /// </summary>
-    /// <param name="value">The value of the nonterminal to add.</param>
-    public void AddNonterminal(string value)
-    {
-        Nonterminal nonterminal = _grammar.GetOrCreateNonterminal(value);
-        _symbols.Add(_grammar.GetSymbolIndex(nonterminal));
-    }
-
-    /// <summary>
-    /// Adds a terminal to the expression.
-    /// </summary>
-    /// <param name="value">The value of the terminal to add.</param>
-    public void AddTerminal(string value)
-    {
-        Terminal terminal = _grammar.GetOrCreateTerminal(value);
-        _symbols.Add(_grammar.GetSymbolIndex(terminal));
-    }
-
-    /// <summary>
-    /// Gets a symbol by its index.
-    /// </summary>
-    /// <param name="index">The index of the symbol to get.</param>
-    /// <returns>The symbol at the given index.</returns>
-    public ISymbol GetSymbol(int index) => _grammar.GetSymbol(index);
+    private readonly IList<ISymbol> _symbols;
 
     /// <inheritdoc/>
-    /// <exception cref="InvalidOperationException">The expression contains no symbols.</exception>
+    public ISymbol this[int index]
+    {
+        get => _symbols[index];
+        set => _symbols[index] = value;
+    }
+
+    /// <inheritdoc/>
+    public int Count => _symbols.Count;
+
+    /// <inheritdoc/>
+    public bool IsReadOnly => _symbols.IsReadOnly;
+
+    /// <summary>
+    /// Creates a new instance of the <see cref="Expression"/> class.
+    /// </summary>
+    public Expression()
+    {
+        _symbols = new List<ISymbol>();
+    }
+
+    /// <summary>
+    /// Creates a new instance of the <see cref="Expression"/> class.
+    /// </summary>
+    /// <param name="symbols">The symbols in this expression.</param>
+    public Expression(params ISymbol[] symbols)
+    {
+        _symbols = new List<ISymbol>(symbols);
+    }
+
+    /// <inheritdoc/>
+    public void Add(ISymbol item)
+    {
+        _symbols.Add(item);
+    }
+    /// <inheritdoc/>
+    public void Clear()
+    {
+        _symbols.Clear();
+    }
+    /// <inheritdoc/>
+    public bool Contains(ISymbol item)
+    {
+        return _symbols.Contains(item);
+    }
+    /// <inheritdoc/>
+    public void CopyTo(ISymbol[] array, int arrayIndex)
+    {
+        _symbols.CopyTo(array, arrayIndex);
+    }
+    /// <inheritdoc/>
+    public IEnumerator<ISymbol> GetEnumerator()
+    {
+        return _symbols.GetEnumerator();
+    }
+    /// <inheritdoc/>
+    public int IndexOf(ISymbol item)
+    {
+        return _symbols.IndexOf(item);
+    }
+    /// <inheritdoc/>
+    public void Insert(int index, ISymbol item)
+    {
+        _symbols.Insert(index, item);
+    }
+    /// <inheritdoc/>
+    public bool Remove(ISymbol item)
+    {
+        return _symbols.Remove(item);
+    }
+    /// <inheritdoc/>
+    public void RemoveAt(int index)
+    {
+        _symbols.RemoveAt(index);
+    }
+
+    /// <inheritdoc/>
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return ((IEnumerable)_symbols).GetEnumerator();
+    }
+
+    /// <inheritdoc/>
     public override string ToString()
     {
         if (_symbols.Count == 0)
-            throw new InvalidOperationException("Expression contains no symbols.");
+        {
+            return "Empty expression";
+        }
 
-        StringBuilder sb = new();
-        _ = sb.Append($"{GetSymbol(0)}");
-        for (int i = 1; i < _symbols.Count; i++)
-            _ = sb.Append($" {GetSymbol(i)}");
-        return sb.ToString();
+        return new StringBuilder().AppendJoin(' ', _symbols).ToString();
     }
 }

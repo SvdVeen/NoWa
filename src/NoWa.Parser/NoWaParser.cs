@@ -9,7 +9,7 @@ namespace NoWa.Parser;
 /// <summary>
 /// Parses a grammar from a file and converts it to a <see cref="Grammar"/>.
 /// </summary>
-public class NoWaParser
+public static class NoWaParser
 {
     /// <summary>
     /// Parse a grammar from a file and convert it to a <see cref="Grammar"/>.
@@ -17,7 +17,7 @@ public class NoWaParser
     /// <param name="path">The path to the file to parse.</param>
     /// <returns></returns>
     /// <exception cref="FileNotFoundException">The file path was not valid.</exception>
-    public Grammar Parse(string path)
+    public static Grammar Parse(string path)
     {
         if (!Path.Exists(path))
             throw new FileNotFoundException($"Could not find the file: {path}");

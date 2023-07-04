@@ -19,22 +19,26 @@ internal class NoWaListener : NoWaParserBaseListener
     /// <param name="context"></param>
     public override void ExitRule([NotNull] Generated.NoWaParser.RuleContext context)
     {
-        List<Expression> expressions = new(context._exprs.Count);
+        Rule rule = Grammar.AddRule(context.name.value.Text);
         foreach (var expr in context._exprs)
         {
-            Expression newExpr = Grammar.CreateExpression();
+            Expression newExpr = new();
             foreach (var sym in expr._symbols)
             {
                 if (sym.t != null)
-                    newExpr.AddTerminal(sym.t.value.Text);
+                {
+                    newExpr.Add(Grammar.GetOrCreateTerminal(sym.t.value.Text));
+                }
                 else if (sym.nt != null)
-                    newExpr.AddNonterminal(sym.nt.value.Text);
+                {
+                    newExpr.Add(Grammar.GetOrCreateNonterminal(sym.nt.value.Text));
+                }
                 else
+                {
                     throw new InvalidOperationException("Parsed symbol is neither a terminal nor a nonterminal."); // This should not even be possible.
+                }
             }
-            expressions.Add(newExpr);
+            rule.Expressions.Add(newExpr);
         }
-
-        _ = Grammar.CreateRule(context.name.value.Text, expressions.ToArray());
     }
 }
