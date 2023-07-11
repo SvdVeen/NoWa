@@ -23,6 +23,10 @@ public static class NoWaConverter
         Term(grammar);
         Console.WriteLine(grammar.ToString());
         Console.WriteLine();
+
+        Bin(grammar);
+        Console.WriteLine(grammar.ToString());
+        Console.WriteLine();
     }
 
     /// <summary>
@@ -32,7 +36,7 @@ public static class NoWaConverter
     private static void Start(Grammar grammar)
     {
         Nonterminal nonterminal = grammar.GetRule(0).Nonterminal;
-        Rule rule = grammar.InsertRule(0, "NoWa-START");
+        Rule rule = grammar.InsertRule(0, "START");
         rule.Expressions.Add(new Expression(nonterminal));
     }
 
@@ -52,13 +56,38 @@ public static class NoWaConverter
                     if (expr[j] is Terminal terminal)
                     {
                         // A nonsolitary terminal is replaced with a nonterminal across the entire grammar.
-                        Nonterminal nonterminal = grammar.GetOrCreateNonterminal($"NoWa-TERM-{terminal.Value.Replace(" ", "-")}");
+                        Nonterminal nonterminal = grammar.GetOrCreateNonterminal($"TERM-{terminal.Value.Replace(" ", "-")}");
                         grammar.ReplaceSymbol(terminal, nonterminal, false); // Keep the original because we will insert it again in the new rule.
                         // A new rule is added for the new nonterminal that refers to the old terminal.
                         Rule newRule = new(nonterminal);
                         newRule.Expressions.Add(new(terminal));
                         grammar.AddRule(newRule);
                     }
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Eliminates rules with more than two nonterminals.
+    /// </summary>
+    /// <param name="grammar"></param>
+    private static void Bin(Grammar grammar)
+    {
+        for (int i = 0, count = grammar.RuleCount; i < count; i++)
+        {
+            Rule rule = grammar.GetRule(i);
+            foreach (var expr in rule.Expressions.Where(expr => expr.OfType<Nonterminal>().Count() > 2))
+            {
+                for (int j = expr.Count - 1;  j >= 2; j--)
+                {
+                    Nonterminal nonterminal = grammar.GetOrCreateNonterminal($"{expr[j - 1].Value}-{expr[j].Value}");
+                    Rule newRule = new Rule(nonterminal);
+                    newRule.Expressions.Add(new(expr[j-1], expr[j]));
+                    grammar.AddRule(newRule);
+                    expr.RemoveAt(j);
+                    expr.RemoveAt(j - 1);
+                    expr.Add(nonterminal);
                 }
             }
         }
