@@ -4,6 +4,8 @@ namespace NoWa.Converter;
 
 /// <summary>
 /// A converter that converts a WAG to CNF.
+/// 
+/// <para>Currently only works for grammars without weighted attributes.</para>
 /// </summary>
 public static class NoWaConverter
 {
@@ -16,21 +18,29 @@ public static class NoWaConverter
         Console.WriteLine(grammar.ToString());
         Console.WriteLine();
 
+        Console.WriteLine("Adding start rule...");
         AddStartRule(grammar);
         Console.WriteLine(grammar.ToString());
         Console.WriteLine();
 
+        Console.WriteLine("Separating terminals...");
         SeparateTerminals(grammar);
         Console.WriteLine(grammar.ToString());
         Console.WriteLine();
 
+        Console.WriteLine("Reducing nonterminals...");
         ReduceNonterminals(grammar);
         Console.WriteLine(grammar.ToString());
         Console.WriteLine();
 
+        Console.WriteLine("Eliminating unit productions...");
         EliminateUnitProductions(grammar);
         Console.WriteLine(grammar.ToString());
         Console.WriteLine();
+
+        Console.WriteLine("Conversion complete!");
+
+        // TODO: Eliminating empty string productions, removing unreachable rules.
     }
 
     /// <summary>
