@@ -2,3 +2,4 @@
 A = 'terminal' | 'terminal2' | B ;
 B = 'A' 'B' 'C' 'D' ;
 C = 'C' ;
+D = A ;

@@ -16,15 +16,19 @@ public static class NoWaConverter
         Console.WriteLine(grammar.ToString());
         Console.WriteLine();
 
-        Start(grammar);
+        AddStartRule(grammar);
         Console.WriteLine(grammar.ToString());
         Console.WriteLine();
 
-        Term(grammar);
+        SeparateTerminals(grammar);
         Console.WriteLine(grammar.ToString());
         Console.WriteLine();
 
-        Bin(grammar);
+        ReduceNonterminals(grammar);
+        Console.WriteLine(grammar.ToString());
+        Console.WriteLine();
+
+        EliminateUnitProductions(grammar);
         Console.WriteLine(grammar.ToString());
         Console.WriteLine();
     }
@@ -33,7 +37,7 @@ public static class NoWaConverter
     /// Replaces the start rule with a new one.
     /// </summary>
     /// <param name="grammar">The grammar to convert.</param>
-    private static void Start(Grammar grammar)
+    private static void AddStartRule(Grammar grammar)
     {
         Nonterminal nonterminal = grammar.GetRule(0).Nonterminal;
         Rule rule = grammar.InsertRule(0, "START");
@@ -44,7 +48,7 @@ public static class NoWaConverter
     /// Eliminates nonsolitary terminals.
     /// </summary>
     /// <param name="grammar">The grammar to convert.</param>
-    private static void Term(Grammar grammar)
+    private static void SeparateTerminals(Grammar grammar)
     {
         for (int i = 0, count = grammar.RuleCount; i < count; i++)
         {
@@ -69,10 +73,10 @@ public static class NoWaConverter
     }
 
     /// <summary>
-    /// Eliminates rules with more than two nonterminals.
+    /// Splits rules with more than two nonterminals.
     /// </summary>
-    /// <param name="grammar"></param>
-    private static void Bin(Grammar grammar)
+    /// <param name="grammar">The grammar to convert.</param>
+    private static void ReduceNonterminals(Grammar grammar)
     {
         for (int i = 0, count = grammar.RuleCount; i < count; i++)
         {
@@ -88,6 +92,26 @@ public static class NoWaConverter
                     expr.RemoveAt(j);
                     expr.RemoveAt(j - 1);
                     expr.Add(nonterminal);
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Eliminates rules that only refer to a single nonterminal.
+    /// </summary>
+    /// <param name="grammar">The grammar to convert.</param>
+    private static void EliminateUnitProductions(Grammar grammar)
+    {
+        for (int i = 0, count = grammar.RuleCount; i < count; i++)
+        {
+            Rule rule = grammar.GetRule(i);
+            if (rule.Expressions.Count == 1 && rule.Expressions[0].Count == 1 && rule.Expressions[0][0] is Nonterminal nonterminal)
+            {
+                rule.Expressions.RemoveAt(0);
+                foreach (var expr in grammar.GetRule(nonterminal.Value).Expressions)
+                {
+                    rule.Expressions.Add(new(expr.ToArray()));
                 }
             }
         }

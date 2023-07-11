@@ -91,6 +91,17 @@ public class Grammar
     /// <returns>The rule with the given index.</returns>
     public Rule GetRule(int index) => _rules[index];
 
+
+    /// <summary>
+    /// Gets a rule with the given nonterminal.
+    /// </summary>
+    /// <param name="nonterminal">The value of the nonterminal matching the rule.</param>
+    /// <returns>The rule for the given nonterminal.</returns>
+    public Rule GetRule(string nonterminal)
+    {
+        return _rules.Single(rule => rule.Nonterminal.Value == nonterminal);
+    }
+
     /// <summary>
     /// Replace a symbol in the grammar with another.
     /// </summary>
