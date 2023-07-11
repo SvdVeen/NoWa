@@ -86,7 +86,7 @@ public static class NoWaConverter
                 for (int j = expr.Count - 1;  j >= 2; j--)
                 {
                     Nonterminal nonterminal = grammar.GetOrCreateNonterminal($"{expr[j - 1].Value}-{expr[j].Value}");
-                    Rule newRule = new Rule(nonterminal);
+                    Rule newRule = new(nonterminal);
                     newRule.Expressions.Add(new(expr[j-1], expr[j]));
                     grammar.AddRule(newRule);
                     expr.RemoveAt(j);

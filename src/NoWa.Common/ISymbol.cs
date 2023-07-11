@@ -8,5 +8,5 @@ public interface ISymbol
     /// <summary>
     /// The value of the symbol.
     /// </summary>
-    public string Value { get; set; }
+    public string Value { get; }
 }

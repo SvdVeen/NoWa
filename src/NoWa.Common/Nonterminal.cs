@@ -17,5 +17,5 @@ public class Nonterminal : ISymbol
     public Nonterminal(string value) => Value = value;
 
     /// <inheritdoc/>
-    public override string ToString() => $"<{Value}>";
+    public override string ToString() => Value;
 }

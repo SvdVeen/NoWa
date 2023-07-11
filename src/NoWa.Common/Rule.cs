@@ -31,6 +31,6 @@ public class Rule
             return $"Empty rule {Nonterminal}";
         }
 
-        return new StringBuilder($"{Nonterminal} ::= ").AppendJoin(" | ", Expressions).Append(" ;").ToString();
+        return new StringBuilder($"{Nonterminal} = ").AppendJoin(" | ", Expressions).Append(" ;").ToString();
     }
 }
