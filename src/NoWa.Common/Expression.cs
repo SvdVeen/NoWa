@@ -102,4 +102,21 @@ public class Expression : IList<ISymbol>
 
         return new StringBuilder().AppendJoin(' ', _symbols).ToString();
     }
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj)
+    {
+        return obj is Expression expression && _symbols.SequenceEqual(expression._symbols);
+    }
+
+    /// <inheritdoc/>
+    public override int GetHashCode()
+    {
+        int result = 17;
+        foreach (var symbol in _symbols)
+        {
+            result = result * 19 + symbol.GetHashCode();
+        }
+        return result;
+    }
 }
