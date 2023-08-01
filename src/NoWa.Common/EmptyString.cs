@@ -25,4 +25,13 @@ public class EmptyString : ISymbol
 
     /// <inheritdoc/>
     public override string ToString() => Value;
+
+    /// <inheritdoc/>
+    /// <remarks>
+    /// Since this class is a singleton, we only have to check that it is an instance of <see cref="EmptyString"/>.
+    /// </remarks>
+    public override bool Equals(object? obj) => obj is EmptyString;
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => HashCode.Combine(Value);
 }

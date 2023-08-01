@@ -23,6 +23,13 @@ public class Rule
     /// <param name="nonterminal">The <see cref="Common.Nonterminal"/> associated with the new rule.</param>
     public Rule(Nonterminal nonterminal) => Nonterminal = nonterminal;
 
+    /// <summary>
+    /// Add an expression to the rule.
+    /// </summary>
+    /// <param name="symbols">The symbols in the expression.</param>
+    /// <remarks>Used as notational shorthand to make quick instantiations more readable.</remarks>
+    public void AddExpression(params ISymbol[] symbols) => Expressions.Add(new(symbols));
+
     /// <inheritdoc/>
     public override string ToString()
     {
@@ -32,5 +39,17 @@ public class Rule
         }
 
         return new StringBuilder($"{Nonterminal} = ").AppendJoin(" | ", Expressions).Append(" ;").ToString();
+    }
+
+    /// <inheritdoc/>
+    /// <remarks>Equaity is based on the nonterminal only.</remarks>
+    public override bool Equals(object? obj) => obj is Rule rule
+                                                && EqualityComparer<Nonterminal>.Default.Equals(Nonterminal, rule.Nonterminal);
+
+    /// <inheritdoc/>
+    /// <remarks>Equaity is based on the nonterminal only.</remarks>
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Nonterminal);
     }
 }

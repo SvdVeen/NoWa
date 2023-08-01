@@ -91,7 +91,6 @@ public class Grammar
     /// <returns>The rule with the given index.</returns>
     public Rule GetRule(int index) => _rules[index];
 
-
     /// <summary>
     /// Gets a rule with the given nonterminal.
     /// </summary>
@@ -101,6 +100,33 @@ public class Grammar
     {
         return _rules.Single(rule => rule.Nonterminal.Value == nonterminal);
     }
+
+    /// <summary>
+    /// Gets a rule with the given nonterminal.
+    /// </summary>
+    /// <param name="nonterminal">The nonterminal corresponding to the rule.</param>
+    /// <returns>The rule for the given nonterminal.</returns>
+    public Rule GetRule(Nonterminal nonterminal) => GetRule(nonterminal.Value);
+
+    /// <summary>
+    /// Try to get a rule with a given nonterminal.
+    /// </summary>
+    /// <param name="nonterminal">The value of the nonterminal matching the rule.</param>
+    /// <param name="rule">The rule with the given nonterminal if it was found. <see langword="null"/> if it was not found.</param>
+    /// <returns><see langword="true"/> if a nonterminal was found. <see langword="false"/> if it was not found.</returns>
+    public bool TryGetRule(string nonterminal, out Rule? rule)
+    {
+        rule = _rules.SingleOrDefault(r => r.Nonterminal.Value == nonterminal);
+        return rule != null;
+    }
+
+    /// <summary>
+    /// Try to get a rule with a given nonterminal.
+    /// </summary>
+    /// <param name="nonterminal">The nonterminal matching the rule.</param>
+    /// <param name="rule">The rule with the given nonterminal if it was found. <see langword="null"/> if it was not found.</param>
+    /// <returns><see langword="true"/> if a nonterminal was found. <see langword="false"/> if it was not found.</returns>
+    public bool TryGetRule(Nonterminal nonterminal, out Rule? rule) => TryGetRule(nonterminal.Value, out rule);
 
     /// <summary>
     /// Replace a symbol in the grammar with another.
@@ -125,6 +151,17 @@ public class Grammar
                 }
             }
         }
+    }
+
+    /// <summary>
+    /// Removes a rule with the given index, as well as its nonterminal.
+    /// </summary>
+    /// <param name="index">The index of the rule to remove.</param>
+    public void RemoveRule(int index)
+    {
+        Rule rule = _rules[index];
+        _nonterminals.Remove(rule.Nonterminal.Value);
+        _rules.RemoveAt(index);
     }
 
     /// <inheritdoc/>

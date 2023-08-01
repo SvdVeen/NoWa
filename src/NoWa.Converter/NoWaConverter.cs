@@ -18,48 +18,41 @@ public static class NoWaConverter
         Console.WriteLine(grammar.ToString());
         Console.WriteLine();
 
-        Console.WriteLine("Adding start rule...");
         AddStartRule(grammar);
-        Console.WriteLine(grammar.ToString());
-        Console.WriteLine();
 
-        Console.WriteLine("Separating terminals...");
         SeparateTerminals(grammar);
-        Console.WriteLine(grammar.ToString());
-        Console.WriteLine();
 
-        Console.WriteLine("Reducing nonterminals...");
         ReduceNonterminals(grammar);
-        Console.WriteLine(grammar.ToString());
-        Console.WriteLine();
 
-        Console.WriteLine("Eliminating unit productions...");
         EliminateUnitProductions(grammar);
-        Console.WriteLine(grammar.ToString());
-        Console.WriteLine();
 
+        EliminateEmptyStringProductions(grammar);
+
+        // TODO: Removing unreachable rules.
         Console.WriteLine("Conversion complete!");
-
-        // TODO: Eliminating empty string productions, removing unreachable rules.
     }
 
     /// <summary>
     /// Replaces the start rule with a new one.
     /// </summary>
     /// <param name="grammar">The grammar to convert.</param>
-    private static void AddStartRule(Grammar grammar)
+    public static void AddStartRule(Grammar grammar)
     {
+        Console.WriteLine("Adding start rule...");
         Nonterminal nonterminal = grammar.GetRule(0).Nonterminal;
         Rule rule = grammar.InsertRule(0, "START");
-        rule.Expressions.Add(new Expression(nonterminal));
+        rule.AddExpression(nonterminal);
+        Console.WriteLine(grammar.ToString());
+        Console.WriteLine();
     }
 
     /// <summary>
     /// Eliminates nonsolitary terminals.
     /// </summary>
     /// <param name="grammar">The grammar to convert.</param>
-    private static void SeparateTerminals(Grammar grammar)
+    public static void SeparateTerminals(Grammar grammar)
     {
+        Console.WriteLine("Separating terminals...");
         for (int i = 0, count = grammar.RuleCount; i < count; i++)
         {
             Rule rule = grammar.GetRule(i);
@@ -74,20 +67,23 @@ public static class NoWaConverter
                         grammar.ReplaceSymbol(terminal, nonterminal, false); // Keep the original because we will insert it again in the new rule.
                         // A new rule is added for the new nonterminal that refers to the old terminal.
                         Rule newRule = new(nonterminal);
-                        newRule.Expressions.Add(new(terminal));
+                        newRule.AddExpression(terminal);
                         grammar.AddRule(newRule);
                     }
                 }
             }
         }
+        Console.WriteLine(grammar.ToString());
+        Console.WriteLine();
     }
 
     /// <summary>
     /// Splits rules with more than two nonterminals.
     /// </summary>
     /// <param name="grammar">The grammar to convert.</param>
-    private static void ReduceNonterminals(Grammar grammar)
+    public static void ReduceNonterminals(Grammar grammar)
     {
+        Console.WriteLine("Reducing nonterminals...");
         for (int i = 0, count = grammar.RuleCount; i < count; i++)
         {
             Rule rule = grammar.GetRule(i);
@@ -97,7 +93,7 @@ public static class NoWaConverter
                 {
                     Nonterminal nonterminal = grammar.GetOrCreateNonterminal($"{expr[j - 1].Value}-{expr[j].Value}");
                     Rule newRule = new(nonterminal);
-                    newRule.Expressions.Add(new(expr[j-1], expr[j]));
+                    newRule.AddExpression(expr[j-1], expr[j]);
                     grammar.AddRule(newRule);
                     expr.RemoveAt(j);
                     expr.RemoveAt(j - 1);
@@ -105,6 +101,8 @@ public static class NoWaConverter
                 }
             }
         }
+        Console.WriteLine(grammar.ToString());
+        Console.WriteLine();
     }
 
     /// <summary>
@@ -113,6 +111,7 @@ public static class NoWaConverter
     /// <param name="grammar">The grammar to convert.</param>
     private static void EliminateUnitProductions(Grammar grammar)
     {
+        Console.WriteLine("Eliminating unit productions...");
         for (int i = 0, count = grammar.RuleCount; i < count; i++)
         {
             Rule rule = grammar.GetRule(i);
@@ -121,9 +120,94 @@ public static class NoWaConverter
                 rule.Expressions.RemoveAt(0);
                 foreach (var expr in grammar.GetRule(nonterminal.Value).Expressions)
                 {
-                    rule.Expressions.Add(new(expr.ToArray()));
+                    rule.AddExpression(expr.ToArray());
                 }
             }
         }
+        Console.WriteLine(grammar.ToString());
+        Console.WriteLine();
+    }
+
+    /// <summary>
+    /// Adjust rules so empty strings cannot be produced.
+    /// </summary>
+    /// <param name="grammar">The grammar to convert.</param>
+    public static void EliminateEmptyStringProductions(Grammar grammar)
+    {
+        Console.WriteLine("Eliminating ε-productions...");
+        // Start by finding nullables and trimming ε-productions.
+        HashSet<Nonterminal> nullables = GetNullableNonterminals(grammar);
+        for (int i = 0; i < grammar.RuleCount; i++)
+        {
+            Rule rule = grammar.GetRule(i);
+            if (!nullables.Contains(rule.Nonterminal))
+            {
+                continue;
+            }
+            for (int j = 0, count = rule.Expressions.Count; j < count; j++)
+            {
+                Expression expr = rule.Expressions[j];
+                for (int k = 0; k < expr.Count; k++)
+                {
+                    // I have to write an annoying thing to make all permutations of nullables happen. Agh
+                }
+            }
+        }
+        Console.WriteLine(grammar.ToString());
+        Console.WriteLine();
+    }
+
+    /// <summary>
+    /// Gets all nullable nonterminals and trims empty string productions from them.
+    /// </summary>
+    /// <param name="grammar">The grammar to convert.</param>
+    /// <returns>A set of all nullable nonterminals.</returns>
+    private static HashSet<Nonterminal> GetNullableNonterminals(Grammar grammar)
+    {
+        HashSet<Nonterminal> nullables = new();
+        // First, we find first-level nullables and trim their ε-productions.
+        for (int i = 0; i < grammar.RuleCount; i++)
+        {
+            Rule rule = grammar.GetRule(i);
+            for (int j = 0; j < rule.Expressions.Count; j++)
+            {
+                Expression expr = rule.Expressions[j];
+                for (int k = 0; k < expr.Count; k++)
+                {
+                    if (expr[k] is EmptyString)
+                    {
+                        expr.RemoveAt(k--);
+                    }
+                }
+                if (expr.Count == 0)
+                {
+                    nullables.Add(rule.Nonterminal);
+                    rule.Expressions.RemoveAt(j--);
+                }
+            }
+            if (rule.Expressions.Count == 0)
+            {
+                grammar.RemoveRule(i--);
+            }
+        }
+        // We iteratively find all remaining nullable rules by seeing if all of their productions are nullable.
+        int lastCount;
+        do
+        {
+            lastCount = nullables.Count;
+            for (int i = 0; i < grammar.RuleCount; i++)
+            {
+                Rule rule = grammar.GetRule(i);
+                if (nullables.Contains(rule.Nonterminal))
+                {
+                    continue;
+                }
+                if (rule.Expressions.SelectMany(e => e.AsEnumerable()).All(s => s is Nonterminal n && nullables.Contains(n)))
+                {
+                    nullables.Add(rule.Nonterminal);
+                }
+            }
+        } while (nullables.Count > lastCount);
+        return nullables;
     }
 }
