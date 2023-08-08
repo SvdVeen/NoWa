@@ -227,7 +227,7 @@ public class NoWaConverter
             }
             if (rule.Expressions.Count == 0)
             {
-                grammar.RemoveRule(i--);
+                grammar.RemoveRuleAt(i--);
             }
         }
         // We iteratively find all remaining nullable rules by seeing if all of their productions are nullable.

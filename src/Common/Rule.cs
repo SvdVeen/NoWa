@@ -33,7 +33,7 @@ public class Rule
     /// <inheritdoc/>
     public override string ToString()
     {
-        if (Expressions.Count == 0 || Expressions[0].Count == 0)
+        if (Expressions.Count == 0)
         {
             return $"Empty rule {Nonterminal}";
         }

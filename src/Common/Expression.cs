@@ -35,7 +35,7 @@ public class Expression : IList<ISymbol>
     /// Creates a new instance of the <see cref="Expression"/> class.
     /// </summary>
     /// <param name="symbols">The symbols in this expression.</param>
-    public Expression(params ISymbol[] symbols)
+    public Expression(IEnumerable<ISymbol> symbols)
     {
         _symbols = new List<ISymbol>(symbols);
     }

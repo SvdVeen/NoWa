@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <Using Include="Microsoft.VisualStudio.TestTools.UnitTesting" />
+    <Using Include="NoWa.Test.Shared" />
   </ItemGroup>
 
 </Project>

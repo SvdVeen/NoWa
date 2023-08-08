@@ -1,6 +1,4 @@
-﻿using System.Numerics;
-
-namespace NoWa.Common;
+﻿namespace NoWa.Common;
 
 /// <summary>
 /// Represents a nonterminal symbol.
@@ -18,7 +16,7 @@ public class Nonterminal : ISymbol
         get => _value;
         set
         {
-            if (String.IsNullOrEmpty(_value))
+            if (string.IsNullOrWhiteSpace(value))
             {
                 throw new ArgumentNullException(nameof(value), "Cannot give an empty value to a nonterminal.");
             }
@@ -33,7 +31,7 @@ public class Nonterminal : ISymbol
     /// <exception cref="ArgumentNullException">Thrown when an empty <paramref name="value"/> is passed.</exception>
     public Nonterminal(string value)
     {
-        if (String.IsNullOrEmpty(value))
+        if (string.IsNullOrWhiteSpace(value))
         {
             throw new ArgumentNullException(nameof(value), "Cannot give an empty value to a nonterminal.");
         }

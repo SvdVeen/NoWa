@@ -8,7 +8,7 @@ namespace NoWa.Console;
 
 class Program
 {
-    private static string HELPINFO =
+    private const string HELPINFO =
 @"Converts the given grammer to Chomsky Normal Form.
 The first rule in the grammar is assumed to be the start rule.
 

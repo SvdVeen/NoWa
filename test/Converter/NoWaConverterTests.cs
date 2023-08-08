@@ -6,6 +6,7 @@ namespace NoWa.Converter.Tests;
 /// Contains unit tests for the NoWaConverter
 /// </summary>
 [TestClass]
+[TestCategory("NoWa.Converter")]
 public partial class NoWaConverterTests
 {
     /// <summary>

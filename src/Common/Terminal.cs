@@ -16,7 +16,7 @@ public class Terminal : ISymbol
         get => _value;
         set
         {
-            if (String.IsNullOrEmpty(value))
+            if (string.IsNullOrWhiteSpace(value))
             {
                 throw new ArgumentNullException(nameof(value), "Cannot give an empty value to a terminal.");
             }
@@ -31,7 +31,7 @@ public class Terminal : ISymbol
     /// <exception cref="ArgumentNullException">Thrown when an empty value is passed.</exception>
     public Terminal(string value)
     {
-        if (String.IsNullOrEmpty(value))
+        if (string.IsNullOrWhiteSpace(value))
         {
             throw new ArgumentNullException(nameof(value), "Cannot give an empty value to a terminal.");
         }
