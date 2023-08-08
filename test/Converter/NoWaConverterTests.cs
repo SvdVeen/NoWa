@@ -1,7 +1,4 @@
-﻿using NoWa.Converter;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NoWa.Common;
-using System.Text.RegularExpressions;
+﻿using NoWa.Common;
 
 namespace NoWa.Converter.Tests;
 

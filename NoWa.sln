@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.6.33723.286
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoWa.Console", "src\NoWa.Console\NoWa.Console.csproj", "{B3F8E0BF-31E6-4B45-A63E-188AC61EB683}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoWa.Console", "src\Console\NoWa.Console.csproj", "{B3F8E0BF-31E6-4B45-A63E-188AC61EB683}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoWa.Converter", "src\NoWa.Converter\NoWa.Converter.csproj", "{56958ECC-6F58-48F5-BFD3-09C4E2C79088}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoWa.Converter", "src\Converter\NoWa.Converter.csproj", "{56958ECC-6F58-48F5-BFD3-09C4E2C79088}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoWa.Parser", "src\NoWa.Parser\NoWa.Parser.csproj", "{33FA8BC6-B775-4EB1-AE25-F4EC78DB7F0E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoWa.Parser", "src\Parser\NoWa.Parser.csproj", "{33FA8BC6-B775-4EB1-AE25-F4EC78DB7F0E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{639AB533-58E7-45EA-B2EC-B9F7F1A0B279}"
 	ProjectSection(SolutionItems) = preProject
@@ -15,9 +15,19 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoWa.Common", "src\Nowa.Common\NoWa.Common.csproj", "{A328D166-DC07-423A-8057-7CB6531EA5F9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoWa.Common", "src\Common\NoWa.Common.csproj", "{A328D166-DC07-423A-8057-7CB6531EA5F9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoWa.ConverterTests", "test\NoWa.ConverterTests\NoWa.ConverterTests.csproj", "{21F86697-9028-437F-A4A6-0429886E277B}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{A8159F1D-97E6-48C4-9564-5EC278E92DFB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{BB0EBB34-3FC2-42D7-89EB-0006564B0949}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoWa.Test.Shared", "test\Shared\NoWa.Test.Shared.csproj", "{25FC72D8-285E-4C85-8BF1-7BD7B41C4F72}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nowa.Test.Common", "test\Common\Nowa.Test.Common.csproj", "{F26D9D80-57D4-4344-B69F-41CEF7E91AB7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nowa.Test.Converter", "test\Converter\Nowa.Test.Converter.csproj", "{33E13489-3C26-4A36-BDFF-A8A10705464B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nowa.Test.Parser", "test\Parser\Nowa.Test.Parser.csproj", "{F5FC18E2-1ED2-4272-B631-6F3F624A8FDD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,13 +51,35 @@ Global
 		{A328D166-DC07-423A-8057-7CB6531EA5F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A328D166-DC07-423A-8057-7CB6531EA5F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A328D166-DC07-423A-8057-7CB6531EA5F9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{21F86697-9028-437F-A4A6-0429886E277B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{21F86697-9028-437F-A4A6-0429886E277B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{21F86697-9028-437F-A4A6-0429886E277B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{21F86697-9028-437F-A4A6-0429886E277B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{25FC72D8-285E-4C85-8BF1-7BD7B41C4F72}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{25FC72D8-285E-4C85-8BF1-7BD7B41C4F72}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{25FC72D8-285E-4C85-8BF1-7BD7B41C4F72}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{25FC72D8-285E-4C85-8BF1-7BD7B41C4F72}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F26D9D80-57D4-4344-B69F-41CEF7E91AB7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F26D9D80-57D4-4344-B69F-41CEF7E91AB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F26D9D80-57D4-4344-B69F-41CEF7E91AB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F26D9D80-57D4-4344-B69F-41CEF7E91AB7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{33E13489-3C26-4A36-BDFF-A8A10705464B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{33E13489-3C26-4A36-BDFF-A8A10705464B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{33E13489-3C26-4A36-BDFF-A8A10705464B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{33E13489-3C26-4A36-BDFF-A8A10705464B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F5FC18E2-1ED2-4272-B631-6F3F624A8FDD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F5FC18E2-1ED2-4272-B631-6F3F624A8FDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F5FC18E2-1ED2-4272-B631-6F3F624A8FDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F5FC18E2-1ED2-4272-B631-6F3F624A8FDD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{B3F8E0BF-31E6-4B45-A63E-188AC61EB683} = {BB0EBB34-3FC2-42D7-89EB-0006564B0949}
+		{56958ECC-6F58-48F5-BFD3-09C4E2C79088} = {BB0EBB34-3FC2-42D7-89EB-0006564B0949}
+		{33FA8BC6-B775-4EB1-AE25-F4EC78DB7F0E} = {BB0EBB34-3FC2-42D7-89EB-0006564B0949}
+		{A328D166-DC07-423A-8057-7CB6531EA5F9} = {BB0EBB34-3FC2-42D7-89EB-0006564B0949}
+		{25FC72D8-285E-4C85-8BF1-7BD7B41C4F72} = {A8159F1D-97E6-48C4-9564-5EC278E92DFB}
+		{F26D9D80-57D4-4344-B69F-41CEF7E91AB7} = {A8159F1D-97E6-48C4-9564-5EC278E92DFB}
+		{33E13489-3C26-4A36-BDFF-A8A10705464B} = {A8159F1D-97E6-48C4-9564-5EC278E92DFB}
+		{F5FC18E2-1ED2-4272-B631-6F3F624A8FDD} = {A8159F1D-97E6-48C4-9564-5EC278E92DFB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {803FF375-E927-4DD2-B0A7-6775E302DA8D}

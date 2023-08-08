@@ -17,7 +17,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\NoWa.Converter\NoWa.Converter.csproj" />
+    <ProjectReference Include="..\..\src\Parser\NoWa.Parser.csproj" />
+    <ProjectReference Include="..\..\test\Shared\NoWa.Test.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Microsoft.VisualStudio.TestTools.UnitTesting" />
   </ItemGroup>
 
 </Project>

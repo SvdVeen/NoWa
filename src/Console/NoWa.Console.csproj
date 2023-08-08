@@ -9,9 +9,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Nowa.Common\NoWa.Common.csproj" />
-    <ProjectReference Include="..\NoWa.Converter\NoWa.Converter.csproj" />
-    <ProjectReference Include="..\NoWa.Parser\NoWa.Parser.csproj" />
+    <ProjectReference Include="..\Common\NoWa.Common.csproj" />
+    <ProjectReference Include="..\Converter\NoWa.Converter.csproj" />
+    <ProjectReference Include="..\Parser\NoWa.Parser.csproj" />
   </ItemGroup>
 
   <ItemGroup>

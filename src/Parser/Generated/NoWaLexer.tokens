@@ -1,0 +1,12 @@
+WS=1
+QUOTE=2
+PRODUCES=3
+TERMINATOR=4
+OR=5
+ALPHA=6
+NEWLINE=7
+' '=1
+'\''=2
+'='=3
+';'=4
+'|'=5
