@@ -2,7 +2,7 @@
   "profiles": {
     "NoWa.Console": {
       "commandName": "Project",
-      "commandLineArgs": "./test.wag"
+      "commandLineArgs": "./test.wag -log debug"
     }
   }
 }
