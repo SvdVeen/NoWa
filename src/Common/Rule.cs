@@ -30,6 +30,25 @@ public class Rule
     /// <remarks>Used as notational shorthand to make quick instantiations more readable.</remarks>
     public void AddExpression(params ISymbol[] symbols) => Expressions.Add(new(symbols));
 
+
+    /// <summary>
+    /// Replace all occurrences of a symbol in this rule's expressions or its nonterminal with another.
+    /// </summary>
+    /// <param name="symbol">The symbol to replace.</param>
+    /// <param name="newSymbol">The symbol to replace the original with.</param>
+    public void ReplaceSymbol(ISymbol symbol, ISymbol newSymbol)
+    {
+        if (newSymbol is Nonterminal nt && Nonterminal.Value == symbol.Value)
+        {
+            Nonterminal = nt;
+        }
+
+        foreach (Expression expression in Expressions)
+        {
+            expression.Replace(symbol, newSymbol);
+        }
+    }
+
     /// <inheritdoc/>
     public override string ToString()
     {

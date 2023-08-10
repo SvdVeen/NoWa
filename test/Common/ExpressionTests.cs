@@ -1,6 +1,91 @@
 ﻿namespace NoWa.Common.Tests;
 
 /// <summary>
+/// Helper class with functions for comparing the entries of <see cref="Expression"/> instances.
+/// </summary>
+internal static class ExpressionAssert
+{
+    /// <summary>
+    /// Tests whether the entries of two expressions are the same.
+    /// </summary>
+    /// <param name="expected">The expected expression.</param>
+    /// <param name="actual">The actual expression.</param>
+    /// <param name="message">The message to add to the exception if the assertions fail.</param>
+    /// <exception cref="AssertFailedException">The two expressions do not have the same entries.</exception>
+    private static void AreSameEntriesImp(Expression expected, Expression actual, string? message)
+    {
+        try
+        {
+            Assert.AreEqual(actual.Count, expected.Count, "The actual expression is longer than the expected expression.");
+            for (int i = 0; i < actual.Count; i++)
+            {
+                Assert.AreSame(expected[i], actual[i], $"The symbol at index {i} did not match the expected symbol.");
+            }
+        }
+        catch (AssertFailedException ex)
+        {
+            message ??= $"The expression does not match the expected expression: {ex.Message}";
+            throw new AssertFailedException(message, ex);
+        }
+    }
+
+    /// <summary>
+    /// Tests whether the entries of two expressions are the same.
+    /// </summary>
+    /// <param name="expected">The expected expression.</param>
+    /// <param name="actual">The actual expression.</param>
+    /// <exception cref="AssertFailedException">The two expressions do not have the same entries.</exception>
+    internal static void AreSameEntries(Expression expected, Expression actual)
+        => AreSameEntriesImp(expected, actual, null);
+
+    internal static void AreSameEntries(Expression expected, Expression actual, string message)
+        => AreSameEntriesImp(expected, actual, message);
+
+    /// <summary>
+    /// Tests whether an expression matches a sequence of expected symbols and throws an exception if they do not contain the same items.
+    /// </summary>
+    /// <param name="actual">The actual expression.</param>
+    /// <param name="message">The message to add to the exception if the assertions fail.</param>
+    /// <param name="expected">The expected sequence of symbols.</param>
+    /// <exception cref="AssertFailedException">The expression's entries are not the same as the expected symbols.</exception>
+    private static void AreSameEntriesImp(Expression actual, string? message, params ISymbol[] expected)
+    {
+        try
+        {
+            Assert.AreEqual(actual.Count, expected.Length, "The actual expression is longer than the number of expected symbols.");
+            for (int i = 0; i < actual.Count; i++)
+            {
+                Assert.AreSame(expected[i], actual[i], $"The symbol at index {i} did not match the expected symbol.");
+            }
+        }
+        catch (AssertFailedException ex)
+        {
+            message ??= $"The expression does not match the expected symbols: {ex.Message}";
+            throw new AssertFailedException(message, ex);
+        }
+    }
+
+    /// <summary>
+    /// Tests whether the entries of an expression match expected symbols.
+    /// </summary>
+    /// <param name="actual">The actual expression.</param>
+    /// <param name="expected">The expected symbols.</param>
+    /// <exception cref="AssertFailedException">The expression's symbols do not match the expected symbols.</exception>
+    internal static void AreSameEntries(Expression actual, params ISymbol[] expected)
+        => AreSameEntriesImp(actual, null, expected);
+
+    /// <summary>
+    /// Tests whether the entries of an expression match expected symbols.
+    /// </summary>
+    /// <param name="actual">The actual expression.</param>
+    /// <param name="message">The message to add to the exception if the assertions fail.</param>
+    /// <param name="expected">The expected symbols.</param>
+    /// <exception cref="AssertFailedException">The expression's symbols do not match the expected symbols.</exception>
+    internal static void AreSameEntries(Expression actual, string message, params ISymbol[] expected)
+        => AreSameEntriesImp(actual, message, expected);
+}
+
+/// <summary>
 /// Contains unit tests for the <see cref="Expression"/> class.
 /// </summary>
 /// <remarks>
@@ -8,13 +93,12 @@
 /// and I trust that it being proxied to an internal list will be fine for the near future.
 /// </remarks>
 [TestClass]
-[TestCategory($"{nameof(NoWa)}.{nameof(Common)}")]
 public class ExpressionTests
 {
     /// <summary>
     /// Tests the constructor of an empty <see cref="Expression"/>.
     /// </summary>
-    [TestMethod($"{nameof(Expression)}.{nameof(TestEmpty)}")]
+    [TestMethod]
     public void TestEmpty()
     {
         Expression expression = new();
@@ -27,7 +111,7 @@ public class ExpressionTests
     /// <summary>
     /// Tests the constructor of an expression with a pre-existing set of symbols.
     /// </summary>
-    [TestMethod($"{nameof(Expression)}.{nameof(TestPrefilled)}")]
+    [TestMethod]
     public void TestPrefilled()
     {
         Nonterminal a = new("a");
@@ -41,7 +125,7 @@ public class ExpressionTests
     /// <summary>
     /// Tests the <see cref="Expression.Add"/> function of an expression.
     /// </summary>
-    [TestMethod($"{nameof(Expression)}.{nameof(TestAdd)}")]
+    [TestMethod]
     public void TestAdd()
     {
         Expression expression = new();
@@ -53,7 +137,7 @@ public class ExpressionTests
     /// <summary>
     /// Tests the <see cref="Expression.Clear"/> function. 
     /// </summary>
-    [TestMethod($"{nameof(Expression)}.{nameof(TestAdd)}")]
+    [TestMethod]
     public void TestClear()
     {
         Expression expression = new() { EmptyString.Instance };
@@ -64,7 +148,7 @@ public class ExpressionTests
     /// <summary>
     /// Tests the <see cref="Expression.Contains"/> function.
     /// </summary>
-    [TestMethod($"{nameof(Expression)}.{nameof(TestContains)}")]
+    [TestMethod]
     public void TestContains()
     {
         Nonterminal a = new("a");
@@ -75,7 +159,7 @@ public class ExpressionTests
     /// <summary>
     /// Tests the <see cref="Expression.CopyTo"/> function.
     /// </summary>
-    [TestMethod($"{nameof(Expression)}.{nameof(TestCopyTo)}")]
+    [TestMethod]
     public void TestCopyTo()
     {
         Nonterminal a = new("a");
@@ -90,7 +174,7 @@ public class ExpressionTests
     /// <summary>
     /// Tests whether the <see cref="Expression.GetEnumerator"/> gives a correct enumerator.
     /// </summary>
-    [TestMethod($"{nameof(Expression)}.{nameof(TestEnumerator)}")]
+    [TestMethod]
     public void TestEnumerator()
     {
         Expression expression = new()
@@ -111,7 +195,7 @@ public class ExpressionTests
     /// <summary>
     /// Tests the <see cref="Expression.IndexOf"/> function.
     /// </summary>
-    [TestMethod($"{nameof(Expression)}.{nameof(TestIndexOf)}")]
+    [TestMethod]
     public void TestIndexOf()
     {
         Nonterminal a = new("a");
@@ -122,7 +206,7 @@ public class ExpressionTests
     /// <summary>
     /// Tests the <see cref="Expression.Insert"/> function.
     /// </summary>
-    [TestMethod($"{nameof(Expression)}.{nameof(TestInsert)}")]
+    [TestMethod]
     public void TestInsert()
     {
         Nonterminal a = new("a");
@@ -134,7 +218,7 @@ public class ExpressionTests
     /// <summary>
     /// Tests the <see cref="Expression.Remove"/> function.
     /// </summary>
-    [TestMethod($"{nameof(Expression)}.{nameof(TestRemove)}")]
+    [TestMethod]
     public void TestRemove()
     {
         Terminal b = new("b");
@@ -147,7 +231,7 @@ public class ExpressionTests
     /// <summary>
     /// Tests the <see cref="Expression.RemoveAt"/> function.
     /// </summary>
-    [TestMethod($"{nameof(Expression)}.{nameof(TestRemoveAt)}")]
+    [TestMethod]
     public void TestRemoveAt()
     {
         Expression expression = new() { new Nonterminal("b"), new Terminal("c"), EmptyString.Instance };
@@ -155,10 +239,105 @@ public class ExpressionTests
         Assert.AreEqual(2, expression.Count);
     }
 
+
+    /// <summary>
+    /// Helper for testing the <see cref="Expression.Replace(ISymbol, ISymbol)"/> function.
+    /// </summary>
+    /// <param name="symbol">The symbol to replace.</param>
+    /// <param name="newSymbol">The symbol to replace the original with.</param>
+    private static void TestReplaceSymbol(ISymbol symbol, ISymbol newSymbol)
+    {
+        Nonterminal NTest = new("test");
+        Terminal TTest = new("test");
+        Expression expression = new() { NTest, symbol, NTest, NTest, symbol, symbol, TTest };
+        expression.Replace(symbol, newSymbol);
+        ExpressionAssert.AreSameEntries(expression, NTest, newSymbol, NTest, NTest, newSymbol, newSymbol, TTest);
+    }
+
+    /// <summary>
+    /// Tests the <see cref="Expression.Replace(ISymbol, ISymbol)"/> function for replacing a <see cref="Terminal"/> with a <see cref="Terminal"/>.
+    /// </summary>
+    /// <param name="symbol">The value of the original symbol.</param>
+    /// <param name="newSymbol">The value of the new symbol.</param>
+    [DataTestMethod]
+    [DataRow("a", "a")]
+    [DataRow("a", "b")]
+    public void TestReplaceTT(string symbol, string newSymbol) =>
+        TestReplaceSymbol(new Terminal(symbol), new Terminal(newSymbol));
+
+    /// <summary>
+    /// Tests the <see cref="Expression.Replace(ISymbol, ISymbol)"/> function for replacing a <see cref="Terminal"/> with a <see cref="Nonterminal"/>.
+    /// </summary>
+    /// <param name="symbol">The value of the original symbol.</param>
+    /// <param name="newSymbol">The value of the new symbol.</param>
+    [DataTestMethod]
+    [DataRow("a", "a")]
+    [DataRow("a", "b")]
+    public void TestReplaceTNT(string symbol, string newSymbol) =>
+        TestReplaceSymbol(new Terminal(symbol), new Nonterminal(newSymbol));
+
+    /// <summary>
+    /// Tests the <see cref="Expression.Replace(ISymbol, ISymbol)"/> function for replacing a <see cref="Terminal"/> with an <see cref="EmptyString"/>.
+    /// </summary>
+    [TestMethod]
+    public void TestReplaceTE() =>
+        TestReplaceSymbol(new Terminal("a"), EmptyString.Instance);
+
+    /// <summary>
+    /// Tests the <see cref="Expression.Replace(ISymbol, ISymbol)"/> function for replacing a <see cref="Nonterminal"/> with a <see cref="Nonterminal"/>.
+    /// </summary>
+    /// <param name="symbol">The value of the original symbol.</param>
+    /// <param name="newSymbol">The value of the new symbol.</param>
+    [DataTestMethod]
+    [DataRow("a", "a")]
+    [DataRow("a", "b")]
+    public void TestReplaceNTNT(string symbol, string newSymbol) =>
+        TestReplaceSymbol(new Nonterminal(symbol), new Nonterminal(newSymbol));
+
+    /// <summary>
+    /// Tests the <see cref="Expression.Replace(ISymbol, ISymbol)"/> function for replacing a <see cref="Nonterminal"/> with a <see cref="Terminal"/>.
+    /// </summary>
+    /// <param name="symbol">The value of the original symbol.</param>
+    /// <param name="newSymbol">The value of the new symbol.</param>
+    [DataTestMethod]
+    [DataRow("a", "a")]
+    [DataRow("a", "b")]
+    public void TestReplaceNTT(string symbol, string newSymbol) =>
+        TestReplaceSymbol(new Nonterminal(symbol), new Terminal(newSymbol));
+
+    /// <summary>
+    /// Tests the <see cref="Expression.Replace(ISymbol, ISymbol)"/> function for replacing a <see cref="Nonterminal"/> with an <see cref="EmptyString"/>.
+    /// </summary>
+    [TestMethod]
+    public void TestReplaceNTE() =>
+        TestReplaceSymbol(new Nonterminal("a"), EmptyString.Instance);
+
+    /// <summary>
+    /// Tests the <see cref="Expression.Replace(ISymbol, ISymbol)"/> function for replacing an <see cref="EmptyString"/> with a <see cref="Terminal"/>.
+    /// </summary>
+    [TestMethod]
+    public void TestReplaceET() => TestReplaceSymbol(EmptyString.Instance, new Terminal("a"));
+
+    /// <summary>
+    /// Tests the <see cref="Expression.Replace(ISymbol, ISymbol)"/> function for replacing an <see cref="EmptyString"/> with a <see cref="Nonterminal"/>.
+    /// </summary>
+    [TestMethod]
+    public void TestReplaceENT() => TestReplaceSymbol(EmptyString.Instance, new Nonterminal("a"));
+
+    /// <summary>
+    /// Tests the <see cref="Expression.ToString"/> function for a non-empty expression.
+    /// </summary>
+    [TestMethod]
+    public void TestToStringNotEmpty()
+    {
+        Expression expression = new() { new Nonterminal("a"), new Terminal("b"), EmptyString.Instance };
+        Assert.AreEqual("a 'b' ''", expression.ToString());
+    }
+
     /// <summary>
     /// Tests whether the <see cref="Expression.Equals"/> function returns <see langword="true"/> for two equal instances.
     /// </summary>
-    [TestMethod($"{nameof(Expression)}.{nameof(TestEqualsEqual)}")]
+    [TestMethod]
     public void TestEqualsEqual()
     {
         Expression a = new() { new Nonterminal("a"), new Terminal("b"), new Nonterminal("c") };
@@ -169,7 +348,7 @@ public class ExpressionTests
     /// <summary>
     /// Tests whether the <see cref="Expression.Equals"/> function returns <see langword="false"/> for two non-equal instances.
     /// </summary>
-    [TestMethod($"{nameof(Expression)}.{nameof(TestEqualsNotEqual)}")]
+    [TestMethod]
     public void TestEqualsNotEqual()
     {
         Expression a = new() { new Nonterminal("a"), new Terminal("b"), new Nonterminal("c") };
@@ -180,7 +359,7 @@ public class ExpressionTests
     /// <summary>
     /// Tests whether the <see cref="Expression.GetHashCode"/> function returns equal hashes for two equal instances.
     /// </summary>
-    [TestMethod($"{nameof(Expression)}.{nameof(TestHashCodeEqual)}")]
+    [TestMethod]
     public void TestHashCodeEqual()
     {
         Expression a = new() { new Nonterminal("a"), new Terminal("b"), new Nonterminal("c") };
@@ -191,7 +370,7 @@ public class ExpressionTests
     /// <summary>
     /// Tests whether the <see cref="Expression.GetHashCode"/> function returns different hashes for two non-equal instances.
     /// </summary>
-    [TestMethod($"{nameof(Expression)}.{nameof(TestHashCodeNotEqual)}")]
+    [TestMethod]
     public void TestHashCodeNotEqual()
     {
         Expression a = new() { new Nonterminal("a"), new Terminal("b"), new Nonterminal("c") };

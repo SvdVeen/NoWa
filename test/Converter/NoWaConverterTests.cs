@@ -18,12 +18,12 @@ public partial class NoWaConverterTests
         Grammar grammar = new();
         // Add rule A = a ;
         Rule rule = grammar.AddRule("A");
-        rule.AddExpression(grammar.GetOrCreateTerminal("a"));
+        rule.AddExpression(grammar.AddTerminal("a"));
 
         // Add rule B = A | 'b' ;
         rule = grammar.AddRule("B");
-        rule.AddExpression(grammar.GetOrCreateNonterminal("A"));
-        rule.AddExpression(grammar.GetOrCreateTerminal("b"));
+        rule.AddExpression(grammar.AddNonterminal("A"));
+        rule.AddExpression(grammar.AddTerminal("b"));
 
         NoWaConverter.AddStartRule(grammar);
 
@@ -37,10 +37,10 @@ public partial class NoWaConverterTests
     public void EliminateEmptyStringProductionsTestA()
     {
         Grammar grammar = new();
-        Nonterminal A = grammar.GetOrCreateNonterminal("A");
-        Nonterminal B = grammar.GetOrCreateNonterminal("B");
-        Terminal a = grammar.GetOrCreateTerminal("a");
-        Terminal b = grammar.GetOrCreateTerminal("b");
+        Nonterminal A = grammar.AddNonterminal("A");
+        Nonterminal B = grammar.AddNonterminal("B");
+        Terminal a = grammar.AddTerminal("a");
+        Terminal b = grammar.AddTerminal("b");
 
         // Add rule S = A B ;
         Rule rule = grammar.AddRule("S");
@@ -68,12 +68,12 @@ public partial class NoWaConverterTests
     public void EliminateEmptyStringProductionsTestB()
     {
         Grammar grammar = new();
-        Nonterminal A = grammar.GetOrCreateNonterminal("A");
-        Nonterminal B = grammar.GetOrCreateNonterminal("B");
-        Nonterminal C = grammar.GetOrCreateNonterminal("C");
-        Terminal a = grammar.GetOrCreateTerminal("a");
-        Terminal b = grammar.GetOrCreateTerminal("b");
-        Terminal c = grammar.GetOrCreateTerminal("c");
+        Nonterminal A = grammar.AddNonterminal("A");
+        Nonterminal B = grammar.AddNonterminal("B");
+        Nonterminal C = grammar.AddNonterminal("C");
+        Terminal a = grammar.AddTerminal("a");
+        Terminal b = grammar.AddTerminal("b");
+        Terminal c = grammar.AddTerminal("c");
 
         // Add rule S = A 'b' B | C;
         Rule rule = grammar.AddRule("S");

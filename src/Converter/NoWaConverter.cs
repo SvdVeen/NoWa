@@ -93,7 +93,7 @@ public class NoWaConverter
                     if (expr[j] is Terminal terminal)
                     {
                         // A nonsolitary terminal is replaced with a nonterminal across the entire grammar.
-                        Nonterminal nonterminal = grammar.GetOrCreateNonterminal($"TERM-{terminal.Value.Replace(" ", "-")}");
+                        Nonterminal nonterminal = grammar.AddNonterminal($"TERM-{terminal.Value.Replace(" ", "-")}");
                         grammar.ReplaceSymbol(terminal, nonterminal, false); // Keep the original because we will insert it again in the new rule.
                         // A new rule is added for the new nonterminal that refers to the old terminal.
                         Rule newRule = new(nonterminal);
@@ -121,7 +121,7 @@ public class NoWaConverter
             {
                 for (int j = expr.Count - 1;  j >= 2; j--)
                 {
-                    Nonterminal nonterminal = grammar.GetOrCreateNonterminal($"{expr[j - 1].Value}-{expr[j].Value}");
+                    Nonterminal nonterminal = grammar.AddNonterminal($"{expr[j - 1].Value}-{expr[j].Value}");
                     Rule newRule = new(nonterminal);
                     newRule.AddExpression(expr[j-1], expr[j]);
                     grammar.AddRule(newRule);

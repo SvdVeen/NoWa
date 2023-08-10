@@ -4,13 +4,12 @@
 /// Contains unit tests for the <see cref="EmptyString"/> class.
 /// </summary>
 [TestClass]
-[TestCategory($"{nameof(NoWa)}.{nameof(Common)}")]
 public class EmptyStringTests
 {
     /// <summary>
     /// Test the <see cref="EmptyString.ToString"/> function.
     /// </summary>
-    [TestMethod($"{nameof(EmptyString)}.{nameof(ToStringTest)}")]
+    [TestMethod]
     public void ToStringTest()
     {
         Assert.AreEqual("''", EmptyString.Instance.ToString());
@@ -19,7 +18,7 @@ public class EmptyStringTests
     /// <summary>
     /// Test the <see cref="EmptyString.Equals"/> function.
     /// </summary>
-    [TestMethod($"{nameof(EmptyString)}.{nameof(EqualsTest)}")]
+    [TestMethod]
     public void EqualsTest()
     {
         Assert.IsTrue(EmptyString.Instance.Equals(EmptyString.Instance), "The instance does not equal itself");
@@ -30,7 +29,7 @@ public class EmptyStringTests
     /// Tests the <see cref="EmptyString.GetHashCode"/> function.
     /// </summary>
 
-    [TestMethod($"{nameof(EmptyString)}.{nameof(GetHashCodeTest)}")]
+    [TestMethod]
     public void GetHashCodeTest()
     {
         Assert.AreEqual(EmptyString.Instance.GetHashCode(), EmptyString.Instance.GetHashCode(), "Two hashcodes are different");

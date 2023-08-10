@@ -38,14 +38,14 @@ public class Grammar
     /// </summary>
     /// <param name="nonterminal">The value of the nonterminal matching the rule.</param>
     /// <returns>The rule for the given nonterminal.</returns>
-    /// <exception cref="KeyNotFoundException">No rule with the given nonterminal value was found.</exception>
+    /// <exception cref="ArgumentException">No rule with the given nonterminal value was found.</exception>
     public Rule GetRule(string nonterminal)
     {
         if (_nonterminals.TryGetValue(nonterminal, out Nonterminal? nt) && _rulesByNonterminal.TryGetValue(nt!, out Rule? rule))
         {
             return rule;
         }
-        throw new KeyNotFoundException($"Could not find a rule with the nonterminal '{nonterminal}'.");
+        throw new ArgumentException($"Could not find a rule with the nonterminal '{nonterminal}'.", nameof(nonterminal));
     }
 
     /// <summary>
@@ -53,14 +53,14 @@ public class Grammar
     /// </summary>
     /// <param name="nonterminal">The nonterminal corresponding to the rule.</param>
     /// <returns>The rule for the given nonterminal.</returns>
-    /// <exception cref="KeyNotFoundException">No rule with the given nonterminal was found.</exception>
+    /// <exception cref="ArgumentException">No rule with the given nonterminal was found.</exception>
     public Rule GetRule(Nonterminal nonterminal)
     {
         if (_rulesByNonterminal.TryGetValue(nonterminal, out Rule? rule))
         {
             return rule;
         }
-        throw new KeyNotFoundException($"Could not find a rule with the nonterminal '{nonterminal}'.");
+        throw new ArgumentException($"Could not find a rule with the nonterminal '{nonterminal}'.", nameof(nonterminal));
     }
 
     /// <summary>
@@ -123,6 +123,7 @@ public class Grammar
         {
             throw new ArgumentException($"A rule with the nonterminal '{rule.Nonterminal}' already exists.", nameof(rule));
         }
+        rule.Nonterminal = AddNonterminal(rule.Nonterminal.Value);
         _rulesByNonterminal.Add(rule.Nonterminal, rule);
         _rules.Add(rule);
     }
@@ -139,7 +140,7 @@ public class Grammar
         {
             throw new ArgumentException($"A rule with the nonterminal '{nonterminal}' already exists.", nameof(nonterminal));
         }
-        Rule rule = new(GetOrCreateNonterminal(nonterminal));
+        Rule rule = new(AddNonterminal(nonterminal));
         _rulesByNonterminal.Add(rule.Nonterminal, rule);
         _rules.Add(rule);
         return rule;
@@ -184,7 +185,7 @@ public class Grammar
         {
             throw new ArgumentException($"A rule with the nonterminal '{nonterminal}' already exists.", nameof(nonterminal));
         }
-        Rule rule = new(GetOrCreateNonterminal(nonterminal));
+        Rule rule = new(AddNonterminal(nonterminal));
         _rulesByNonterminal.Add(rule.Nonterminal, rule);
         _rules.Insert(index, rule);
         return rule;
@@ -194,6 +195,7 @@ public class Grammar
     /// Removes a rule with the given index, as well as its nonterminal.
     /// </summary>
     /// <param name="index">The index of the rule to remove.</param>
+    /// <exception cref="ArgumentOutOfRangeException">The index is outside the bounds of the rule list.</exception>
     public void RemoveRuleAt(int index)
     {
         if (index < 0 || index >= _rules.Count)
@@ -208,12 +210,28 @@ public class Grammar
     #endregion Rules
 
     #region Symbols
+
     /// <summary>
-    /// Gets or creates a nonterminal with the given value.
+    /// Gets a nonterminal in the grammar if one with the given value exists.
+    /// </summary>
+    /// <param name="value">The value of nonterminal.</param>
+    /// <returns>The nonterminal with the given value.</returns>
+    /// <exception cref="ArgumentException">No nonterminal with the given value exists in the grammar.</exception>
+    public Nonterminal GetNonterminal(string value)
+    {
+        if (!_nonterminals.TryGetValue(value, out Nonterminal? nonterminal))
+        {
+            throw new ArgumentException($"Could not find a terminal with the value '{value}'", nameof(value));
+        }
+        return nonterminal;
+    }
+
+    /// <summary>
+    /// Adds nonterminal to the grammar.
     /// </summary>
     /// <param name="value">The value of the nonterminal.</param>
-    /// <returns>Either a preexisting nonterminal with the given value, or a newly created one.</returns>
-    public Nonterminal GetOrCreateNonterminal(string value)
+    /// <returns>The added nonterminal or an existing nonterminal with the same value.</returns>
+    public Nonterminal AddNonterminal(string value)
     {
         if (!_nonterminals.TryGetValue(value, out Nonterminal? nonterminal))
         {
@@ -224,11 +242,26 @@ public class Grammar
     }
 
     /// <summary>
-    /// Gets or creates a terminal with the given value.
+    /// Gets a terminal in the grammar if one with the given value exists.
+    /// </summary>
+    /// <param name="value">The value of the terminal.</param>
+    /// <returns>The terminal with the given value.</returns>
+    /// <exception cref="ArgumentException">No terminal with the given value exists in the grammar.</exception>
+    public Terminal GetTerminal(string value)
+    {
+        if (!_terminals.TryGetValue(value, out Terminal? terminal))
+        {
+            throw new ArgumentException($"Could not find a terminal '{value}'", nameof(value));
+        }
+        return terminal;
+    }
+
+    /// <summary>
+    /// Adds a terminal to the grammar.
     /// </summary>
     /// <param name="value">The value of the terminal.</param>
     /// <returns>Either a preexisting terminal with the given value, or a newly created one.</returns>
-    public Terminal GetOrCreateTerminal(string value)
+    public Terminal AddTerminal(string value)
     {
         if (!_terminals.TryGetValue(value, out Terminal? terminal))
         {
@@ -239,27 +272,56 @@ public class Grammar
     }
 
     /// <summary>
+    /// Remove a symbol from the grammar.
+    /// </summary>
+    /// <param name="symbol">The symbol to remove.</param>
+    private void RemoveSymbol(ISymbol symbol)
+    {
+        if (symbol is Nonterminal)
+        {
+            _ = _nonterminals.Remove(symbol.Value);
+        }
+        else if (symbol is Terminal)
+        {
+            _ = _terminals.Remove(symbol.Value);
+        }
+    }
+
+    /// <summary>
+    /// Add a symbol to the grammar.
+    /// </summary>
+    /// <param name="symbol"></param>
+    private void AddSymbol(ISymbol symbol)
+    {
+        if (symbol is Nonterminal nt)
+        {
+            _ = _nonterminals.TryAdd(nt.Value, nt);
+        }
+        else if (symbol is Terminal t)
+        {
+            _ = _terminals.TryAdd(t.Value, t);
+        }
+    }
+
+    /// <summary>
     /// Replace a symbol in the grammar with another.
     /// </summary>
-    /// <param name="original">The original symbol.</param>
-    /// <param name="replacement">The symbol that should replace it.</param>
-    /// <param name="removeOriginal"><see langword="true"/> to have the original symbol deleted entirely from the grammar, otherwise <see langword="false"/>.</param>
-    public void ReplaceSymbol(Terminal original, Nonterminal replacement, bool removeOriginal = true)
+    /// <param name="symbol">The symbol to replace.</param>
+    /// <param name="newSymbol">The symbol to replace the original with.</param>
+    /// <param name="removesymbol"><see langword="true"/> to remove the original symbol from the grammar entirely; <see langword="false"/> otherwise.</param>
+    public void ReplaceSymbol(ISymbol symbol, ISymbol newSymbol, bool removesymbol = true)
     {
-        if (removeOriginal)
+        // If I cared a lot about performance, I would have made specific implementations for each combination of symbols; I do not.
+        if (removesymbol)
         {
-            _ = _terminals.Remove(original.Value);
+            RemoveSymbol(symbol);
         }
-        _ = _nonterminals.TryAdd(replacement.Value, replacement);
-        foreach (var expr in _rules.SelectMany(rule => rule.Expressions))
+
+        AddSymbol(newSymbol);
+
+        foreach (Rule rule in _rules)
         {
-            for (int i = 0; i < expr.Count; i++)
-            {
-                if (expr[i] == original)
-                {
-                    expr[i] = replacement;
-                }
-            }
+            rule.ReplaceSymbol(symbol, newSymbol);
         }
     }
     #endregion Symbols

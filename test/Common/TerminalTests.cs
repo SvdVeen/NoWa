@@ -4,23 +4,22 @@
 /// Contains unit tests for the <see cref="Terminal"/> class.
 /// </summary>
 [TestClass]
-[TestCategory($"{nameof(NoWa)}.{nameof(Common)}")]
 public class TerminalTests
 {
     /// <summary>
     /// Tests whether the constructor properly instantiates <see cref="Terminal.Value"/>.
     /// </summary>
-    [TestMethod($"{nameof(Terminal)}.{nameof(ConstructorTest)}")]
+    [TestMethod]
     public void ConstructorTest()
     {
-        Terminal Terminal = new("test");
-        Assert.AreEqual("test", Terminal.Value);
+        Terminal terminal = new("test");
+        Assert.AreEqual("test", terminal.Value);
     }
 
     /// <summary>
     /// Tests whether the constructor throws an <see cref="ArgumentNullException"/> if an empty value is passed.
     /// </summary>
-    [TestMethod($"{nameof(Terminal)}.{nameof(ConstructorTestEmptyValue)}")]
+    [TestMethod]
     public void ConstructorTestEmptyValue()
     {
         _ = Assert.ThrowsException<ArgumentNullException>(() => _ = new Terminal(""));
@@ -29,7 +28,7 @@ public class TerminalTests
     /// <summary>
     /// Tests whether the constructor throws an <see cref="ArgumentNullException"/> if a whitespace value is passed.
     /// </summary>
-    [TestMethod($"{nameof(Terminal)}.{nameof(ConstructorTestWhiteSpaceValue)}")]
+    [TestMethod]
     public void ConstructorTestWhiteSpaceValue()
     {
         _ = Assert.ThrowsException<ArgumentNullException>(() => _ = new Terminal("    "));
@@ -38,40 +37,40 @@ public class TerminalTests
     /// <summary>
     /// Tests whether the setter of <see cref="Terminal.Value"/> and its getter work properly.
     /// </summary>
-    [TestMethod($"{nameof(Terminal)}.{nameof(ValueTest)}")]
+    [TestMethod]
     public void ValueTest()
     {
 #pragma warning disable IDE0017 // Simplify object initialization
-        Terminal Terminal = new("a");
+        Terminal terminal = new("a");
 #pragma warning restore IDE0017 // Simplify object initialization
-        Terminal.Value = "b";
-        Assert.AreEqual("b", Terminal.Value);
+        terminal.Value = "b";
+        Assert.AreEqual("b", terminal.Value);
     }
 
     /// <summary>
     /// Tests whether the setter of <see cref="Terminal.Value"/> throws an <see cref="ArgumentNullException"/> if an empty value is passed.
     /// </summary>
-    [TestMethod($"{nameof(Terminal)}.{nameof(ValueTestEmpty)}")]
+    [TestMethod]
     public void ValueTestEmpty()
     {
-        Terminal Terminal = new("test");
-        _ = Assert.ThrowsException<ArgumentNullException>(() => Terminal.Value = "");
+        Terminal terminal = new("test");
+        _ = Assert.ThrowsException<ArgumentNullException>(() => terminal.Value = "");
     }
 
     /// <summary>
     /// Tests whether the setter of <see cref="Terminal.Value"/> throws an <see cref="ArgumentNullException"/> if a whitespace value is passed.
     /// </summary>
-    [TestMethod($"{nameof(Terminal)}.{nameof(ValueTestWhiteSpace)}")]
+    [TestMethod]
     public void ValueTestWhiteSpace()
     {
-        Terminal Terminal = new("test");
-        _ = Assert.ThrowsException<ArgumentNullException>(() => Terminal.Value = "     ");
+        Terminal terminal = new("test");
+        _ = Assert.ThrowsException<ArgumentNullException>(() => terminal.Value = "     ");
     }
 
     /// <summary>
     /// Tests the <see cref="Terminal.ToString"/> function.
     /// </summary>
-    [TestMethod($"{nameof(Terminal)}.{nameof(ToStringTest)}")]
+    [TestMethod]
     public void ToStringTest()
     {
         Terminal Terminal = new("test");
@@ -81,7 +80,7 @@ public class TerminalTests
     /// <summary>
     /// Tests the <see cref="Terminal.Equals"/> function for two equal terminals.
     /// </summary>
-    [TestMethod($"{nameof(Terminal)}.{nameof(EqualsTestEqual)}")]
+    [TestMethod]
     public void EqualsTestEqual()
     {
         Terminal a = new("test");
@@ -92,7 +91,7 @@ public class TerminalTests
     /// <summary>
     /// Tests the <see cref="Terminal.Equals"/> function for two non-equal terminals.
     /// </summary>
-    [TestMethod($"{nameof(Terminal)}.{nameof(EqualsTestNotEqual)}")]
+    [TestMethod]
     public void EqualsTestNotEqual()
     {
         Terminal a = new("test");
@@ -103,7 +102,7 @@ public class TerminalTests
     /// <summary>
     /// Tests the <see cref="Terminal.GetHashCode"/> function for two equal terminals.
     /// </summary>
-    [TestMethod($"{nameof(Terminal)}.{nameof(GetHashCodeTestEqual)}")]
+    [TestMethod]
     public void GetHashCodeTestEqual()
     {
         Terminal a = new("test");
@@ -114,7 +113,7 @@ public class TerminalTests
     /// <summary>
     /// Tests the <see cref="Terminal.GetHashCode"/> function for two non-equal terminals.
     /// </summary>
-    [TestMethod($"{nameof(Terminal)}.{nameof(GetHashCodeTestNotEqual)}")]
+    [TestMethod]
     public void GetHashCodeTestNotEqual()
     {
         Terminal a = new("test");

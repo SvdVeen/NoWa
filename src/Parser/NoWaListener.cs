@@ -29,11 +29,11 @@ internal class NoWaListener : Generated.NoWaParserBaseListener
             {
                 if (sym is Generated.NoWaParser.NonterminalContext nonterminal)
                 {
-                    newExpr.Add(Grammar.GetOrCreateNonterminal(nonterminal.value.Text));
+                    newExpr.Add(Grammar.AddNonterminal(nonterminal.value.Text));
                 }
                 else if (sym is Generated.NoWaParser.TerminalContext terminal)
                 {
-                    newExpr.Add(Grammar.GetOrCreateTerminal(terminal.value.Text));
+                    newExpr.Add(Grammar.AddTerminal(terminal.value.Text));
                 }
                 else if (sym is Generated.NoWaParser.EmptyStringContext)
                 {

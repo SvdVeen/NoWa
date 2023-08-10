@@ -4,13 +4,12 @@
 /// Contains unit tests for the <see cref="Nonterminal"/> class.
 /// </summary>
 [TestClass]
-[TestCategory($"{nameof(NoWa)}.{nameof(Common)}")]
 public class NonterminalTests
 {
     /// <summary>
     /// Tests whether the constructor properly instantiates <see cref="Nonterminal.Value"/>.
     /// </summary>
-    [TestMethod($"{nameof(Nonterminal)}.{nameof(ConstructorTest)}")]
+    [TestMethod]
     public void ConstructorTest()
     {
         Nonterminal nonterminal = new("test");
@@ -20,7 +19,7 @@ public class NonterminalTests
     /// <summary>
     /// Tests whether the constructor throws an <see cref="ArgumentNullException"/> if an empty value is passed.
     /// </summary>
-    [TestMethod($"{nameof(Nonterminal)}.{nameof(ConstructorTestEmptyValue)}")]
+    [TestMethod]
     public void ConstructorTestEmptyValue()
     {
         _ = Assert.ThrowsException<ArgumentNullException>(() => _ = new Nonterminal(""));
@@ -29,7 +28,7 @@ public class NonterminalTests
     /// <summary>
     /// Tests whether the constructor throws an <see cref="ArgumentNullException"/> if a whitespace value is passed.
     /// </summary>
-    [TestMethod($"{nameof(Nonterminal)}.{nameof(ConstructorTestWhiteSpaceValue)}")]
+    [TestMethod]
     public void ConstructorTestWhiteSpaceValue()
     {
         _ = Assert.ThrowsException<ArgumentNullException>(() => _ = new Nonterminal("    "));
@@ -38,7 +37,7 @@ public class NonterminalTests
     /// <summary>
     /// Tests whether the setter of <see cref="Nonterminal.Value"/> and its getter work properly.
     /// </summary>
-    [TestMethod($"{nameof(Nonterminal)}.{nameof(ValueTest)}")]
+    [TestMethod]
     public void ValueTest()
     {
 #pragma warning disable IDE0017 // Simplify object initialization
@@ -51,7 +50,7 @@ public class NonterminalTests
     /// <summary>
     /// Tests whether the setter of <see cref="Nonterminal.Value"/> throws an <see cref="ArgumentNullException"/> if an empty value is passed.
     /// </summary>
-    [TestMethod($"{nameof(Nonterminal)}.{nameof(ValueTestEmpty)}")]
+    [TestMethod]
     public void ValueTestEmpty()
     {
         Nonterminal nonterminal = new("test");
@@ -61,7 +60,7 @@ public class NonterminalTests
     /// <summary>
     /// Tests whether the setter of <see cref="Nonterminal.Value"/> throws an <see cref="ArgumentNullException"/> if a whitespace value is passed.
     /// </summary>
-    [TestMethod($"{nameof(Nonterminal)}.{nameof(ValueTestWhiteSpace)}")]
+    [TestMethod]
     public void ValueTestWhiteSpace()
     {
         Nonterminal nonterminal = new("test");
@@ -71,7 +70,7 @@ public class NonterminalTests
     /// <summary>
     /// Tests the <see cref="Nonterminal.ToString"/> function.
     /// </summary>
-    [TestMethod($"{nameof(Nonterminal)}.{nameof(ToStringTest)}")]
+    [TestMethod]
     public void ToStringTest()
     {
         Nonterminal nonterminal = new("test");
@@ -81,7 +80,7 @@ public class NonterminalTests
     /// <summary>
     /// Tests the <see cref="Nonterminal.Equals"/> function for two equal nonterminals.
     /// </summary>
-    [TestMethod($"{nameof(Nonterminal)}.{nameof(EqualsTestEqual)}")]
+    [TestMethod]
     public void EqualsTestEqual()
     {
         Nonterminal a = new("test");
@@ -92,7 +91,7 @@ public class NonterminalTests
     /// <summary>
     /// Tests the <see cref="Nonterminal.Equals"/> function for two non-equal nonterminals.
     /// </summary>
-    [TestMethod($"{nameof(Nonterminal)}.{nameof(EqualsTestNotEqual)}")]
+    [TestMethod]
     public void EqualsTestNotEqual()
     {
         Nonterminal a = new("test");
@@ -103,7 +102,7 @@ public class NonterminalTests
     /// <summary>
     /// Tests the <see cref="Nonterminal.GetHashCode"/> function for two equal nonterminals.
     /// </summary>
-    [TestMethod($"{nameof(Nonterminal)}.{nameof(GetHashCodeTestEqual)}")]
+    [TestMethod]
     public void GetHashCodeTestEqual()
     {
         Nonterminal a = new("test");
@@ -114,7 +113,7 @@ public class NonterminalTests
     /// <summary>
     /// Tests the <see cref="Nonterminal.GetHashCode"/> function for two non-equal nonterminals.
     /// </summary>
-    [TestMethod($"{nameof(Nonterminal)}.{nameof(GetHashCodeTestNotEqual)}")]
+    [TestMethod]
     public void GetHashCodeTestNotEqual()
     {
         Nonterminal a = new("test");

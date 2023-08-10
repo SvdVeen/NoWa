@@ -86,6 +86,22 @@ public class Expression : IList<ISymbol>
         _symbols.RemoveAt(index);
     }
 
+    /// <summary>
+    /// Replace all occurrences of a symbol in the expression with another.
+    /// </summary>
+    /// <param name="symbol">The symbol to replace.</param>
+    /// <param name="newSymbol">The symbol to replace the original with.</param>
+    public void Replace(ISymbol symbol, ISymbol newSymbol)
+    {
+        for (int i = 0; i < _symbols.Count; i++)
+        {
+            if (_symbols[i].Equals(symbol))
+            {
+                _symbols[i] = newSymbol;
+            }
+        }
+    }
+
     /// <inheritdoc/>
     IEnumerator IEnumerable.GetEnumerator()
     {
