@@ -63,14 +63,8 @@ Return codes:
 
         if (!string.IsNullOrWhiteSpace(outPath))
         {
-            try
+            if (!SaveResultToFile(outPath, result))
             {
-                File.WriteAllText(outPath, result!.ToString());
-            }
-            catch (Exception ex)
-            {
-                Con.Error.WriteLine("Failed to save result:");
-                Con.Error.WriteLine($"{ex.GetType} - {ex.Message}");
                 return 4;
             }
         }
@@ -163,6 +157,29 @@ Return codes:
             }
         }
 
+        return true;
+    }
+
+    /// <summary>
+    /// Save a result to a file.
+    /// </summary>
+    /// <param name="outPath">The path to save the result to.</param>
+    /// <param name="result">The result to save.</param>
+    /// <returns><see langword="true"/> if the file was saved successfully; <see langword="false"/> otherwise.</returns>
+    private static bool SaveResultToFile(string outPath, Grammar result)
+    {
+        try
+        {
+            File.WriteAllText(outPath, result.ToString());
+        }
+        catch (Exception ex)
+        {
+            Con.Error.WriteLine("Failed to save result:");
+            Con.Error.WriteLine($"{ex.GetType} - {ex.Message}");
+            return false;
+        }
+
+        Con.WriteLine($"Result saved to {Path.GetFullPath(outPath)}");
         return true;
     }
 }
