@@ -42,7 +42,10 @@ public class EmptyStringStepTests
         EmptyStringStep step = new(logger);
         step.Convert(grammar);
 
-        Assert.AreEqual("S = A B | B | A ;\r\nA = 'a' A A | 'a' A | 'a' ;\r\nB = 'b' B B | 'b' B | 'b' ;", grammar.ToString());
+        Assert.AreEqual(
+            $"S = A B | B | A ;{Environment.NewLine}" +
+            $"A = 'a' A A | 'a' A | 'a' ;{Environment.NewLine}" +
+            $"B = 'b' B B | 'b' B | 'b' ;", grammar.ToString());
     }
 
     /// <summary>
@@ -86,7 +89,11 @@ public class EmptyStringStepTests
         EmptyStringStep step = new(logger);
         step.Convert(grammar);
 
-        Assert.AreEqual("S = A 'b' B | 'b' B | 'b' | A 'b' | C ;\r\nB = A A | A | A C | C ;\r\nC = 'b' | 'c' ;\r\nA = 'a' ;", grammar.ToString());
+        Assert.AreEqual(
+            $"S = A 'b' B | 'b' B | 'b' | A 'b' | C ;{Environment.NewLine}" +
+            $"B = A A | A | A C | C ;{Environment.NewLine}" +
+            $"C = 'b' | 'c' ;{Environment.NewLine}" +
+            $"A = 'a' ;", grammar.ToString());
     }
 
     /// <summary>
@@ -112,7 +119,9 @@ public class EmptyStringStepTests
         EmptyStringStep step = new(logger);
         step.Convert(grammar);
 
-        Assert.AreEqual("S = B ;\r\nB = 'b' ;", grammar.ToString());
+        Assert.AreEqual(
+            $"S = B ;{Environment.NewLine}" +
+            $"B = 'b' ;", grammar.ToString());
     }
 
     /// <summary>
@@ -140,6 +149,8 @@ public class EmptyStringStepTests
         EmptyStringStep step = new(logger);
         step.Convert(grammar);
 
-        Assert.AreEqual("S = B ;\r\nB = 'b' ;", grammar.ToString());
+        Assert.AreEqual(
+            $"S = B ;{Environment.NewLine}" +
+            $"B = 'b' ;", grammar.ToString());
     }
 }

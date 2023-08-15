@@ -6,7 +6,7 @@ namespace NoWa.Converter;
 /// <summary>
 /// A conversion step that eliminates all ε-productions in a grammar.
 /// </summary>
-public sealed class EmptyStringStep : BaseConversionStep, IConversionStep
+public sealed class EmptyStringStep : BaseConversionStep
 {
     /// <inheritdoc/>
     public EmptyStringStep(ILogger logger) : base(logger) { }
