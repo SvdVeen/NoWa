@@ -12,7 +12,8 @@ public class EmptyStringStepTests
     /// Tests the <see cref="EmptyStringStep.Convert(Grammar)"/> function.
     /// </summary>
     /// <remarks>
-    /// This unit test is based on the example given by TODO: SOURCE.
+    /// This unit test is based on the example given by Hopcroft, Motwani, and Ullman on pages 266-267 of the 2013 edition
+    /// of "Introduction to Automata Theory, Languages, and Computation: Pearson New International Edition" 
     /// </remarks>
     [TestMethod]
     public void TestRemoveEmptyStringProductionsA()
@@ -25,30 +26,30 @@ public class EmptyStringStepTests
 
         // Add rule S = A B ;
         Rule rule = grammar.AddRule("S");
-        rule.AddExpression(A, B);
+        rule.AddProduction(A, B);
 
         // add rule A = 'a' A A | '' ;
         rule = grammar.AddRule("A");
-        rule.AddExpression(a, A, A);
-        rule.AddExpression(EmptyString.Instance);
+        rule.AddProduction(a, A, A);
+        rule.AddProduction(EmptyString.Instance);
 
         // Add rule B = 'b' B B | '' ;
         rule = grammar.AddRule("B");
-        rule.AddExpression(b, B, B);
-        rule.AddExpression(EmptyString.Instance);
+        rule.AddProduction(b, B, B);
+        rule.AddProduction(EmptyString.Instance);
 
         TestLogger logger = new TestLogger();
         EmptyStringStep step = new(logger);
         step.Convert(grammar);
 
-        Assert.AreEqual("S = A B | A | B ;\r\nA = 'a' A A | 'a' A | 'a' ;\r\nB = 'b' B B | 'b' B | 'b' ;", grammar.ToString());
+        Assert.AreEqual("S = A B | B | A ;\r\nA = 'a' A A | 'a' A | 'a' ;\r\nB = 'b' B B | 'b' B | 'b' ;", grammar.ToString());
     }
 
     /// <summary>
     /// Tests the <see cref="EmptyStringStep.Convert(Grammar)"/> function.
     /// </summary>
     /// <remarks>
-    /// This unit test is based on the example given by TODO: SOURCE (wiki).
+    /// This unit test is based on the example given on https://en.wikipedia.org/wiki/Chomsky_normal_form (2023-08-15).
     /// </remarks>
     [TestMethod]
     public void TestRemoveEmptyStringProductionsB()
@@ -63,28 +64,82 @@ public class EmptyStringStepTests
 
         // Add rule S = A 'b' B | C;
         Rule rule = grammar.AddRule("S");
-        rule.AddExpression(A, b, B);
-        rule.AddExpression(C);
+        rule.AddProduction(A, b, B);
+        rule.AddProduction(C);
 
         // add rule B = A A | A C ;
         rule = grammar.AddRule("B");
-        rule.AddExpression(A, A);
-        rule.AddExpression(A, C);
+        rule.AddProduction(A, A);
+        rule.AddProduction(A, C);
 
         // Add rule C = 'b' | 'c' ;
         rule = grammar.AddRule("C");
-        rule.AddExpression(b);
-        rule.AddExpression(c);
+        rule.AddProduction(b);
+        rule.AddProduction(c);
 
         // Add rule A = 'a' | '' ;
         rule = grammar.AddRule("A");
-        rule.AddExpression(a);
-        rule.AddExpression(EmptyString.Instance);
+        rule.AddProduction(a);
+        rule.AddProduction(EmptyString.Instance);
 
         TestLogger logger = new();
         EmptyStringStep step = new(logger);
         step.Convert(grammar);
 
-        Assert.AreEqual("S = A 'b' B | A 'b' | 'b' B | 'b' | C ;\r\nB = A A | A | A C | C ;\r\nC = 'b' | 'c' ;\r\nA = 'a' ;", grammar.ToString());
+        Assert.AreEqual("S = A 'b' B | 'b' B | 'b' | A 'b' | C ;\r\nB = A A | A | A C | C ;\r\nC = 'b' | 'c' ;\r\nA = 'a' ;", grammar.ToString());
+    }
+
+    /// <summary>
+    /// Tests whether the step removes empty rules (rules that only produce empty strings).
+    /// </summary>
+    [TestMethod]
+    public void TestRemoveEmptyRule()
+    {
+        Grammar grammar = new();
+        
+        Rule S = grammar.AddRule("S");
+
+        Rule A = grammar.AddRule("A");
+        A.AddProduction(EmptyString.Instance, EmptyString.Instance);
+        A.AddProduction(EmptyString.Instance);
+
+        Rule B = grammar.AddRule("B");
+        B.AddProduction(new Terminal("b"));
+
+        S.AddProduction(A.Nonterminal, B.Nonterminal);
+
+        TestLogger logger = new();
+        EmptyStringStep step = new(logger);
+        step.Convert(grammar);
+
+        Assert.AreEqual("S = B ;\r\nB = 'b' ;", grammar.ToString());
+    }
+
+    /// <summary>
+    /// Tests whether the step removes empty rules several levels deep (those that contain only rules that would only produce empty strings).
+    /// </summary>
+    [TestMethod]
+    public void TestRemoveNestedEmptyRule()
+    {
+        Grammar grammar = new();
+        Rule S = grammar.AddRule("S");
+
+        Rule A = grammar.AddRule("A");
+
+        Rule B = grammar.AddRule("B");
+        B.AddProduction(new Terminal("b"));
+
+        Rule C = grammar.AddRule("C");
+        C.AddProduction(EmptyString.Instance);
+
+        A.AddProduction(C.Nonterminal);
+
+        S.AddProduction(A.Nonterminal, B.Nonterminal);
+
+        TestLogger logger = new();
+        EmptyStringStep step = new(logger);
+        step.Convert(grammar);
+
+        Assert.AreEqual("S = B ;\r\nB = 'b' ;", grammar.ToString());
     }
 }

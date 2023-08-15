@@ -14,13 +14,13 @@ public interface ILogger
     /// Log a message using the given log level.
     /// </summary>
     /// <param name="level">The <see cref="LogLevel"/> to display the message at.</param>
-    /// <param name="message"></param>
+    /// <param name="message">The message to log.</param>
     public void Log(LogLevel level, string message);
 
     /// <summary>
     /// Log a debug message using the logger.
     /// </summary>
-    /// <param name="message"></param>
+    /// <param name="message">The message to log.</param>
     public void LogDebug(string message) => Log(LogLevel.Debug, message);
 
     /// <summary>

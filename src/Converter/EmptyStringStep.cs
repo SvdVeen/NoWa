@@ -12,76 +12,81 @@ public sealed class EmptyStringStep : BaseConversionStep, IConversionStep
     public EmptyStringStep(ILogger logger) : base(logger) { }
 
     /// <summary>
-    /// Eliminate all empty string productions in the given <see cref="Grammar"/>.
+    /// Eliminates all empty string productions in the given <see cref="Grammar"/>.
     /// </summary>
     /// <inheritdoc/>
     public override void Convert(Grammar grammar)
     {
         Logger.LogInfo("Eliminating ε-productions...");
+        EliminateEmptyRules(grammar);
         // Start by finding nullables and trimming ε-productions.
-        HashSet<Nonterminal> nullables = GetNullableNonterminals(grammar);
+        ISet<Nonterminal> nullables = GetNullables(grammar);
         for (int i = 0; i < grammar.RuleCount; i++)
         {
-            Rule rule = grammar.GetRule(i);
-            HashSet<Expression> uniqueExpressions = new();
-            for (int j = 0; j < rule.Expressions.Count; j++)
-            {
-                Expression expr = rule.Expressions[j];
-                List<Nonterminal> exprNullables = new();
-                for (int k = 0; k < expr.Count; k++)
-                {
-                    if (nullables.Contains(expr[k]) && !exprNullables.Contains(expr[k]))
-                    {
-                        exprNullables.Insert(0, (Nonterminal)expr[k]);
-                    }
-                }
-                if (exprNullables.Count > 0)
-                {
-                    IList<Expression> newExprs = GetExpressionPermutations(uniqueExpressions, expr, exprNullables);
-                    rule.Expressions.RemoveAt(j);
-                    for (int k = newExprs.Count - 1; k >= 0; k--)
-                    {
-                        rule.Expressions.Insert(j, newExprs[k]);
-                    }
-                }
-            }
+            ProcessRule(nullables, grammar, i);
         }
     }
 
     /// <summary>
-    /// Gets all nullable nonterminals and trims empty string productions from them.
+    /// Removes rules that entirely consist of ε-productions iteratively until all rules that would only have ε-productions are eliminatied.
     /// </summary>
-    /// <param name="grammar">The grammar to convert.</param>
-    /// <returns>A set of all nullable nonterminals.</returns>
-    private static HashSet<Nonterminal> GetNullableNonterminals(Grammar grammar)
+    /// <param name="grammar">The grammar to eliminate empty rules from.</param>
+    private void EliminateEmptyRules(Grammar grammar)
     {
-        HashSet<Nonterminal> nullables = new();
-        // First, we find first-level nullables and trim their ε-productions.
-        for (int i = 0; i < grammar.RuleCount; i++)
+        bool ruleRemoved;
+        do
         {
-            Rule rule = grammar.GetRule(i);
-            for (int j = 0; j < rule.Expressions.Count; j++)
+            ruleRemoved = false;
+            for (int i = 0; i < grammar.RuleCount; i++)
             {
-                Expression expr = rule.Expressions[j];
-                for (int k = 0; k < expr.Count; k++)
+                Rule rule = grammar.GetRule(i);
+                for (int j = 0; j < rule.Productions.Count; j++)
                 {
-                    if (expr[k] is EmptyString)
+                    rule.Productions[j] = new(rule.Productions[j].Where(s => s is not EmptyString));
+                    if (rule.Productions[j].Count == 0)
                     {
-                        expr.RemoveAt(k--);
+                        rule.Productions[j].Add(EmptyString.Instance);
                     }
                 }
-                if (expr.Count == 0)
+                MakeDistinct(rule.Productions);
+                if (rule.Productions.Count == 1 && rule.Productions[0][0] is EmptyString)
                 {
-                    nullables.Add(rule.Nonterminal);
-                    rule.Expressions.RemoveAt(j--);
+                    Logger.LogDebug($"Removing empty rule {rule.Nonterminal}");
+                    ruleRemoved = true;
+                    grammar.RemoveRuleAt(i--);
+                    grammar.ReplaceSymbol(rule.Nonterminal, EmptyString.Instance, true);
                 }
             }
-            if (rule.Expressions.Count == 0)
+        } while (ruleRemoved);
+    }
+
+    /// <summary>
+    /// Filters a list of productions to only contain its distinct elements.
+    /// </summary>
+    /// <param name="productions">The list to filter.</param>
+    private static void MakeDistinct(IList<Expression> productions)
+    {
+        List<Expression> distinct = productions.Distinct().ToList();
+        if (distinct.Count < productions.Count)
+        {
+            productions.Clear();
+            foreach (Expression production in distinct)
             {
-                grammar.RemoveRuleAt(i--);
+                productions.Add(production);
             }
         }
-        // We iteratively find all remaining nullable rules by seeing if all of their productions are nullable.
+    }
+
+    #region obtaining nullables
+    /// <summary>
+    /// Gets the nonterminals in a grammar that have ε-productions in their rules. Reduces any occurrence of multiple instances of ε to a single instance of ε.
+    /// </summary>
+    /// <param name="grammar">The grammar to get the nullables for.</param>
+    /// <returns>The set of all nullable nonterminals in the grammar.</returns>
+    private ISet<Nonterminal> GetNullables(Grammar grammar)
+    {
+        ISet<Nonterminal> nullables = GetFirstLevelNullables(grammar);
+        Logger.LogDebug("Getting higher level nullables...");
         int lastCount;
         do
         {
@@ -93,8 +98,9 @@ public sealed class EmptyStringStep : BaseConversionStep, IConversionStep
                 {
                     continue;
                 }
-                if (rule.Expressions.All(e => e.Any(s => s is Nonterminal n && nullables.Contains(n))))
+                if (rule.Productions.All(e => e.OfType<Nonterminal>().Any(nullables.Contains)))
                 {
+                    Logger.LogDebug($"Nullable: {rule}");
                     nullables.Add(rule.Nonterminal);
                 }
             }
@@ -103,47 +109,108 @@ public sealed class EmptyStringStep : BaseConversionStep, IConversionStep
     }
 
     /// <summary>
-    /// Get all permutation of an expression with certain nullable nonterminals either existing or not existing.
+    /// Gets all first-level nullables; those that directly produce ε. Removes duplicate instances of ε in productions.
     /// </summary>
-    /// <param name="uniqueExpressions">A set of current unique expressions, used to prevent duplicates from being inserted.</param>
-    /// <param name="expression">The expression to get permutations of.</param>
-    /// <param name="nullables">The nullable nonterminals to process.</param>
-    /// <returns>A collection of all versions of the expression with the given nonterminals either existing or not existing.</returns>
-    private static IList<Expression> GetExpressionPermutations(HashSet<Expression> uniqueExpressions, Expression expression, IEnumerable<Nonterminal> nullables)
+    /// <param name="grammar">The grammar to get the nullables for.</param>
+    /// <returns>A dictionary of all nullable nonterminals, with booleans indicating whether they produced only ε.</returns>
+    private ISet<Nonterminal> GetFirstLevelNullables(Grammar grammar)
     {
-        List<Expression> exprs = new() { expression };
-        foreach (var nullable in nullables)
+        Logger.LogDebug("Getting first-level nullables...");
+        HashSet<Nonterminal> nullables = new();
+        for (int i = 0; i < grammar.RuleCount; i++)
         {
-            for (int i = 0; i < exprs.Count; i++)
+            Rule rule = grammar.GetRule(i);
+            for (int j = 0; j < rule.Productions.Count; j++)
             {
-                exprs.AddRange(GetNullablePermutations(uniqueExpressions, exprs[i], nullable));
-            }
-        }
-        return exprs;
-    }
-
-    /// <summary>
-    /// Gets all permutations of a nullable nonterminal existing or not existing.
-    /// </summary>
-    /// <param name="uniqueExprs">A hashset of current unique expressions, used to prevent duplicates.</param>
-    /// <param name="expr">The expression to get the permutations of.</param>
-    /// <param name="nullable">The nullable nonterminal to process.</param>
-    /// <returns>A collection of all expressions with the nonterminal either existing or not existing.</returns>
-    private static IEnumerable<Expression> GetNullablePermutations(HashSet<Expression> uniqueExprs, Expression expr, Nonterminal nullable)
-    {
-        List<Expression> exprs = new();
-        for (int i = 0; i < expr.Count; i++)
-        {
-            if (expr[i].Equals(nullable))
-            {
-                Expression newExpr = new(expr.ToArray());
-                newExpr.RemoveAt(i);
-                if (newExpr.Count > 0 && uniqueExprs.Add(newExpr))
+                if (rule.Productions[j].Any((s) => s is EmptyString))
                 {
-                    exprs.Add(newExpr);
+                    Logger.LogDebug($"Production with ε: {rule.Productions[j]}");
+                    rule.Productions[j] = new(rule.Productions[j].Where(s => s is not EmptyString));
+                    if (rule.Productions[j].Count == 0)
+                    {
+                        rule.Productions[j].Add(EmptyString.Instance);
+                    }
+                    Logger.LogDebug($"Reduced to {rule.Productions[j]}");
+                }
+                if (rule.Productions[j].Count == 1 && rule.Productions[j][0] is EmptyString)
+                {
+                    if (nullables.Add(rule.Nonterminal))
+                    {
+                        Logger.LogDebug($"First-level nullable: {rule.Nonterminal}");
+                    }
                 }
             }
         }
-        return exprs;
+        return nullables;
+    }
+    #endregion obtaining nullables
+
+    /// <summary>
+    /// Removes all ε-productions from a rule by taking combinations of its productions where nullables are missing or not.
+    /// </summary>
+    /// <param name="nullables">All nullables in the grammar.</param>
+    /// <param name="grammar">The grammar to convert.</param>
+    /// <param name="ruleIndex">The index of the rule in the grammar to process.</param>
+    private void ProcessRule(ISet<Nonterminal> nullables, Grammar grammar, int ruleIndex)
+    {
+        Rule rule = grammar.GetRule(ruleIndex);
+        HashSet<Expression> uniqueProductions = new();
+        for (int i = 0; i < rule.Productions.Count; i++)
+        {
+            IList<Expression> combinations = ProcessProduction(nullables, uniqueProductions, rule.Productions[i]);
+            rule.Productions.RemoveAt(i);
+            for (int j = combinations.Count - 1; j >= 0; j--)
+            {
+                rule.Productions.Insert(i, combinations[j]);
+            }
+            i = (combinations.Count == 0) ? i - 1 : i;
+        }
+        if (rule.Productions.Count == 0)
+        {
+            Logger.LogDebug($"Removing empty rule {rule.Nonterminal}");
+            grammar.RemoveRuleAt(ruleIndex);
+        }
+    }
+
+    /// <summary>
+    /// Shorthand for checking if any <see cref="ISymbol"/> is a nullable.
+    /// </summary>
+    /// <param name="nullables">The set of all nullable symbols.</param>
+    /// <param name="symbol">The symbol to check.</param>
+    /// <returns><see langword="true"/> if the <paramref name="symbol"/> is one of the <paramref name="nullables"/> or is the <see cref="EmptyString"/>; <see langword="false"/> otherwise.</returns>
+    private static bool IsNullable(ISet<Nonterminal> nullables, ISymbol symbol) => symbol is EmptyString || (symbol is Nonterminal nt && nullables.Contains(nt));
+
+    /// <summary>
+    /// Removes all possible ε-productions by taking the combinations of a production where nullables are either absent or not.
+    /// </summary>
+    /// <param name="nullables">The nullables in the grammar.</param>
+    /// <param name="uniqueProductions">The unique productions already present in the rule the <paramref name="production"/> is part of.</param>
+    /// <param name="production">The production to process.</param>
+    /// <returns>All combinations of the production with the <paramref name="nullables"/> missing or not.</returns>
+    private List<Expression> ProcessProduction(ISet<Nonterminal> nullables, ISet<Expression> uniqueProductions, Expression production)
+    {
+        List<Expression> result = new();
+
+        // Do not include direct empty string productions.
+        if (production.Count == 1 && production[0] is EmptyString)
+        {
+            return result;
+        }
+
+        result.Add(production);
+        for (int i = 0; i < production.Count; i++)
+        {
+            if (IsNullable(nullables, production[i]))
+            {
+                Expression newProduction = new(production);
+                newProduction.RemoveAt(i);
+                if (newProduction.Count > 0 && uniqueProductions.Add(newProduction))
+                {
+                    Logger.LogDebug($"Introducing new production: {newProduction}");
+                    result.Add(newProduction);
+                }
+            }
+        }
+        return result;
     }
 }

@@ -15,7 +15,7 @@ public class RuleTests
         Nonterminal a = new("a");
         Rule rule = new(a);
         Assert.AreSame(a, rule.Nonterminal, "Nonterminal did not match.");
-        Assert.AreEqual(0, rule.Expressions.Count, "Expressions is not empty.");
+        Assert.AreEqual(0, rule.Productions.Count, "Expressions is not empty.");
     }
 
     /// <summary>
@@ -31,17 +31,17 @@ public class RuleTests
     }
 
     /// <summary>
-    /// Tests the <see cref="Rule.AddExpression"/> function.
+    /// Tests the <see cref="Rule.AddProduction"/> function.
     /// </summary>
     [TestMethod]
-    public void TestAddExpression()
+    public void TestAddProduction()
     {
         Rule rule = new(new("a"));
         Nonterminal b = new("b");
         Nonterminal c = new("c");
-        rule.AddExpression(b, c);
-        Assert.AreSame(b, rule.Expressions[0][0]);
-        Assert.AreSame(c, rule.Expressions[0][1]);
+        rule.AddProduction(b, c);
+        Assert.AreSame(b, rule.Productions[0][0]);
+        Assert.AreSame(c, rule.Productions[0][1]);
     }
 
     /// <summary>
@@ -54,14 +54,14 @@ public class RuleTests
         Nonterminal Ntest = new("test");
         Terminal Ttest = new("test");
         Rule rule = new(Ntest);
-        rule.Expressions.Add(new() { symbol, Ntest, Ntest, symbol, Ttest });
-        rule.Expressions.Add(new() { Ttest, Ntest, Ttest });
-        rule.Expressions.Add(new() { Ttest, symbol, symbol });
+        rule.Productions.Add(new() { symbol, Ntest, Ntest, symbol, Ttest });
+        rule.Productions.Add(new() { Ttest, Ntest, Ttest });
+        rule.Productions.Add(new() { Ttest, symbol, symbol });
         rule.ReplaceSymbol(symbol, newSymbol);
         Assert.AreSame(Ntest, rule.Nonterminal, "The rule's nonterminal does not match the original.");
-        ExpressionAssert.AreSameEntries(rule.Expressions[0], newSymbol, Ntest, Ntest, newSymbol, Ttest);
-        ExpressionAssert.AreSameEntries(rule.Expressions[1], Ttest, Ntest, Ttest);
-        ExpressionAssert.AreSameEntries(rule.Expressions[2], Ttest, newSymbol, newSymbol);
+        ExpressionAssert.AreSameEntries(rule.Productions[0], newSymbol, Ntest, Ntest, newSymbol, Ttest);
+        ExpressionAssert.AreSameEntries(rule.Productions[1], Ttest, Ntest, Ttest);
+        ExpressionAssert.AreSameEntries(rule.Productions[2], Ttest, newSymbol, newSymbol);
     }
 
     /// <summary>
@@ -138,10 +138,10 @@ public class RuleTests
         Nonterminal b = new("b");
         Nonterminal test = new("test");
         Rule rule = new(a);
-        rule.Expressions.Add(new() { test });
+        rule.Productions.Add(new() { test });
         rule.ReplaceSymbol(a, b);
         Assert.AreSame(b, rule.Nonterminal);
-        Assert.AreSame(test, rule.Expressions[0][0]);
+        Assert.AreSame(test, rule.Productions[0][0]);
     }
 
     /// <summary>
@@ -161,8 +161,8 @@ public class RuleTests
     public void TestToStringNotEmpty()
     {
         Rule rule = new(new("a"));
-        rule.AddExpression(new Nonterminal("b"), new Terminal("a"));
-        rule.AddExpression(new Terminal("c"));
+        rule.AddProduction(new Nonterminal("b"), new Terminal("a"));
+        rule.AddProduction(new Terminal("c"));
         Assert.AreEqual("a = b 'a' | 'c' ;", rule.ToString());
     }
 

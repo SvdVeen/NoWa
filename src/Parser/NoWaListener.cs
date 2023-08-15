@@ -44,7 +44,7 @@ internal class NoWaListener : Generated.NoWaParserBaseListener
                     throw new InvalidOperationException("Parsed symbol is invalid."); // This should not even be possible.
                 }
             }
-            rule.Expressions.Add(newExpr);
+            rule.Productions.Add(newExpr);
         }
     }
 }

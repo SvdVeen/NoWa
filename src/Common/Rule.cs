@@ -13,9 +13,9 @@ public class Rule
     public Nonterminal Nonterminal { get; set; }
 
     /// <summary>
-    /// Gets the list of expressions this nonterminal translates to.
+    /// Gets the list of productions for this rule.
     /// </summary>
-    public IList<Expression> Expressions { get; } = new List<Expression>();
+    public IList<Expression> Productions { get; } = new List<Expression>();
 
     /// <summary>
     /// Creates a new instance of the <see cref="Rule"/> class.
@@ -24,15 +24,15 @@ public class Rule
     public Rule(Nonterminal nonterminal) => Nonterminal = nonterminal;
 
     /// <summary>
-    /// Add an expression to the rule.
+    /// Add a production to the rule.
     /// </summary>
-    /// <param name="symbols">The symbols in the expression.</param>
+    /// <param name="symbols">The symbols in the expression of this production.</param>
     /// <remarks>Used as notational shorthand to make quick instantiations more readable.</remarks>
-    public void AddExpression(params ISymbol[] symbols) => Expressions.Add(new(symbols));
+    public void AddProduction(params ISymbol[] symbols) => Productions.Add(new(symbols));
 
 
     /// <summary>
-    /// Replace all occurrences of a symbol in this rule's expressions or its nonterminal with another.
+    /// Replace all occurrences of a symbol in this rule's productions or its nonterminal with another.
     /// </summary>
     /// <param name="symbol">The symbol to replace.</param>
     /// <param name="newSymbol">The symbol to replace the original with.</param>
@@ -43,7 +43,7 @@ public class Rule
             Nonterminal = nt;
         }
 
-        foreach (Expression expression in Expressions)
+        foreach (Expression expression in Productions)
         {
             expression.Replace(symbol, newSymbol);
         }
@@ -52,12 +52,12 @@ public class Rule
     /// <inheritdoc/>
     public override string ToString()
     {
-        if (Expressions.Count == 0)
+        if (Productions.Count == 0)
         {
             return $"Empty rule {Nonterminal}";
         }
 
-        return new StringBuilder($"{Nonterminal} = ").AppendJoin(" | ", Expressions).Append(" ;").ToString();
+        return new StringBuilder($"{Nonterminal} = ").AppendJoin(" | ", Productions).Append(" ;").ToString();
     }
 
     /// <inheritdoc/>

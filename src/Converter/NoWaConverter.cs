@@ -27,7 +27,10 @@ public class NoWaConverter
     public NoWaConverter(ILogger logger)
     {
         Logger = logger;
-        _steps = new List<IConversionStep>() { };
+        _steps = new List<IConversionStep>()
+        {
+            new EmptyStringStep(Logger)
+        };
     }
 
     /// <summary>
@@ -63,20 +66,6 @@ public class NoWaConverter
     }
 
     /// <summary>
-    /// Replaces the start rule with a new one.
-    /// </summary>
-    /// <param name="grammar">The grammar to convert.</param>
-    public static void AddStartRule(Grammar grammar)
-    {
-        Console.WriteLine("Adding start rule...");
-        Nonterminal nonterminal = grammar.GetRule(0).Nonterminal;
-        Rule rule = grammar.InsertRule(0, "START");
-        rule.AddExpression(nonterminal);
-        Console.WriteLine(grammar.ToString());
-        Console.WriteLine();
-    }
-
-    /// <summary>
     /// Eliminates nonsolitary terminals.
     /// </summary>
     /// <param name="grammar">The grammar to convert.</param>
@@ -86,7 +75,7 @@ public class NoWaConverter
         for (int i = 0, count = grammar.RuleCount; i < count; i++)
         {
             Rule rule = grammar.GetRule(i);
-            foreach (var expr in rule.Expressions.Where(expr => expr.Count > 1))
+            foreach (var expr in rule.Productions.Where(expr => expr.Count > 1))
             {
                 for (int j = 0; j < expr.Count; j++)
                 {
@@ -97,7 +86,7 @@ public class NoWaConverter
                         grammar.ReplaceSymbol(terminal, nonterminal, false); // Keep the original because we will insert it again in the new rule.
                         // A new rule is added for the new nonterminal that refers to the old terminal.
                         Rule newRule = new(nonterminal);
-                        newRule.AddExpression(terminal);
+                        newRule.AddProduction(terminal);
                         grammar.AddRule(newRule);
                     }
                 }
@@ -117,13 +106,13 @@ public class NoWaConverter
         for (int i = 0, count = grammar.RuleCount; i < count; i++)
         {
             Rule rule = grammar.GetRule(i);
-            foreach (var expr in rule.Expressions.Where(expr => expr.OfType<Nonterminal>().Count() > 2))
+            foreach (var expr in rule.Productions.Where(expr => expr.OfType<Nonterminal>().Count() > 2))
             {
                 for (int j = expr.Count - 1;  j >= 2; j--)
                 {
                     Nonterminal nonterminal = grammar.AddNonterminal($"{expr[j - 1].Value}-{expr[j].Value}");
                     Rule newRule = new(nonterminal);
-                    newRule.AddExpression(expr[j-1], expr[j]);
+                    newRule.AddProduction(expr[j-1], expr[j]);
                     grammar.AddRule(newRule);
                     expr.RemoveAt(j);
                     expr.RemoveAt(j - 1);
@@ -145,12 +134,12 @@ public class NoWaConverter
         for (int i = 0, count = grammar.RuleCount; i < count; i++)
         {
             Rule rule = grammar.GetRule(i);
-            if (rule.Expressions.Count == 1 && rule.Expressions[0].Count == 1 && rule.Expressions[0][0] is Nonterminal nonterminal)
+            if (rule.Productions.Count == 1 && rule.Productions[0].Count == 1 && rule.Productions[0][0] is Nonterminal nonterminal)
             {
-                rule.Expressions.RemoveAt(0);
-                foreach (var expr in grammar.GetRule(nonterminal.Value).Expressions)
+                rule.Productions.RemoveAt(0);
+                foreach (var expr in grammar.GetRule(nonterminal.Value).Productions)
                 {
-                    rule.AddExpression(expr.ToArray());
+                    rule.AddProduction(expr.ToArray());
                 }
             }
         }

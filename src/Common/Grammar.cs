@@ -309,7 +309,7 @@ public class Grammar
     /// <param name="symbol">The symbol to replace.</param>
     /// <param name="newSymbol">The symbol to replace the original with.</param>
     /// <param name="removesymbol"><see langword="true"/> to remove the original symbol from the grammar entirely; <see langword="false"/> otherwise.</param>
-    public void ReplaceSymbol(ISymbol symbol, ISymbol newSymbol, bool removesymbol = true)
+    public void ReplaceSymbol(ISymbol symbol, ISymbol newSymbol, bool removesymbol)
     {
         // If I cared a lot about performance, I would have made specific implementations for each combination of symbols; I do not.
         if (removesymbol)

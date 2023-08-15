@@ -353,23 +353,23 @@ public class GrammarTests
 
         Rule rule1 = grammar.AddRule("test1");
         Nonterminal test1 = rule1.Nonterminal;
-        rule1.Expressions.Add(new() { Ntest, symbol, Ttest });
-        rule1.Expressions.Add(new() { Ttest, Ttest });
+        rule1.Productions.Add(new() { Ntest, symbol, Ttest });
+        rule1.Productions.Add(new() { Ttest, Ttest });
 
         Rule rule2 = grammar.AddRule("test2");
         Nonterminal test2 = rule2.Nonterminal;
-        rule2.Expressions.Add(new Expression() { Ttest, Ttest, symbol, symbol });
+        rule2.Productions.Add(new Expression() { Ttest, Ttest, symbol, symbol });
 
         grammar.ReplaceSymbol(symbol, newSymbol, removeSymbol);
 
         rule1 = grammar.GetRule(0);
         Assert.AreSame(test1, rule1.Nonterminal, "The first rule does not have its original nonterminal.");
-        ExpressionAssert.AreSameEntries(rule1.Expressions[0], "The first rule's first expression does not match the expected symbols.", Ntest, newSymbol, Ttest);
-        ExpressionAssert.AreSameEntries(rule1.Expressions[1], "The first rule's second expression does not match the expected symbols.", Ttest, Ttest);
+        ExpressionAssert.AreSameEntries(rule1.Productions[0], "The first rule's first expression does not match the expected symbols.", Ntest, newSymbol, Ttest);
+        ExpressionAssert.AreSameEntries(rule1.Productions[1], "The first rule's second expression does not match the expected symbols.", Ttest, Ttest);
 
         rule2 = grammar.GetRule(1);
         Assert.AreSame(test2, rule2.Nonterminal, "The second rule does not have its original nonterminal.");
-        ExpressionAssert.AreSameEntries(rule2.Expressions[0], "The second rule's expression does not match the expected symbols." , Ttest, Ttest, newSymbol, newSymbol);
+        ExpressionAssert.AreSameEntries(rule2.Productions[0], "The second rule's expression does not match the expected symbols." , Ttest, Ttest, newSymbol, newSymbol);
 
         if (removeSymbol)
         {
@@ -489,11 +489,11 @@ public class GrammarTests
         Grammar grammar = new();
 
         Rule rule1 = grammar.AddRule("S");
-        rule1.Expressions.Add(new() { new Nonterminal("B"), new Terminal("c") });
-        rule1.Expressions.Add(new() { EmptyString.Instance });
+        rule1.Productions.Add(new() { new Nonterminal("B"), new Terminal("c") });
+        rule1.Productions.Add(new() { EmptyString.Instance });
 
         Rule rule2 = grammar.AddRule("B");
-        rule2.Expressions.Add(new() { new Terminal("b") });
+        rule2.Productions.Add(new() { new Terminal("b") });
 
         Assert.AreEqual($"S = B 'c' | '' ;{Environment.NewLine}B = 'b' ;", grammar.ToString());
     }
