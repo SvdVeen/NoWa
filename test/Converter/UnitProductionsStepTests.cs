@@ -9,7 +9,7 @@ namespace NoWa.Converter.Tests;
 public class UnitProductionsStepTests
 {
     /// <summary>
-    /// Tests the <see cref="EmptyStringStep"/>.
+    /// Tests the <see cref="UnitProductionsStep"/>.
     /// </summary>
     /// <remarks>
     /// This unit test is based on the example given by Hopcroft, Motwani, and Ullman on pages 268-271 of the 2013 edition
@@ -29,10 +29,10 @@ public class UnitProductionsStepTests
         Terminal times = grammar.AddTerminal("*");
         Terminal plus = grammar.AddTerminal("+");
 
-        Rule I = grammar.AddRule("I");
-        Rule F = grammar.AddRule("F");
-        Rule T = grammar.AddRule("T");
         Rule E = grammar.AddRule("E");
+        Rule T = grammar.AddRule("T");
+        Rule F = grammar.AddRule("F");
+        Rule I = grammar.AddRule("I");
 
         I.AddProduction(a);
         I.AddProduction(b);
@@ -50,7 +50,7 @@ public class UnitProductionsStepTests
         E.AddProduction(T.Nonterminal);
         E.AddProduction(E.Nonterminal, plus, T.Nonterminal);
 
-        TestLogger logger = new TestLogger();
+        TestLogger logger = new();
         UnitProductionsStep step = new(logger);
         step.Convert(grammar);
 

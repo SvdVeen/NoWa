@@ -38,7 +38,7 @@ public class EmptyStringStepTests
         rule.AddProduction(b, B, B);
         rule.AddProduction(EmptyString.Instance);
 
-        TestLogger logger = new TestLogger();
+        TestLogger logger = new();
         EmptyStringStep step = new(logger);
         step.Convert(grammar);
 

@@ -3,7 +3,7 @@
 namespace NoWa.Common;
 
 /// <summary>
-/// Represents a grammar.
+/// Represents a context-free grammar.
 /// </summary>
 public class Grammar
 {
