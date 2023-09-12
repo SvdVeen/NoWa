@@ -125,27 +125,4 @@ public class NoWaConverter
         Console.WriteLine(grammar.ToString());
         Console.WriteLine();
     }
-
-    /// <summary>
-    /// Eliminates rules that only refer to a single nonterminal.
-    /// </summary>
-    /// <param name="grammar">The grammar to convert.</param>
-    private static void EliminateUnitProductions(Grammar grammar)
-    {
-        Console.WriteLine("Eliminating unit productions...");
-        for (int i = 0, count = grammar.RuleCount; i < count; i++)
-        {
-            Rule rule = grammar.GetRule(i);
-            if (rule.Productions.Count == 1 && rule.Productions[0].Count == 1 && rule.Productions[0][0] is Nonterminal nonterminal)
-            {
-                rule.Productions.RemoveAt(0);
-                foreach (var expr in grammar.GetRule(nonterminal.Value).Productions)
-                {
-                    rule.AddProduction(expr.ToArray());
-                }
-            }
-        }
-        Console.WriteLine(grammar.ToString());
-        Console.WriteLine();
-    }
 }
