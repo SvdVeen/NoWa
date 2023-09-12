@@ -30,7 +30,8 @@ public class NoWaConverter
         _steps = new List<IConversionStep>()
         {
             new EmptyStringStep(Logger),
-            new UnitProductionsStep(Logger)
+            new UnitProductionsStep(Logger),
+            new UnreachableSymbolsStep(Logger)
         };
     }
 

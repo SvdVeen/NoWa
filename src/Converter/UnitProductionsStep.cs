@@ -17,6 +17,8 @@ public sealed class UnitProductionsStep : BaseConversionStep
     /// <inheritdoc/>
     public override void Convert(Grammar grammar)
     {
+        Logger.LogInfo("Eliminating unit productions...");
+
         var unitPairs = GetUnitPairs(grammar);
 
         // First, we save all original rules and replace them with versions that only contain their non-unit productions.
