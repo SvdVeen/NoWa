@@ -14,6 +14,8 @@ public class GrammarTests
     {
         Grammar grammar = new();
         Assert.AreEqual(0, grammar.RuleCount, "RuleCount does not match.");
+        Assert.AreEqual(0, grammar.NonterminalCount, "NonterminalCount does not match.");
+        Assert.AreEqual(0, grammar.TerminalCount, "NonterminalCount does not match.");
         Assert.AreEqual("Empty grammar", grammar.ToString(), "ToString does not match.");
     }
 
@@ -264,10 +266,38 @@ public class GrammarTests
     }
 
     /// <summary>
+    /// Tests the <see cref="Grammar.GetNonterminal(int)"/> after adding a nonterminal.
+    /// </summary>
+    [TestMethod]
+    public void TestGetNonterminalIndex()
+    {
+        Grammar grammar = new();
+        Nonterminal a = grammar.AddNonterminal("a");
+        Nonterminal b = grammar.GetNonterminal(0);
+        Assert.AreSame(a, b);
+    }
+
+    /// <summary>
+    /// Tests whether <see cref="Grammar.GetNonterminal(int)"/> throws an exception for an index outside the acceptable range.
+    /// </summary>
+    [TestMethod]
+    [DataTestMethod]
+    [DataRow(int.MinValue)]
+    [DataRow(-1)]
+    [DataRow(1)]
+    [DataRow(int.MaxValue)]
+    public void TestGetNonterminalIndexOutOfRange(int index)
+    {
+        Grammar grammar = new();
+        Nonterminal a = grammar.AddNonterminal("a");
+        _ = Assert.ThrowsException<ArgumentOutOfRangeException>(() => grammar.GetNonterminal(index));
+    }
+
+    /// <summary>
     /// Tests the <see cref="Grammar.GetNonterminal(string)"/> after adding a nonterminal.
     /// </summary>
     [TestMethod]
-    public void TestGetNonterminal()
+    public void TestGetNonterminalString()
     {
         Grammar grammar = new();
         Nonterminal a = grammar.AddNonterminal("a");
@@ -278,10 +308,10 @@ public class GrammarTests
     /// Tests the <see cref="Grammar.GetNonterminal(string)"/> if it does not exist.
     /// </summary>
     [TestMethod]
-    public void TestGetNonterminalNotExists()
+    public void TestGetNonterminalStringNotExists()
     {
         Grammar grammar = new();
-        Assert.ThrowsException<ArgumentException>(() => grammar.GetNonterminal("a"));
+        _ = Assert.ThrowsException<ArgumentException>(() => grammar.GetNonterminal("a"));
     }
 
     /// <summary>
@@ -309,10 +339,60 @@ public class GrammarTests
     }
 
     /// <summary>
+    /// Tests the <see cref="Grammar.NonterminalCount"/> property.
+    /// </summary>
+    [TestMethod]
+    public void TestNonterminalCount()
+    {
+        Grammar grammar = new();
+        Assert.AreEqual(0, grammar.NonterminalCount);
+
+        Nonterminal a = grammar.AddNonterminal("a");
+        Assert.AreEqual(1, grammar.NonterminalCount);
+
+        Nonterminal b = grammar.AddNonterminal("b");
+        Assert.AreEqual(2, grammar.NonterminalCount);
+
+        grammar.RemoveNonterminalAt(1);
+        Assert.AreEqual(1, grammar.NonterminalCount);
+
+        grammar.RemoveNonterminalAt(0);
+        Assert.AreEqual(0, grammar.NonterminalCount);
+    }
+
+    /// <summary>
+    /// Tests the <see cref="Grammar.GetTerminal(int)"/> after adding a terminal.
+    /// </summary>
+    [TestMethod]
+    public void TestGetTerminalIndex()
+    {
+        Grammar grammar = new();
+        Terminal a = grammar.AddTerminal("a");
+        Terminal b = grammar.GetTerminal(0);
+        Assert.AreSame(a, b);
+    }
+
+    /// <summary>
+    /// Tests whether <see cref="Grammar.Tonterminal(int)"/> throws an exception for an index outside the acceptable range.
+    /// </summary>
+    [TestMethod]
+    [DataTestMethod]
+    [DataRow(int.MinValue)]
+    [DataRow(-1)]
+    [DataRow(1)]
+    [DataRow(int.MaxValue)]
+    public void TestGetTerminalIndexOutOfRange(int index)
+    {
+        Grammar grammar = new();
+        Terminal a = grammar.AddTerminal("a");
+        _ = Assert.ThrowsException<ArgumentOutOfRangeException>(() => grammar.GetTerminal(index));
+    }
+
+    /// <summary>
     /// Tests the <see cref="Grammar.GetTerminal(string)"/> after adding a terminal.
     /// </summary>
     [TestMethod]
-    public void TestGetTerminal()
+    public void TestGetTerminalString()
     {
         Grammar grammar = new();
         Terminal a = grammar.AddTerminal("a");
@@ -323,7 +403,7 @@ public class GrammarTests
     /// Tests the <see cref="Grammar.GetTerminal(string)"/> if the terminal does not exist.
     /// </summary>
     [TestMethod]
-    public void TestGetTerminalNotExists()
+    public void TestGetTerminalStringNotExists()
     {
         Grammar grammar = new();
         Assert.ThrowsException<ArgumentException>(() => grammar.GetTerminal("a"));
@@ -338,6 +418,28 @@ public class GrammarTests
         Grammar grammar = new();
         Terminal a = grammar.AddTerminal("a");
         Assert.AreSame(a, grammar.AddTerminal("a"));
+    }
+
+    /// <summary>
+    /// Tests the <see cref="Grammar.TerminalCount"/> property.
+    /// </summary>
+    [TestMethod]
+    public void TestTerminalCount()
+    {
+        Grammar grammar = new();
+        Assert.AreEqual(0, grammar.TerminalCount);
+
+        Terminal a = grammar.AddTerminal("a");
+        Assert.AreEqual(1, grammar.TerminalCount);
+
+        Terminal b = grammar.AddTerminal("b");
+        Assert.AreEqual(2, grammar.TerminalCount);
+
+        grammar.RemoveTerminalAt(1);
+        Assert.AreEqual(1, grammar.TerminalCount);
+
+        grammar.RemoveTerminalAt(0);
+        Assert.AreEqual(0, grammar.TerminalCount);
     }
 
     /// <summary>
