@@ -18,12 +18,20 @@ public sealed class EmptyStringStep : BaseConversionStep
     public override void Convert(Grammar grammar)
     {
         Logger.LogInfo("Eliminating ε-productions...");
+        int initialRuleCount = grammar.RuleCount;
+
         EliminateEmptyRules(grammar);
         // Start by finding nullables and trimming ε-productions.
         ISet<Nonterminal> nullables = GetNullables(grammar);
         for (int i = 0; i < grammar.RuleCount; i++)
         {
             ProcessRule(nullables, grammar, i);
+        }
+
+        Logger.LogInfo("Eliminating ε-productions...");
+        if (initialRuleCount != grammar.RuleCount)
+        {
+            Logger.LogInfo($"\tRemoved {initialRuleCount - grammar.RuleCount} rules");
         }
     }
 

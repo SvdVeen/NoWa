@@ -76,12 +76,12 @@ public sealed class UnitProductionsStep : BaseConversionStep
     {
         HashSet<Tuple<Nonterminal,Nonterminal>> pairs = new();
         // Base step: every nonterminal pairs with itself.
-        for (int i = 0; i < grammar.RuleCount; i++)
+        for (int i = 0; i < grammar.NonterminalCount; i++)
         {
-            Rule rule = grammar.GetRule(i);
-            if (pairs.Add(new(rule.Nonterminal, rule.Nonterminal)))
+            Nonterminal nonterminal = grammar.GetNonterminal(i);
+            if (pairs.Add(new(nonterminal, nonterminal)))
             {
-                Logger.LogDebug($"Adding unit pair ({rule.Nonterminal}, {rule.Nonterminal})");
+                Logger.LogDebug($"Adding unit pair ({nonterminal}, {nonterminal})");
             }
         }
 

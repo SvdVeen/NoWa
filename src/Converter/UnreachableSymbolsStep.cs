@@ -21,8 +21,10 @@ public sealed class UnreachableSymbolsStep : BaseConversionStep
         int initialRuleCount = grammar.RuleCount;
         int initialNonterminalCount = grammar.NonterminalCount;
         int initialTerminalCount = grammar.TerminalCount;
+
         EliminateNonGenerating(grammar);
         EliminateUnreachable(grammar);
+
         Logger.LogInfo("Unreachable symbols eliminated.");
         if (initialRuleCount != grammar.RuleCount)
         {
