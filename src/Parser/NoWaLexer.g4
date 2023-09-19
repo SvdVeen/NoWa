@@ -10,7 +10,7 @@ QUOTE:		'\'' ;
 PRODUCES:	'='  ;
 TERMINATOR: ';'  ;
 OR:			'|'  ;
-
+DASH:		'-'  ;
 
 ALPHA: (UPPERCASE | LOWERCASE | DIGIT)+ ; // Any alphanumeric character
 NEWLINE: [\r\n]+ -> skip ; // skip line breaks
