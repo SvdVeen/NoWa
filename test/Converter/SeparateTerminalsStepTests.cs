@@ -38,7 +38,7 @@ public class SeparateTerminalsStepTests
 
         Assert.AreEqual($"A = T-a B | 'c' ;{Environment.NewLine}" +
             $"B = 'b' | T-d T-e ;{Environment.NewLine}" +
-            $"T-d = 'a' ;{Environment.NewLine}" +
+            $"T-a = 'a' ;{Environment.NewLine}" +
             $"T-d = 'd' ;{Environment.NewLine}" +
             $"T-e = 'e' ;", grammar.ToString());
     }
