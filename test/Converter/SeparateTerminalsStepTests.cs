@@ -32,8 +32,7 @@ public class SeparateTerminalsStepTests
         RB.AddProduction(b);
         RB.AddProduction(d, e);
 
-        TestLogger logger = new();
-        SeparateTerminalsStep step = new(logger);
+        SeparateTerminalsStep step = new(new TestLogger());
         step.Convert(grammar);
 
         Assert.AreEqual($"A = T-a B | 'c' ;{Environment.NewLine}" +
@@ -62,11 +61,45 @@ public class SeparateTerminalsStepTests
         Rule C = grammar.AddRule("C");
         C.AddProduction(c);
 
-        TestLogger logger = new();
-        SeparateTerminalsStep step = new(logger);
+        SeparateTerminalsStep step = new(new TestLogger());
         step.Convert(grammar);
 
         Assert.AreEqual($"A = 'a' | 'b' ;{Environment.NewLine}" +
             $"C = 'c' ;", grammar.ToString());
+    }
+
+    /// <summary>
+    /// Tests the separation of terminals if they need to be separated from multiple bodies.
+    /// </summary>
+    [TestMethod]
+    public void TestSeparateTerminalsTwice()
+    {
+        Grammar grammar = new();
+
+        Terminal a = grammar.AddTerminal("a");
+        Terminal b = grammar.AddTerminal("b");
+        Terminal c = grammar.AddTerminal("c");
+
+        Nonterminal B = grammar.AddNonterminal("B");
+        Nonterminal C = grammar.AddNonterminal("C");
+
+        Rule A = grammar.AddRule("A");
+        A.AddProduction(a, B);
+        A.AddProduction(a, C);
+        
+        Rule RB = grammar.AddRule("B");
+        RB.AddProduction(b);
+        RB.AddProduction(a, C);
+
+        Rule RC = grammar.AddRule("C");
+        RC.AddProduction(c);
+
+        SeparateTerminalsStep step = new(new TestLogger());
+        step.Convert(grammar);
+
+        Assert.AreEqual($"A = T-a B | T-a C ;{Environment.NewLine}" +
+            $"B = 'b' | T-a C ;{Environment.NewLine}" +
+            $"C = 'c' ;{Environment.NewLine}" +
+            $"T-a = 'a' ;", grammar.ToString());
     }
 }
