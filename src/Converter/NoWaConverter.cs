@@ -32,7 +32,8 @@ public class NoWaConverter
             new EmptyStringStep(Logger),
             new UnitProductionsStep(Logger),
             new UnreachableSymbolsStep(Logger),
-            new SeparateTerminalsStep(Logger)
+            new SeparateTerminalsStep(Logger),
+            new SplitNonterminalsStep(Logger)
         };
     }
 
@@ -60,39 +61,12 @@ public class NoWaConverter
                 Logger.LogError($"Conversion encountered an unexpected error:{Environment.NewLine}\t{ex.GetType().Name} - {ex.Message}");
                 if (!continueOnError)
                 {
+                    Logger.LogInfo("Conversion failed!");
                     return null;
                 }
             }
         }
-
+        Logger.LogInfo($"Conversion completed!");
         return result;
-    }
-
-    /// <summary>
-    /// Splits rules with more than two nonterminals.
-    /// </summary>
-    /// <param name="grammar">The grammar to convert.</param>
-    public static void ReduceNonterminals(Grammar grammar)
-    {
-        Console.WriteLine("Reducing nonterminals...");
-        for (int i = 0, count = grammar.RuleCount; i < count; i++)
-        {
-            Rule rule = grammar.GetRule(i);
-            foreach (var expr in rule.Productions.Where(expr => expr.OfType<Nonterminal>().Count() > 2))
-            {
-                for (int j = expr.Count - 1;  j >= 2; j--)
-                {
-                    Nonterminal nonterminal = grammar.AddNonterminal($"{expr[j - 1].Value}-{expr[j].Value}");
-                    Rule newRule = new(nonterminal);
-                    newRule.AddProduction(expr[j-1], expr[j]);
-                    grammar.AddRule(newRule);
-                    expr.RemoveAt(j);
-                    expr.RemoveAt(j - 1);
-                    expr.Add(nonterminal);
-                }
-            }
-        }
-        Console.WriteLine(grammar.ToString());
-        Console.WriteLine();
     }
 }
