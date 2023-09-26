@@ -19,27 +19,28 @@ public class UnreachableSymbolsStepTests
     public void TestUnreachableSymbols()
     {
         Grammar grammar = new();
-
         Terminal a = grammar.AddTerminal("a");
         Terminal b = grammar.AddTerminal("b");
-
+        Nonterminal S = grammar.AddNonterminal("S");
+        Nonterminal A = grammar.AddNonterminal("A");
         Nonterminal B = grammar.AddNonterminal("B");
 
-        Rule S = grammar.AddRule("S");
-        Rule A = grammar.AddRule("A");
+        // Add rule S = A B ;
+        Rule rule = grammar.AddRule("S");
+        rule.AddProduction(A, B);
+        rule.AddProduction(a);
 
-        S.AddProduction(A.Nonterminal, B);
-        S.AddProduction(a);
+        // Add rule A = 'a' | 'b'
+        rule = grammar.AddRule("A");
+        rule.AddProduction(a);
+        rule.AddProduction(b);
 
-        A.AddProduction(b);
-
-        TestLogger logger = new();
-        UnreachableSymbolsStep step = new(logger);
+        UnreachableSymbolsStep step = new(new TestLogger());
         step.Convert(grammar);
 
         Assert.AreEqual("S = 'a' ;", grammar.ToString());
         Assert.AreEqual(1, grammar.NonterminalCount);
-        Assert.AreSame(S.Nonterminal, grammar.GetNonterminal(0));
+        Assert.AreSame(S, grammar.GetNonterminal(0));
         Assert.AreEqual(1, grammar.TerminalCount);
         Assert.AreSame(a, grammar.GetTerminal(0));
     }
@@ -51,39 +52,38 @@ public class UnreachableSymbolsStepTests
     public void TestManyUnreachableSymbols()
     {
         Grammar grammar = new();
-
         Terminal a = grammar.AddTerminal("a");
         Terminal b = grammar.AddTerminal("b");
         Terminal c = grammar.AddTerminal("c");
         Terminal d = grammar.AddTerminal("d");
-        
         Nonterminal A = grammar.AddNonterminal("A");
         Nonterminal B = grammar.AddNonterminal("B");
         Nonterminal C = grammar.AddNonterminal("C");
-        Nonterminal D = grammar.AddNonterminal("D");
-        Nonterminal E = grammar.AddNonterminal("E");
-        Nonterminal S = grammar.AddNonterminal("S");
 
-        Rule rS = grammar.AddRule("S");
-        rS.AddProduction(A, B, C);
-        rS.AddProduction(A);
-        rS.AddProduction(a);
+        // Add rule S = A B C | A | 'a' ;
+        Rule rule = grammar.AddRule("S");
+        rule.AddProduction(A, B, C);
+        rule.AddProduction(A);
+        rule.AddProduction(a);
 
-        Rule rA = grammar.AddRule("A");
-        rA.AddProduction(C);
-        rA.AddProduction(a);
+        // Add rule A = C | 'a' ;
+        rule = grammar.AddRule("A");
+        rule.AddProduction(C);
+        rule.AddProduction(a);
 
-        Rule rC = grammar.AddRule("C");
-        rC.AddProduction(c);
+        // Add rule C = 'c' ;
+        rule = grammar.AddRule("C");
+        rule.AddProduction(c);
 
-        Rule rD = grammar.AddRule("D");
-        rD.AddProduction(d);
+        // Add rule D = 'd' ;
+        rule = grammar.AddRule("D");
+        rule.AddProduction(d);
 
-        TestLogger logger = new();
-        UnreachableSymbolsStep step = new(logger);
+        UnreachableSymbolsStep step = new(new TestLogger());
         step.Convert(grammar);
 
-        Assert.AreEqual($"S = A | 'a' ;{Environment.NewLine}" +
+        Assert.AreEqual(
+            $"S = A | 'a' ;{Environment.NewLine}" +
             $"A = C | 'a' ;{Environment.NewLine}" +
             $"C = 'c' ;", grammar.ToString());
         Assert.AreEqual(3, grammar.RuleCount);

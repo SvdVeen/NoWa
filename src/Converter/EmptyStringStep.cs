@@ -28,7 +28,7 @@ public sealed class EmptyStringStep : BaseConversionStep
             ProcessRule(nullables, grammar, i);
         }
 
-        Logger.LogInfo("Eliminating ε-productions...");
+        Logger.LogInfo("Eliminated ε-productions.");
         if (initialRuleCount != grammar.RuleCount)
         {
             Logger.LogInfo($"\tRemoved {initialRuleCount - grammar.RuleCount} rules");
@@ -94,7 +94,6 @@ public sealed class EmptyStringStep : BaseConversionStep
     private ISet<Nonterminal> GetNullables(Grammar grammar)
     {
         ISet<Nonterminal> nullables = GetFirstLevelNullables(grammar);
-        Logger.LogDebug("Getting higher level nullables...");
         int lastCount;
         do
         {
@@ -108,7 +107,7 @@ public sealed class EmptyStringStep : BaseConversionStep
                 }
                 if (rule.Productions.All(e => e.OfType<Nonterminal>().Any(nullables.Contains)))
                 {
-                    Logger.LogDebug($"Nullable: {rule}");
+                    Logger.LogDebug($"Found nullable: {rule}");
                     nullables.Add(rule.Nonterminal);
                 }
             }
@@ -123,7 +122,6 @@ public sealed class EmptyStringStep : BaseConversionStep
     /// <returns>A dictionary of all nullable nonterminals, with booleans indicating whether they produced only ε.</returns>
     private ISet<Nonterminal> GetFirstLevelNullables(Grammar grammar)
     {
-        Logger.LogDebug("Getting first-level nullables...");
         HashSet<Nonterminal> nullables = new();
         for (int i = 0; i < grammar.RuleCount; i++)
         {
@@ -144,7 +142,7 @@ public sealed class EmptyStringStep : BaseConversionStep
                 {
                     if (nullables.Add(rule.Nonterminal))
                     {
-                        Logger.LogDebug($"First-level nullable: {rule.Nonterminal}");
+                        Logger.LogDebug($"Found nullable: {rule.Nonterminal}");
                     }
                 }
             }

@@ -15,27 +15,28 @@ public class SeparateTerminalsStepTests
     public void TestSeparateTerminals()
     {
         Grammar grammar = new();
-
         Terminal a = grammar.AddTerminal("a");
         Terminal b = grammar.AddTerminal("b");
         Terminal c = grammar.AddTerminal("c");
         Terminal d = grammar.AddTerminal("d");
         Terminal e = grammar.AddTerminal("e");
-
         Nonterminal B = grammar.AddNonterminal("B");
 
-        Rule RA = grammar.AddRule("A");
-        RA.AddProduction(a, B);
-        RA.AddProduction(c);
+        // Add rule A = 'a' B | 'c' ;
+        Rule rule = grammar.AddRule("A");
+        rule.AddProduction(a, B);
+        rule.AddProduction(c);
 
-        Rule RB = grammar.AddRule("B");
-        RB.AddProduction(b);
-        RB.AddProduction(d, e);
+        // Add rule B = 'b' | 'd' 'e' ;
+        rule = grammar.AddRule("B");
+        rule.AddProduction(b);
+        rule.AddProduction(d, e);
 
         SeparateTerminalsStep step = new(new TestLogger());
         step.Convert(grammar);
 
-        Assert.AreEqual($"A = T-a B | 'c' ;{Environment.NewLine}" +
+        Assert.AreEqual(
+            $"A = T-a B | 'c' ;{Environment.NewLine}" +
             $"B = 'b' | T-d T-e ;{Environment.NewLine}" +
             $"T-a = 'a' ;{Environment.NewLine}" +
             $"T-d = 'd' ;{Environment.NewLine}" +
@@ -49,22 +50,24 @@ public class SeparateTerminalsStepTests
     public void TestNoTerminalsToSeparate()
     {
         Grammar grammar = new();
-
         Terminal a = grammar.AddTerminal("a");
         Terminal b = grammar.AddTerminal("b");
         Terminal c = grammar.AddTerminal("c");
 
-        Rule A = grammar.AddRule("A");
-        A.AddProduction(a);
-        A.AddProduction(b);
+        // Add rule A = 'a' | 'b' ;
+        Rule rule = grammar.AddRule("A");
+        rule.AddProduction(a);
+        rule.AddProduction(b);
 
-        Rule C = grammar.AddRule("C");
-        C.AddProduction(c);
+        // Add rule C = 'c' ;
+        rule = grammar.AddRule("C");
+        rule.AddProduction(c);
 
         SeparateTerminalsStep step = new(new TestLogger());
         step.Convert(grammar);
 
-        Assert.AreEqual($"A = 'a' | 'b' ;{Environment.NewLine}" +
+        Assert.AreEqual(
+            $"A = 'a' | 'b' ;{Environment.NewLine}" +
             $"C = 'c' ;", grammar.ToString());
     }
 
@@ -75,29 +78,31 @@ public class SeparateTerminalsStepTests
     public void TestSeparateTerminalsTwice()
     {
         Grammar grammar = new();
-
         Terminal a = grammar.AddTerminal("a");
         Terminal b = grammar.AddTerminal("b");
         Terminal c = grammar.AddTerminal("c");
-
         Nonterminal B = grammar.AddNonterminal("B");
         Nonterminal C = grammar.AddNonterminal("C");
 
-        Rule A = grammar.AddRule("A");
-        A.AddProduction(a, B);
-        A.AddProduction(a, C);
+        // Add rule A = 'a' B | 'a' C ;
+        Rule rule = grammar.AddRule("A");
+        rule.AddProduction(a, B);
+        rule.AddProduction(a, C);
         
-        Rule RB = grammar.AddRule("B");
-        RB.AddProduction(b);
-        RB.AddProduction(a, C);
+        // Add rule B = 'b' | 'a' C ;
+        rule = grammar.AddRule("B");
+        rule.AddProduction(b);
+        rule.AddProduction(a, C);
 
-        Rule RC = grammar.AddRule("C");
-        RC.AddProduction(c);
+        // Add rule C = 'c' ;
+        rule = grammar.AddRule("C");
+        rule.AddProduction(c);
 
         SeparateTerminalsStep step = new(new TestLogger());
         step.Convert(grammar);
 
-        Assert.AreEqual($"A = T-a B | T-a C ;{Environment.NewLine}" +
+        Assert.AreEqual(
+            $"A = T-a B | T-a C ;{Environment.NewLine}" +
             $"B = 'b' | T-a C ;{Environment.NewLine}" +
             $"C = 'c' ;{Environment.NewLine}" +
             $"T-a = 'a' ;", grammar.ToString());

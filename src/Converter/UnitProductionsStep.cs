@@ -18,6 +18,8 @@ public sealed class UnitProductionsStep : BaseConversionStep
     public override void Convert(Grammar grammar)
     {
         Logger.LogInfo("Eliminating unit productions...");
+        int initialRuleCount = grammar.RuleCount;
+        int initialNonterminalCount = grammar.NonterminalCount;
 
         var unitPairs = GetUnitPairs(grammar);
 
@@ -64,6 +66,16 @@ public sealed class UnitProductionsStep : BaseConversionStep
                     }
                 }
             }
+        }
+
+        Logger.LogInfo("Elminated unit productions.");
+        if (initialRuleCount != grammar.RuleCount)
+        {
+            Logger.LogInfo($"\tRemoved {initialRuleCount - grammar.RuleCount} rules.");
+        }
+        if (initialNonterminalCount != grammar.NonterminalCount)
+        {
+            Logger.LogInfo($"\tRemoved {initialNonterminalCount - grammar.NonterminalCount} nonterminals.");
         }
     }
 

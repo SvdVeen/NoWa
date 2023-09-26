@@ -38,8 +38,7 @@ public class EmptyStringStepTests
         rule.AddProduction(b, B, B);
         rule.AddProduction(EmptyString.Instance);
 
-        TestLogger logger = new();
-        EmptyStringStep step = new(logger);
+        EmptyStringStep step = new(new TestLogger());
         step.Convert(grammar);
 
         Assert.AreEqual(
@@ -85,8 +84,7 @@ public class EmptyStringStepTests
         rule.AddProduction(a);
         rule.AddProduction(EmptyString.Instance);
 
-        TestLogger logger = new();
-        EmptyStringStep step = new(logger);
+        EmptyStringStep step = new(new TestLogger());
         step.Convert(grammar);
 
         Assert.AreEqual(
@@ -103,20 +101,24 @@ public class EmptyStringStepTests
     public void TestRemoveEmptyRule()
     {
         Grammar grammar = new();
+        Terminal b = grammar.AddTerminal("b");
+        Nonterminal A = grammar.AddNonterminal("A");
+        Nonterminal B = grammar.AddNonterminal("B");
         
-        Rule S = grammar.AddRule("S");
+        // Add rule S = A B ;
+        Rule rule = grammar.AddRule("S");
+        rule.AddProduction(A, B);
 
-        Rule A = grammar.AddRule("A");
-        A.AddProduction(EmptyString.Instance, EmptyString.Instance);
-        A.AddProduction(EmptyString.Instance);
+        // Add rule A = '' '' | '' ;
+        rule = grammar.AddRule("A");
+        rule.AddProduction(EmptyString.Instance, EmptyString.Instance);
+        rule.AddProduction(EmptyString.Instance);
 
-        Rule B = grammar.AddRule("B");
-        B.AddProduction(new Terminal("b"));
+        // Add rule B = 'b' ;
+        rule = grammar.AddRule("B");
+        rule.AddProduction(b);
 
-        S.AddProduction(A.Nonterminal, B.Nonterminal);
-
-        TestLogger logger = new();
-        EmptyStringStep step = new(logger);
+        EmptyStringStep step = new(new TestLogger());
         step.Convert(grammar);
 
         Assert.AreEqual(
@@ -131,22 +133,87 @@ public class EmptyStringStepTests
     public void TestRemoveNestedEmptyRule()
     {
         Grammar grammar = new();
-        Rule S = grammar.AddRule("S");
+        Terminal b = grammar.AddTerminal("b");
+        Nonterminal A = grammar.AddNonterminal("A");
+        Nonterminal B = grammar.AddNonterminal("B");
+        Nonterminal C = grammar.AddNonterminal("C");
 
-        Rule A = grammar.AddRule("A");
+        // Add rule S = A B ;
+        Rule rule = grammar.AddRule("S");
+        rule.AddProduction(A, B);
 
-        Rule B = grammar.AddRule("B");
-        B.AddProduction(new Terminal("b"));
+        // Add rule A = C ;
+        rule = grammar.AddRule("A");
+        rule.AddProduction(C);
 
-        Rule C = grammar.AddRule("C");
-        C.AddProduction(EmptyString.Instance);
+        // Add rule B = 'b' ;
+        rule = grammar.AddRule("B");
+        rule.AddProduction(b);
 
-        A.AddProduction(C.Nonterminal);
+        // Add rule C = '' ;
+        rule = grammar.AddRule("C");
+        rule.AddProduction(EmptyString.Instance);
 
-        S.AddProduction(A.Nonterminal, B.Nonterminal);
+        EmptyStringStep step = new(new TestLogger());
+        step.Convert(grammar);
 
-        TestLogger logger = new();
-        EmptyStringStep step = new(logger);
+        Assert.AreEqual(
+            $"S = B ;{Environment.NewLine}" +
+            $"B = 'b' ;", grammar.ToString());
+    }
+
+    /// <summary>
+    /// Tests the step when there is nothing to remove.
+    /// </summary>
+    [TestMethod]
+    public void TestRemoveNothing()
+    {
+        Grammar grammar = new();
+        Terminal a = grammar.AddTerminal("a");
+        Terminal b = grammar.AddTerminal("b");
+
+        // Add rule S = 'a' | 'b' ;
+        Rule rule = grammar.AddRule("S");
+        rule.AddProduction(a);
+        rule.AddProduction(b);
+
+        EmptyStringStep step = new(new TestLogger());
+        step.Convert(grammar);
+
+        Assert.AreEqual(
+            $"S = 'a' | 'b' ;", grammar.ToString());
+    }
+
+    /// <summary>
+    ///  Tests performing the step twice.
+    /// </summary>
+    [TestMethod]
+    public void TestPerformStepTwice()
+    {
+        Grammar grammar = new();
+        Terminal b = grammar.AddTerminal("b");
+        Nonterminal A = grammar.AddNonterminal("A");
+        Nonterminal B = grammar.AddNonterminal("B");
+        Nonterminal C = grammar.AddNonterminal("C");
+
+        // Add rule S = A B ;
+        Rule rule = grammar.AddRule("S");
+        rule.AddProduction(A, B);
+
+        // Add rule A = C ;
+        rule = grammar.AddRule("A");
+        rule.AddProduction(C);
+
+        // Add rule B = 'b' ;
+        rule = grammar.AddRule("B");
+        rule.AddProduction(b);
+
+        // Add rule C = '' ;
+        rule = grammar.AddRule("C");
+        rule.AddProduction(EmptyString.Instance);
+
+        EmptyStringStep step = new(new TestLogger());
+        step.Convert(grammar);
         step.Convert(grammar);
 
         Assert.AreEqual(

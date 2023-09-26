@@ -19,7 +19,6 @@ public class UnitProductionsStepTests
     public void TestUnitProductions()
     {
         Grammar grammar = new();
-
         Terminal a = grammar.AddTerminal("a");
         Terminal b = grammar.AddTerminal("b");
         Terminal zero = grammar.AddTerminal("0");
@@ -28,30 +27,36 @@ public class UnitProductionsStepTests
         Terminal closeParen = grammar.AddTerminal(")");
         Terminal times = grammar.AddTerminal("*");
         Terminal plus = grammar.AddTerminal("+");
+        Nonterminal E = grammar.AddNonterminal("E");
+        Nonterminal T = grammar.AddNonterminal("T");
+        Nonterminal F = grammar.AddNonterminal("F");
+        Nonterminal I = grammar.AddNonterminal("I");
 
-        Rule E = grammar.AddRule("E");
-        Rule T = grammar.AddRule("T");
-        Rule F = grammar.AddRule("F");
-        Rule I = grammar.AddRule("I");
+        // Add rule E = T | E '+' T ;
+        Rule rule = grammar.AddRule("E");
+        rule.AddProduction(T);
+        rule.AddProduction(E, plus, T);
 
-        I.AddProduction(a);
-        I.AddProduction(b);
-        I.AddProduction(I.Nonterminal, a);
-        I.AddProduction(I.Nonterminal, b);
-        I.AddProduction(I.Nonterminal, zero);
-        I.AddProduction(I.Nonterminal, one);
+        // Add rule T = F | T '*' F ;
+        rule = grammar.AddRule("T");
+        rule.AddProduction(F);
+        rule.AddProduction(T, times, F);
 
-        F.AddProduction(I.Nonterminal);
-        F.AddProduction(openParen, E.Nonterminal, closeParen);
+        // Add rule F = I | ( E ) ;
+        rule = grammar.AddRule("F");
+        rule.AddProduction(I);
+        rule.AddProduction(openParen, E, closeParen);
 
-        T.AddProduction(F.Nonterminal);
-        T.AddProduction(T.Nonterminal, times, F.Nonterminal);
+        // Add rule I = 'a' | 'b' | I 'a' | I 'b' | I '0' | I '1' ;
+        rule = grammar.AddRule("I");
+        rule.AddProduction(a);
+        rule.AddProduction(b);
+        rule.AddProduction(I, a);
+        rule.AddProduction(I, b);
+        rule.AddProduction(I, zero);
+        rule.AddProduction(I, one);
 
-        E.AddProduction(T.Nonterminal);
-        E.AddProduction(E.Nonterminal, plus, T.Nonterminal);
-
-        TestLogger logger = new();
-        UnitProductionsStep step = new(logger);
+        UnitProductionsStep step = new(new TestLogger());
         step.Convert(grammar);
 
         Assert.AreEqual(

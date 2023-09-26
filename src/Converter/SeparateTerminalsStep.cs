@@ -64,6 +64,7 @@ public sealed class SeparateTerminalsStep : BaseConversionStep
             }
         }
     }
+
     /// <summary>
     /// Replace a terminal in bodies larger than 2 with a nonterminal that produces it.
     /// </summary>
@@ -88,7 +89,7 @@ public sealed class SeparateTerminalsStep : BaseConversionStep
     /// <param name="rule">The rule to replace the terminal in.</param>
     /// <param name="terminal">The terminal to replace.</param>
     /// <param name="nonterminal">The nonterminal to replace the terminal with.</param>
-    private void ReplaceTerminalInRule(Rule rule, Terminal terminal, Nonterminal nonterminal)
+    private static void ReplaceTerminalInRule(Rule rule, Terminal terminal, Nonterminal nonterminal)
     {
         foreach (Expression production in rule.Productions)
         {
@@ -106,7 +107,7 @@ public sealed class SeparateTerminalsStep : BaseConversionStep
     /// <param name="production">The production to replace the terminal in.</param>
     /// <param name="terminal">The terminal to replace.</param>
     /// <param name="nonterminal">The nonterminal to replace the terminal with.</param>
-    private void ReplaceTerminalInProduction(Expression production, Terminal terminal, Nonterminal nonterminal)
+    private static void ReplaceTerminalInProduction(Expression production, Terminal terminal, Nonterminal nonterminal)
     {
         for (int i = 0; i < production.Count; ++i)
         {

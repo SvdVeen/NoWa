@@ -14,7 +14,235 @@ public class Grammar
     private readonly List<Terminal> _terminals = new();
     private readonly List<Rule> _rules = new();
 
+    #region Symbols
+
+    #region Terminals
+
+    /// <summary>
+    /// Gets a list of terminals in the grammar.
+    /// </summary>
+    public IReadOnlyList<Terminal> Terminals { get => _terminals; }
+
+    /// <summary>
+    /// Gets the number of terminals in the grammar.
+    /// </summary>
+    public int TerminalCount { get => _terminals.Count; }
+
+    /// <summary>
+    /// Gets a terminal in the grammar with the given index.
+    /// </summary>
+    /// <param name="index">The index of the terminal to get.</param>
+    /// <returns>The <see cref="Terminal"/> with the given index.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">The index is outside the bounds of the terminal list.</exception>
+    public Terminal GetTerminal(int index)
+    {
+        if (index < 0 || index >= _terminals.Count)
+        {
+            throw new ArgumentOutOfRangeException(nameof(index));
+        }
+        return _terminals[index];
+    }
+
+    /// <summary>
+    /// Gets a terminal in the grammar if one with the given value exists.
+    /// </summary>
+    /// <param name="value">The value of the terminal.</param>
+    /// <returns>The terminal with the given value.</returns>
+    /// <exception cref="ArgumentException">No terminal with the given value exists in the grammar.</exception>
+    public Terminal GetTerminal(string value)
+    {
+        if (!_terminalsByValue.TryGetValue(value, out Terminal? terminal))
+        {
+            throw new ArgumentException($"Could not find a terminal '{value}'", nameof(value));
+        }
+        return terminal;
+    }
+
+    /// <summary>
+    /// Adds a terminal to the grammar.
+    /// </summary>
+    /// <param name="value">The value of the terminal.</param>
+    /// <returns>Either a preexisting terminal with the given value, or a newly created one.</returns>
+    public Terminal AddTerminal(string value)
+    {
+        if (!_terminalsByValue.TryGetValue(value, out Terminal? terminal))
+        {
+            terminal = new(value);
+            _terminals.Add(terminal);
+            _terminalsByValue[value] = terminal;
+        }
+        return terminal;
+    }
+
+    /// <summary>
+    /// Remove the terminal at the given index.
+    /// </summary>
+    /// <param name="index">The index of the terminal to remove.</param>
+    /// <exception cref="ArgumentOutOfRangeException">The index is outside of the bounds of the nonterminal list.</exception>
+    public void RemoveTerminalAt(int index)
+    {
+        if (index < 0 || index >= _terminals.Count)
+        {
+            throw new ArgumentOutOfRangeException(nameof(index));
+        }
+        Terminal terminal = _terminals[index];
+        _terminals.RemoveAt(index);
+        _terminalsByValue.Remove(terminal.Value);
+    }
+
+    #endregion Terminals
+
+    #region Nonterminals
+
+    /// <summary>
+    /// Gets a list of nonterminals in the grammar.
+    /// </summary>
+    public IReadOnlyList<Nonterminal> Nonterminals { get => _nonterminals; }
+
+    /// <summary>
+    /// Gets the number of nonterminals in the grammar.
+    /// </summary>
+    public int NonterminalCount { get => _nonterminals.Count; }
+
+    /// <summary>
+    /// Gets a nonterminal in the grammar with the given index.
+    /// </summary>
+    /// <param name="index">The index of the nonterminal to get.</param>
+    /// <returns>The <see cref="Nonterminal"/> with the given index.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">The index is outside the bounds of the nonterminal list.</exception>
+    public Nonterminal GetNonterminal(int index)
+    {
+        if (index < 0 || index >= _nonterminals.Count)
+        {
+            throw new ArgumentOutOfRangeException(nameof(index));
+        }
+        return _nonterminals[index];
+    }
+
+    /// <summary>
+    /// Gets a nonterminal in the grammar if one with the given value exists.
+    /// </summary>
+    /// <param name="value">The value of nonterminal.</param>
+    /// <returns>The nonterminal with the given value.</returns>
+    /// <exception cref="ArgumentException">No nonterminal with the given value exists in the grammar.</exception>
+    public Nonterminal GetNonterminal(string value)
+    {
+        if (!_nonterminalsByValue.TryGetValue(value, out Nonterminal? nonterminal))
+        {
+            throw new ArgumentException($"Could not find a terminal with the value '{value}'", nameof(value));
+        }
+        return nonterminal;
+    }
+
+    /// <summary>
+    /// Adds nonterminal to the grammar.
+    /// </summary>
+    /// <param name="value">The value of the nonterminal.</param>
+    /// <returns>The added nonterminal or an existing nonterminal with the same value.</returns>
+    public Nonterminal AddNonterminal(string value)
+    {
+        if (!_nonterminalsByValue.TryGetValue(value, out Nonterminal? nonterminal))
+        {
+            nonterminal = new(value);
+            _nonterminals.Add(nonterminal);
+            _nonterminalsByValue[value] = nonterminal;
+        }
+        return nonterminal;
+    }
+
+    /// <summary>
+    /// Remove the nonterminal at the given index.
+    /// </summary>
+    /// <param name="index">The index of the nonterminal to remove.</param>
+    /// <exception cref="ArgumentOutOfRangeException">The index is outside of the bounds of the nonterminal list.</exception>
+    public void RemoveNonterminalAt(int index)
+    {
+        if (index < 0 || index >= _nonterminals.Count)
+        {
+            throw new ArgumentOutOfRangeException(nameof(index));
+        }
+        Nonterminal nonterminal = _nonterminals[index];
+        _nonterminals.RemoveAt(index);
+        _nonterminalsByValue.Remove(nonterminal.Value);
+    }
+
+    #endregion Nonterminals
+
+    /// <summary>
+    /// Remove a symbol from the grammar.
+    /// </summary>
+    /// <param name="symbol">The symbol to remove.</param>
+    private void RemoveSymbol(ISymbol symbol)
+    {
+        if (symbol is Nonterminal nonterminal)
+        {
+            if (_nonterminalsByValue.Remove(symbol.Value))
+            {
+                _ = _nonterminals.Remove(nonterminal);
+            }
+        }
+        else if (symbol is Terminal terminal)
+        {
+            if (_terminalsByValue.Remove(symbol.Value))
+            {
+                _ = _terminals.Remove(terminal);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Add a symbol to the grammar.
+    /// </summary>
+    /// <param name="symbol">The symbol to add.</param>
+    private void AddSymbol(ISymbol symbol)
+    {
+        if (symbol is Nonterminal nonterminal)
+        {
+            if (_nonterminalsByValue.TryAdd(nonterminal.Value, nonterminal))
+            {
+                _nonterminals.Add(nonterminal);
+            }
+        }
+        else if (symbol is Terminal terminal)
+        {
+            if (_terminalsByValue.TryAdd(terminal.Value, terminal))
+            {
+                _terminals.Add(terminal);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Replace a symbol in the grammar with another.
+    /// </summary>
+    /// <param name="symbol">The symbol to replace.</param>
+    /// <param name="newSymbol">The symbol to replace the original with.</param>
+    /// <param name="removesymbol"><see langword="true"/> to remove the original symbol from the grammar entirely; <see langword="false"/> otherwise.</param>
+    public void ReplaceSymbol(ISymbol symbol, ISymbol newSymbol, bool removesymbol)
+    {
+        // If I cared a lot about performance, I would have made specific implementations for each combination of symbols; I do not.
+        if (removesymbol)
+        {
+            RemoveSymbol(symbol);
+        }
+
+        AddSymbol(newSymbol);
+
+        foreach (Rule rule in _rules)
+        {
+            rule.ReplaceSymbol(symbol, newSymbol);
+        }
+    }
+
+    #endregion Symbols
+
     #region Rules
+
+    /// <summary>
+    /// Gets a list of rules in this grammar.
+    /// </summary>
+    public IReadOnlyList<Rule> Rules { get => _rules; }
+
     /// <summary>
     /// Gets the number of rules in the grammar.
     /// </summary>
@@ -211,209 +439,6 @@ public class Grammar
         _rules.RemoveAt(index);
     }
     #endregion Rules
-
-    #region Symbols
-
-    /// <summary>
-    /// Gets the number of nonterminals in the grammar.
-    /// </summary>
-    public int NonterminalCount { get => _nonterminals.Count; }
-
-    /// <summary>
-    /// Gets the number of terminals in the grammar.
-    /// </summary>
-    public int TerminalCount { get => _terminals.Count; }
-
-    /// <summary>
-    /// Gets a nonterminal in the grammar with the given index.
-    /// </summary>
-    /// <param name="index">The index of the nonterminal to get.</param>
-    /// <returns>The <see cref="Nonterminal"/> with the given index.</returns>
-    /// <exception cref="ArgumentOutOfRangeException">The index is outside the bounds of the nonterminal list.</exception>
-    public Nonterminal GetNonterminal(int index)
-    {
-        if (index < 0 || index >= _nonterminals.Count)
-        {
-            throw new ArgumentOutOfRangeException(nameof(index));
-        }
-        return _nonterminals[index];
-    }
-
-    /// <summary>
-    /// Gets a nonterminal in the grammar if one with the given value exists.
-    /// </summary>
-    /// <param name="value">The value of nonterminal.</param>
-    /// <returns>The nonterminal with the given value.</returns>
-    /// <exception cref="ArgumentException">No nonterminal with the given value exists in the grammar.</exception>
-    public Nonterminal GetNonterminal(string value)
-    {
-        if (!_nonterminalsByValue.TryGetValue(value, out Nonterminal? nonterminal))
-        {
-            throw new ArgumentException($"Could not find a terminal with the value '{value}'", nameof(value));
-        }
-        return nonterminal;
-    }
-
-    /// <summary>
-    /// Adds nonterminal to the grammar.
-    /// </summary>
-    /// <param name="value">The value of the nonterminal.</param>
-    /// <returns>The added nonterminal or an existing nonterminal with the same value.</returns>
-    public Nonterminal AddNonterminal(string value)
-    {
-        if (!_nonterminalsByValue.TryGetValue(value, out Nonterminal? nonterminal))
-        {
-            nonterminal = new(value);
-            _nonterminals.Add(nonterminal);
-            _nonterminalsByValue[value] = nonterminal;
-        }
-        return nonterminal;
-    }
-
-    /// <summary>
-    /// Remove the nonterminal at the given index.
-    /// </summary>
-    /// <param name="index">The index of the nonterminal to remove.</param>
-    /// <exception cref="ArgumentOutOfRangeException">The index is outside of the bounds of the nonterminal list.</exception>
-    public void RemoveNonterminalAt(int index)
-    {
-        if (index < 0 || index >= _nonterminals.Count)
-        {
-            throw new ArgumentOutOfRangeException(nameof(index));
-        }
-        Nonterminal nonterminal = _nonterminals[index];
-        _nonterminals.RemoveAt(index);
-        _nonterminalsByValue.Remove(nonterminal.Value);
-    }
-
-    /// <summary>
-    /// Gets a terminal in the grammar with the given index.
-    /// </summary>
-    /// <param name="index">The index of the terminal to get.</param>
-    /// <returns>The <see cref="Terminal"/> with the given index.</returns>
-    /// <exception cref="ArgumentOutOfRangeException">The index is outside the bounds of the terminal list.</exception>
-    public Terminal GetTerminal(int index)
-    {
-        if (index < 0 || index >= _terminals.Count)
-        {
-            throw new ArgumentOutOfRangeException(nameof(index));
-        }
-        return _terminals[index];
-    }
-
-    /// <summary>
-    /// Gets a terminal in the grammar if one with the given value exists.
-    /// </summary>
-    /// <param name="value">The value of the terminal.</param>
-    /// <returns>The terminal with the given value.</returns>
-    /// <exception cref="ArgumentException">No terminal with the given value exists in the grammar.</exception>
-    public Terminal GetTerminal(string value)
-    {
-        if (!_terminalsByValue.TryGetValue(value, out Terminal? terminal))
-        {
-            throw new ArgumentException($"Could not find a terminal '{value}'", nameof(value));
-        }
-        return terminal;
-    }
-
-    /// <summary>
-    /// Adds a terminal to the grammar.
-    /// </summary>
-    /// <param name="value">The value of the terminal.</param>
-    /// <returns>Either a preexisting terminal with the given value, or a newly created one.</returns>
-    public Terminal AddTerminal(string value)
-    {
-        if (!_terminalsByValue.TryGetValue(value, out Terminal? terminal))
-        {
-            terminal = new(value);
-            _terminals.Add(terminal);
-            _terminalsByValue[value] = terminal;
-        }
-        return terminal;
-    }
-
-    /// <summary>
-    /// Remove the terminal at the given index.
-    /// </summary>
-    /// <param name="index">The index of the terminal to remove.</param>
-    /// <exception cref="ArgumentOutOfRangeException">The index is outside of the bounds of the nonterminal list.</exception>
-    public void RemoveTerminalAt(int index)
-    {
-        if (index < 0 || index >= _terminals.Count)
-        {
-            throw new ArgumentOutOfRangeException(nameof(index));
-        }
-        Terminal terminal = _terminals[index];
-        _terminals.RemoveAt(index);
-        _terminalsByValue.Remove(terminal.Value);
-    }
-
-    /// <summary>
-    /// Remove a symbol from the grammar.
-    /// </summary>
-    /// <param name="symbol">The symbol to remove.</param>
-    private void RemoveSymbol(ISymbol symbol)
-    {
-        if (symbol is Nonterminal nonterminal)
-        {
-            if (_nonterminalsByValue.Remove(symbol.Value))
-            {
-               _ = _nonterminals.Remove(nonterminal);
-            }
-        }
-        else if (symbol is Terminal terminal)
-        {
-            if (_terminalsByValue.Remove(symbol.Value))
-            {
-                _ = _terminals.Remove(terminal);
-            }
-        }
-    }
-
-    /// <summary>
-    /// Add a symbol to the grammar.
-    /// </summary>
-    /// <param name="symbol">The symbol to add.</param>
-    private void AddSymbol(ISymbol symbol)
-    {
-        if (symbol is Nonterminal nonterminal)
-        {
-            if (_nonterminalsByValue.TryAdd(nonterminal.Value, nonterminal))
-            {
-                _nonterminals.Add(nonterminal);
-            }
-        }
-        else if (symbol is Terminal terminal)
-        {
-            if (_terminalsByValue.TryAdd(terminal.Value, terminal))
-            {
-                _terminals.Add(terminal);
-            }
-        }
-    }
-
-    /// <summary>
-    /// Replace a symbol in the grammar with another.
-    /// </summary>
-    /// <param name="symbol">The symbol to replace.</param>
-    /// <param name="newSymbol">The symbol to replace the original with.</param>
-    /// <param name="removesymbol"><see langword="true"/> to remove the original symbol from the grammar entirely; <see langword="false"/> otherwise.</param>
-    public void ReplaceSymbol(ISymbol symbol, ISymbol newSymbol, bool removesymbol)
-    {
-        // If I cared a lot about performance, I would have made specific implementations for each combination of symbols; I do not.
-        if (removesymbol)
-        {
-            RemoveSymbol(symbol);
-        }
-
-        AddSymbol(newSymbol);
-
-        foreach (Rule rule in _rules)
-        {
-            rule.ReplaceSymbol(symbol, newSymbol);
-        }
-    }
-    #endregion Symbols
 
     /// <inheritdoc/>
     public override string ToString()
