@@ -15,7 +15,7 @@ public sealed class SplitNonterminalsStep : BaseConversionStep
     /// Splits all productions with more than two nonterminals into multiple substeps.
     /// </summary>
     /// <inheritdoc/>
-    public override void Convert(Grammar grammar)
+    public override void Convert(CFG grammar)
     {
         Logger.LogInfo("Splitting production bodies longer than 2...");
         int initialRuleCount = grammar.RuleCount;
@@ -44,7 +44,7 @@ public sealed class SplitNonterminalsStep : BaseConversionStep
     /// <param name="grammar">The grammar to convert.</param>
     /// <param name="newNonterminals">The newly introduced nonterminals in the step.</param>
     /// <param name="rule">The rule to split productions in.</param>
-    private void SplitRule(Grammar grammar, IDictionary<string, Nonterminal> newNonterminals, Rule rule)
+    private void SplitRule(CFG grammar, IDictionary<string, Nonterminal> newNonterminals, Rule rule)
     {
         foreach (Expression production in rule.Productions)
         {
@@ -58,7 +58,7 @@ public sealed class SplitNonterminalsStep : BaseConversionStep
     /// <param name="grammar">The grammar to convert.</param>
     /// <param name="newNonterminals">The newly introduced nonterminals in the step.</param>
     /// <param name="production">The production to split.</param>
-    private void SplitProduction(Grammar grammar, IDictionary<string, Nonterminal> newNonterminals, Expression production)
+    private void SplitProduction(CFG grammar, IDictionary<string, Nonterminal> newNonterminals, Expression production)
     {
         while (production.Count > 2)
         {

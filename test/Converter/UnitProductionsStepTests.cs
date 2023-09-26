@@ -18,7 +18,7 @@ public class UnitProductionsStepTests
     [TestMethod]
     public void TestUnitProductions()
     {
-        Grammar grammar = new();
+        CFG grammar = new();
         Terminal a = grammar.AddTerminal("a");
         Terminal b = grammar.AddTerminal("b");
         Terminal zero = grammar.AddTerminal("0");

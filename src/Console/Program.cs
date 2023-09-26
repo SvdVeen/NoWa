@@ -52,10 +52,10 @@ Return codes:
 
         ConsoleLogger logger = new() { DisplayLevel = logLevel };
 
-        Grammar grammar = NoWaParser.Parse(inPath!);
+        CFG grammar = NoWaParser.Parse(inPath!);
 
         NoWaConverter converter = new(logger);
-        Grammar? result = converter.Convert(grammar, logLevel == LogLevel.Debug);
+        CFG? result = converter.Convert(grammar, logLevel == LogLevel.Debug);
         if (result == null)
         {
             return 3;
@@ -166,7 +166,7 @@ Return codes:
     /// <param name="outPath">The path to save the result to.</param>
     /// <param name="result">The result to save.</param>
     /// <returns><see langword="true"/> if the file was saved successfully; <see langword="false"/> otherwise.</returns>
-    private static bool SaveResultToFile(string outPath, Grammar result)
+    private static bool SaveResultToFile(string outPath, CFG result)
     {
         try
         {

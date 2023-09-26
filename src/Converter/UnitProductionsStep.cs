@@ -12,10 +12,10 @@ public sealed class UnitProductionsStep : BaseConversionStep
     public UnitProductionsStep(ILogger logger) : base(logger) { }
 
     /// <summary>
-    /// Eliminates all unit productions in the given <see cref="Grammar"/>.
+    /// Eliminates all unit productions in the given <see cref="CFG"/>.
     /// </summary>
     /// <inheritdoc/>
-    public override void Convert(Grammar grammar)
+    public override void Convert(CFG grammar)
     {
         Logger.LogInfo("Eliminating unit productions...");
         int initialRuleCount = grammar.RuleCount;
@@ -84,7 +84,7 @@ public sealed class UnitProductionsStep : BaseConversionStep
     /// </summary>
     /// <param name="grammar">The grammar to get unit pairs from.</param>
     /// <returns>A set of all unit pairs in the grammar.</returns>
-    private ISet<Tuple<Nonterminal,Nonterminal>> GetUnitPairs(Grammar grammar)
+    private ISet<Tuple<Nonterminal,Nonterminal>> GetUnitPairs(CFG grammar)
     {
         HashSet<Tuple<Nonterminal,Nonterminal>> pairs = new();
         // Base step: every nonterminal pairs with itself.

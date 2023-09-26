@@ -18,5 +18,5 @@ public abstract class BaseConversionStep : IConversionStep
     public BaseConversionStep(ILogger logger) => Logger = logger;
 
     /// <inheritdoc/>
-    public abstract void Convert(Grammar grammar);
+    public abstract void Convert(CFG grammar);
 }

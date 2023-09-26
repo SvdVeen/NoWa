@@ -14,8 +14,8 @@ public interface IConversionStep
     public ILogger Logger { get; }
 
     /// <summary>
-    /// Performs the conversion step on the given <see cref="Grammar"/>.
+    /// Performs the conversion step on the given <see cref="CFG"/>.
     /// </summary>
-    /// <param name="grammar">The <see cref="Grammar"/> to convert.</param>
-    public void Convert(Grammar grammar);
+    /// <param name="grammar">The <see cref="CFG"/> to convert.</param>
+    public void Convert(CFG grammar);
 }

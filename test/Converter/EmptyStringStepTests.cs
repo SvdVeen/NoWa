@@ -9,7 +9,7 @@ namespace NoWa.Converter.Tests;
 public class EmptyStringStepTests
 {
     /// <summary>
-    /// Tests the <see cref="EmptyStringStep.Convert(Grammar)"/> function.
+    /// Tests the <see cref="EmptyStringStep.Convert(CFG)"/> function.
     /// </summary>
     /// <remarks>
     /// This unit test is based on the example given by Hopcroft, Motwani, and Ullman on pages 266-267 of the 2013 edition
@@ -18,7 +18,7 @@ public class EmptyStringStepTests
     [TestMethod]
     public void TestRemoveEmptyStringProductionsA()
     {
-        Grammar grammar = new();
+        CFG grammar = new();
         Nonterminal A = grammar.AddNonterminal("A");
         Nonterminal B = grammar.AddNonterminal("B");
         Terminal a = grammar.AddTerminal("a");
@@ -48,7 +48,7 @@ public class EmptyStringStepTests
     }
 
     /// <summary>
-    /// Tests the <see cref="EmptyStringStep.Convert(Grammar)"/> function.
+    /// Tests the <see cref="EmptyStringStep.Convert(CFG)"/> function.
     /// </summary>
     /// <remarks>
     /// This unit test is based on the example given on https://en.wikipedia.org/wiki/Chomsky_normal_form (2023-08-15).
@@ -56,7 +56,7 @@ public class EmptyStringStepTests
     [TestMethod]
     public void TestRemoveEmptyStringProductionsB()
     {
-        Grammar grammar = new();
+        CFG grammar = new();
         Nonterminal A = grammar.AddNonterminal("A");
         Nonterminal B = grammar.AddNonterminal("B");
         Nonterminal C = grammar.AddNonterminal("C");
@@ -100,7 +100,7 @@ public class EmptyStringStepTests
     [TestMethod]
     public void TestRemoveEmptyRule()
     {
-        Grammar grammar = new();
+        CFG grammar = new();
         Terminal b = grammar.AddTerminal("b");
         Nonterminal A = grammar.AddNonterminal("A");
         Nonterminal B = grammar.AddNonterminal("B");
@@ -132,7 +132,7 @@ public class EmptyStringStepTests
     [TestMethod]
     public void TestRemoveNestedEmptyRule()
     {
-        Grammar grammar = new();
+        CFG grammar = new();
         Terminal b = grammar.AddTerminal("b");
         Nonterminal A = grammar.AddNonterminal("A");
         Nonterminal B = grammar.AddNonterminal("B");
@@ -168,7 +168,7 @@ public class EmptyStringStepTests
     [TestMethod]
     public void TestRemoveNothing()
     {
-        Grammar grammar = new();
+        CFG grammar = new();
         Terminal a = grammar.AddTerminal("a");
         Terminal b = grammar.AddTerminal("b");
 
@@ -190,7 +190,7 @@ public class EmptyStringStepTests
     [TestMethod]
     public void TestPerformStepTwice()
     {
-        Grammar grammar = new();
+        CFG grammar = new();
         Terminal b = grammar.AddTerminal("b");
         Nonterminal A = grammar.AddNonterminal("A");
         Nonterminal B = grammar.AddNonterminal("B");

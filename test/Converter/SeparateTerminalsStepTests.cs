@@ -14,7 +14,7 @@ public class SeparateTerminalsStepTests
     [TestMethod]
     public void TestSeparateTerminals()
     {
-        Grammar grammar = new();
+        CFG grammar = new();
         Terminal a = grammar.AddTerminal("a");
         Terminal b = grammar.AddTerminal("b");
         Terminal c = grammar.AddTerminal("c");
@@ -49,7 +49,7 @@ public class SeparateTerminalsStepTests
     [TestMethod]
     public void TestNoTerminalsToSeparate()
     {
-        Grammar grammar = new();
+        CFG grammar = new();
         Terminal a = grammar.AddTerminal("a");
         Terminal b = grammar.AddTerminal("b");
         Terminal c = grammar.AddTerminal("c");
@@ -77,7 +77,7 @@ public class SeparateTerminalsStepTests
     [TestMethod]
     public void TestSeparateTerminalsTwice()
     {
-        Grammar grammar = new();
+        CFG grammar = new();
         Terminal a = grammar.AddTerminal("a");
         Terminal b = grammar.AddTerminal("b");
         Terminal c = grammar.AddTerminal("c");

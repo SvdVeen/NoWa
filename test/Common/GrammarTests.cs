@@ -1,7 +1,7 @@
 ﻿namespace NoWa.Common.Tests;
 
 /// <summary>
-/// Contains unit tests for the <see cref="Grammar"/> class.
+/// Contains unit tests for the <see cref="CFG"/> class.
 /// </summary>
 [TestClass]
 public class GrammarTests
@@ -12,7 +12,7 @@ public class GrammarTests
     [TestMethod]
     public void TestEmptyGrammar()
     {
-        Grammar grammar = new();
+        CFG grammar = new();
         Assert.AreEqual(0, grammar.RuleCount, "RuleCount does not match.");
         Assert.AreEqual(0, grammar.NonterminalCount, "NonterminalCount does not match.");
         Assert.AreEqual(0, grammar.TerminalCount, "NonterminalCount does not match.");
@@ -20,7 +20,7 @@ public class GrammarTests
     }
 
     /// <summary>
-    /// Tests the <see cref="Grammar.GetRule(int)"/> function for a rule index outside the bounds of the rule list.
+    /// Tests the <see cref="CFG.GetRule(int)"/> function for a rule index outside the bounds of the rule list.
     /// </summary>
     /// <param name="index">The index to get.</param>
     [TestMethod]
@@ -31,39 +31,39 @@ public class GrammarTests
     [DataRow(int.MaxValue)]
     public void TestGetRuleOutOfRange(int index)
     {
-        Grammar grammar = new();
+        CFG grammar = new();
         _ = grammar.AddRule("a");
         _ = Assert.ThrowsException<ArgumentOutOfRangeException>(() => grammar.GetRule(index));
     }
 
     /// <summary>
-    /// Tests the <see cref="Grammar.GetRule(string)"/> function.
+    /// Tests the <see cref="CFG.GetRule(string)"/> function.
     /// </summary>
     [TestMethod]
     public void TestGetRuleString()
     {
-        Grammar grammar = new();
+        CFG grammar = new();
         Rule rule = grammar.AddRule("a");
         Assert.AreSame(rule, grammar.GetRule("a"));
     }
 
     /// <summary>
-    /// Tests the <see cref="Grammar.GetRule(string)"/> function for a rule that does not exist.
+    /// Tests the <see cref="CFG.GetRule(string)"/> function for a rule that does not exist.
     /// </summary>
     [TestMethod]
     public void TestGetRuleStringNotExists()
     {
-        Grammar grammar = new();
+        CFG grammar = new();
         _ = Assert.ThrowsException<ArgumentException>(() => grammar.GetRule("a"));
     }
 
     /// <summary>
-    /// Tests the <see cref="Grammar.GetRule(Nonterminal)"/> function.
+    /// Tests the <see cref="CFG.GetRule(Nonterminal)"/> function.
     /// </summary>
     [TestMethod]
     public void TestGetRuleNonterminal()
     {
-        Grammar grammar = new();
+        CFG grammar = new();
         Nonterminal a = new("a");
         Rule rule = new(a);
         grammar.AddRule(rule);
@@ -71,22 +71,22 @@ public class GrammarTests
     }
 
     /// <summary>
-    /// Tests the <see cref="Grammar.GetRule(Nonterminal)"/> function for a nonterminal that is not in the grammar.
+    /// Tests the <see cref="CFG.GetRule(Nonterminal)"/> function for a nonterminal that is not in the grammar.
     /// </summary>
     [TestMethod]
     public void TestGetRuleNonterminalNotExists()
     {
-        Grammar grammar = new();
+        CFG grammar = new();
         _ = Assert.ThrowsException<ArgumentException>(() => grammar.GetRule(new Nonterminal("a")));
     }
 
     /// <summary>
-    /// Tests the <see cref="Grammar.AddRule(Rule)"/> function.
+    /// Tests the <see cref="CFG.AddRule(Rule)"/> function.
     /// </summary>
     [TestMethod]
     public void TestAddRule()
     {
-        Grammar grammar = new();
+        CFG grammar = new();
         Rule rule = new(new("a"));
         grammar.AddRule(rule);
         Assert.AreEqual(1, grammar.RuleCount, "RuleCount does not match.");
@@ -94,12 +94,12 @@ public class GrammarTests
     }
 
     /// <summary>
-    /// Tests the <see cref="Grammar.TryGetRule(string, out Rule?)"/> function.
+    /// Tests the <see cref="CFG.TryGetRule(string, out Rule?)"/> function.
     /// </summary>
     [TestMethod]
     public void TestTryGetRuleString()
     {
-        Grammar grammar = new();
+        CFG grammar = new();
         Rule rule = new(new("a"));
         grammar.AddRule(rule);
         Assert.IsTrue(grammar.TryGetRule("a", out Rule? res), "TryGetRule did not return true.");
@@ -107,23 +107,23 @@ public class GrammarTests
     }
 
     /// <summary>
-    /// Tests the <see cref="Grammar.TryGetRule(string, out Rule?)"/> function for a rule that does not exist.
+    /// Tests the <see cref="CFG.TryGetRule(string, out Rule?)"/> function for a rule that does not exist.
     /// </summary>
     [TestMethod]
     public void TestTryGetRuleStringNotExists()
     {
-        Grammar grammar = new();
+        CFG grammar = new();
         Assert.IsFalse(grammar.TryGetRule("a", out Rule? res), "TryGetRule did not return false.");
         Assert.IsNull(res, "Result is not null.");
     }
 
     /// <summary>
-    /// Tests the <see cref="Grammar.TryGetRule(Nonterminal, out Rule?)"/> function.
+    /// Tests the <see cref="CFG.TryGetRule(Nonterminal, out Rule?)"/> function.
     /// </summary>
     [TestMethod]
     public void TestTryGetRuleNonterminal()
     {
-        Grammar grammar = new();
+        CFG grammar = new();
         Nonterminal a = new("a");
         Rule rule = new(a);
         grammar.AddRule(rule);
@@ -132,23 +132,23 @@ public class GrammarTests
     }
 
     /// <summary>
-    /// Tests the <see cref="Grammar.TryGetRule(Nonterminal, out Rule?)"/> function for a rule that does not exist.
+    /// Tests the <see cref="CFG.TryGetRule(Nonterminal, out Rule?)"/> function for a rule that does not exist.
     /// </summary>
     [TestMethod]
     public void TestTryGetRuleNonterminalNotExists()
     {
-        Grammar grammar = new();
+        CFG grammar = new();
         Assert.IsFalse(grammar.TryGetRule(new Nonterminal("a"), out Rule? res), "TryGetRule did not return false.");
         Assert.IsNull(res, "Result is not null.");
     }
 
     /// <summary>
-    /// Tests the <see cref="Grammar.AddRule(Rule)"/> function when adding a rule with a nonterminal that already has a rule.
+    /// Tests the <see cref="CFG.AddRule(Rule)"/> function when adding a rule with a nonterminal that already has a rule.
     /// </summary>
     [TestMethod]
     public void TestAddRuleAlreadyExists()
     {
-        Grammar grammar = new();
+        CFG grammar = new();
         grammar.AddRule(new Rule(new("a")));
         Rule rule = new(new("a"));
         _ = Assert.ThrowsException<ArgumentException>(() => grammar.AddRule(rule), "Adding the rule did not throw an exception.");
@@ -156,36 +156,36 @@ public class GrammarTests
     }
 
     /// <summary>
-    /// Tests the <see cref="Grammar.AddRule(string)"/> function.
+    /// Tests the <see cref="CFG.AddRule(string)"/> function.
     /// </summary>
     [TestMethod]
     public void TestAddRuleNonterminal()
     {
-        Grammar grammar = new();
+        CFG grammar = new();
         Rule rule = grammar.AddRule("a");
         Assert.AreEqual(1, grammar.RuleCount, "RuleCount does not match.");
         Assert.AreSame(rule, grammar.GetRule(0), "Rule does not match.");
     }
 
     /// <summary>
-    /// Tests the <see cref="Grammar.AddRule(string)"/> function for a nonterminal that already has a rule.
+    /// Tests the <see cref="CFG.AddRule(string)"/> function for a nonterminal that already has a rule.
     /// </summary>
     [TestMethod]
     public void TestAddRuleNonterminalAlreadyExists()
     {
-        Grammar grammar = new();
+        CFG grammar = new();
         _ = grammar.AddRule("a");
         _ = Assert.ThrowsException<ArgumentException>(() => grammar.AddRule("a"), "Adding the rule did not throw an exception.");
         Assert.AreEqual(1, grammar.RuleCount);
     }
 
     /// <summary>
-    /// Tests the <see cref="Grammar.InsertRule(int, Rule)"/> function.
+    /// Tests the <see cref="CFG.InsertRule(int, Rule)"/> function.
     /// </summary>
     [TestMethod]
     public void TestInsertRule()
     {
-        Grammar grammar = new();
+        CFG grammar = new();
         _ = grammar.AddRule("a");
         Rule rule = new(new("b"));
         grammar.InsertRule(0, rule);
@@ -194,12 +194,12 @@ public class GrammarTests
     }
 
     /// <summary>
-    /// Tests the <see cref="Grammar.InsertRule(int, Rule)"/> function for a rule with a nonterminal that already has a rule.
+    /// Tests the <see cref="CFG.InsertRule(int, Rule)"/> function for a rule with a nonterminal that already has a rule.
     /// </summary>
     [TestMethod]
     public void TestInsertRuleAlreadyExists()
     {
-        Grammar grammar = new();
+        CFG grammar = new();
         _ = grammar.AddRule("a");
         Rule rule = new(new("a"));
         _ = Assert.ThrowsException<ArgumentException>(() => grammar.InsertRule(0, rule), "The insertion did not throw an exception.");
@@ -207,7 +207,7 @@ public class GrammarTests
     }
 
     /// <summary>
-    /// Tests the <see cref="Grammar.InsertRule(int, Rule)"/> function for an index out of range.
+    /// Tests the <see cref="CFG.InsertRule(int, Rule)"/> function for an index out of range.
     /// </summary>
     /// <param name="index"></param>
     [TestMethod]
@@ -216,19 +216,19 @@ public class GrammarTests
     [DataRow(1)]
     public void TestInsertRuleOutOfRange(int index)
     {
-        Grammar grammar = new();
+        CFG grammar = new();
         _ = grammar.AddRule("a");
         _ = Assert.ThrowsException<ArgumentOutOfRangeException>(() => grammar.InsertRule(index, new Rule(new("b"))), "The insertion did not throw an exception.");
         Assert.AreEqual(1, grammar.RuleCount, "RuleCount does not match.");
     }
 
     /// <summary>
-    /// Tests the <see cref="Grammar.InsertRule(int, Rule)"/> function.
+    /// Tests the <see cref="CFG.InsertRule(int, Rule)"/> function.
     /// </summary>
     [TestMethod]
     public void TestInsertRuleNonTerminal()
     {
-        Grammar grammar = new();
+        CFG grammar = new();
         _ = grammar.AddRule("a");
         Rule rule = grammar.InsertRule(0, "b");
         Assert.AreEqual(2, grammar.RuleCount, "RuleCount does not match.");
@@ -236,19 +236,19 @@ public class GrammarTests
     }
 
     /// <summary>
-    /// Tests the <see cref="Grammar.InsertRule(int, Rule)"/> function for a rule with a nonterminal that already has a rule.
+    /// Tests the <see cref="CFG.InsertRule(int, Rule)"/> function for a rule with a nonterminal that already has a rule.
     /// </summary>
     [TestMethod]
     public void TestInsertRuleNonTerminalAlreadyExists()
     {
-        Grammar grammar = new();
+        CFG grammar = new();
         _ = grammar.AddRule("a");
         _ = Assert.ThrowsException<ArgumentException>(() => grammar.InsertRule(0, "a"), "The insertion did not throw an exception.");
         Assert.AreEqual(1, grammar.RuleCount, "RuleCount does not match.");
     }
 
     /// <summary>
-    /// Tests the <see cref="Grammar.InsertRule(int, Rule)"/> function for an index out of range.
+    /// Tests the <see cref="CFG.InsertRule(int, Rule)"/> function for an index out of range.
     /// </summary>
     /// <param name="index">The index to insert the rule at.</param>
     [TestMethod]
@@ -259,26 +259,26 @@ public class GrammarTests
     [DataRow(int.MaxValue)]
     public void TestInsertRuleNonTerminalOutOfRange(int index)
     {
-        Grammar grammar = new();
+        CFG grammar = new();
         _ = grammar.AddRule("a");
         _ = Assert.ThrowsException<ArgumentOutOfRangeException>(() => grammar.InsertRule(index, "b"), "The insertion did not throw an exception.");
         Assert.AreEqual(1, grammar.RuleCount, "RuleCount does not match.");
     }
 
     /// <summary>
-    /// Tests the <see cref="Grammar.GetNonterminal(int)"/> after adding a nonterminal.
+    /// Tests the <see cref="CFG.GetNonterminal(int)"/> after adding a nonterminal.
     /// </summary>
     [TestMethod]
     public void TestGetNonterminalIndex()
     {
-        Grammar grammar = new();
+        CFG grammar = new();
         Nonterminal a = grammar.AddNonterminal("a");
         Nonterminal b = grammar.GetNonterminal(0);
         Assert.AreSame(a, b);
     }
 
     /// <summary>
-    /// Tests whether <see cref="Grammar.GetNonterminal(int)"/> throws an exception for an index outside the acceptable range.
+    /// Tests whether <see cref="CFG.GetNonterminal(int)"/> throws an exception for an index outside the acceptable range.
     /// </summary>
     [TestMethod]
     [DataTestMethod]
@@ -288,50 +288,50 @@ public class GrammarTests
     [DataRow(int.MaxValue)]
     public void TestGetNonterminalIndexOutOfRange(int index)
     {
-        Grammar grammar = new();
+        CFG grammar = new();
         Nonterminal a = grammar.AddNonterminal("a");
         _ = Assert.ThrowsException<ArgumentOutOfRangeException>(() => grammar.GetNonterminal(index));
     }
 
     /// <summary>
-    /// Tests the <see cref="Grammar.GetNonterminal(string)"/> after adding a nonterminal.
+    /// Tests the <see cref="CFG.GetNonterminal(string)"/> after adding a nonterminal.
     /// </summary>
     [TestMethod]
     public void TestGetNonterminalString()
     {
-        Grammar grammar = new();
+        CFG grammar = new();
         Nonterminal a = grammar.AddNonterminal("a");
         Assert.AreSame(a, grammar.GetNonterminal("a"));
     }
 
     /// <summary>
-    /// Tests the <see cref="Grammar.GetNonterminal(string)"/> if it does not exist.
+    /// Tests the <see cref="CFG.GetNonterminal(string)"/> if it does not exist.
     /// </summary>
     [TestMethod]
     public void TestGetNonterminalStringNotExists()
     {
-        Grammar grammar = new();
+        CFG grammar = new();
         _ = Assert.ThrowsException<ArgumentException>(() => grammar.GetNonterminal("a"));
     }
 
     /// <summary>
-    /// Test the <see cref="Grammar.AddNonterminal(string)"/> function.
+    /// Test the <see cref="CFG.AddNonterminal(string)"/> function.
     /// </summary>
     [TestMethod]
     public void TestAddNonterminal()
     {
-        Grammar grammar = new();
+        CFG grammar = new();
         Nonterminal a = grammar.AddNonterminal("a");
         Assert.AreSame(a, grammar.AddNonterminal("a"));
     }
 
     /// <summary>
-    /// Test the <see cref="Grammar.AddNonterminal(string)"/> function.
+    /// Test the <see cref="CFG.AddNonterminal(string)"/> function.
     /// </summary>
     [TestMethod]
     public void TestAddNonterminalAlreadyExists()
     {
-        Grammar grammar = new();
+        CFG grammar = new();
         Nonterminal a = new("a");
         Rule rule = new(a);
         grammar.AddRule(rule);
@@ -339,12 +339,12 @@ public class GrammarTests
     }
 
     /// <summary>
-    /// Tests the <see cref="Grammar.NonterminalCount"/> property.
+    /// Tests the <see cref="CFG.NonterminalCount"/> property.
     /// </summary>
     [TestMethod]
     public void TestNonterminalCount()
     {
-        Grammar grammar = new();
+        CFG grammar = new();
         Assert.AreEqual(0, grammar.NonterminalCount);
 
         Nonterminal a = grammar.AddNonterminal("a");
@@ -361,19 +361,19 @@ public class GrammarTests
     }
 
     /// <summary>
-    /// Tests the <see cref="Grammar.GetTerminal(int)"/> after adding a terminal.
+    /// Tests the <see cref="CFG.GetTerminal(int)"/> after adding a terminal.
     /// </summary>
     [TestMethod]
     public void TestGetTerminalIndex()
     {
-        Grammar grammar = new();
+        CFG grammar = new();
         Terminal a = grammar.AddTerminal("a");
         Terminal b = grammar.GetTerminal(0);
         Assert.AreSame(a, b);
     }
 
     /// <summary>
-    /// Tests whether <see cref="Grammar.Tonterminal(int)"/> throws an exception for an index outside the acceptable range.
+    /// Tests whether <see cref="CFG.Tonterminal(int)"/> throws an exception for an index outside the acceptable range.
     /// </summary>
     [TestMethod]
     [DataTestMethod]
@@ -383,50 +383,50 @@ public class GrammarTests
     [DataRow(int.MaxValue)]
     public void TestGetTerminalIndexOutOfRange(int index)
     {
-        Grammar grammar = new();
+        CFG grammar = new();
         Terminal a = grammar.AddTerminal("a");
         _ = Assert.ThrowsException<ArgumentOutOfRangeException>(() => grammar.GetTerminal(index));
     }
 
     /// <summary>
-    /// Tests the <see cref="Grammar.GetTerminal(string)"/> after adding a terminal.
+    /// Tests the <see cref="CFG.GetTerminal(string)"/> after adding a terminal.
     /// </summary>
     [TestMethod]
     public void TestGetTerminalString()
     {
-        Grammar grammar = new();
+        CFG grammar = new();
         Terminal a = grammar.AddTerminal("a");
         Assert.AreSame(a, grammar.GetTerminal("a"));
     }
 
     /// <summary>
-    /// Tests the <see cref="Grammar.GetTerminal(string)"/> if the terminal does not exist.
+    /// Tests the <see cref="CFG.GetTerminal(string)"/> if the terminal does not exist.
     /// </summary>
     [TestMethod]
     public void TestGetTerminalStringNotExists()
     {
-        Grammar grammar = new();
+        CFG grammar = new();
         Assert.ThrowsException<ArgumentException>(() => grammar.GetTerminal("a"));
     }
 
     /// <summary>
-    /// Test the <see cref="Grammar.AddNonterminal(string)"/> function.
+    /// Test the <see cref="CFG.AddNonterminal(string)"/> function.
     /// </summary>
     [TestMethod]
     public void TestAddTerminal()
     {
-        Grammar grammar = new();
+        CFG grammar = new();
         Terminal a = grammar.AddTerminal("a");
         Assert.AreSame(a, grammar.AddTerminal("a"));
     }
 
     /// <summary>
-    /// Tests the <see cref="Grammar.TerminalCount"/> property.
+    /// Tests the <see cref="CFG.TerminalCount"/> property.
     /// </summary>
     [TestMethod]
     public void TestTerminalCount()
     {
-        Grammar grammar = new();
+        CFG grammar = new();
         Assert.AreEqual(0, grammar.TerminalCount);
 
         Terminal a = grammar.AddTerminal("a");
@@ -443,7 +443,7 @@ public class GrammarTests
     }
 
     /// <summary>
-    /// Helper for testing the <see cref="Grammar.ReplaceSymbol(ISymbol, ISymbol, bool)"/> function
+    /// Helper for testing the <see cref="CFG.ReplaceSymbol(ISymbol, ISymbol, bool)"/> function
     /// </summary>
     /// <param name="symbol"></param>
     /// <param name="newSymbol"></param>
@@ -451,7 +451,7 @@ public class GrammarTests
     {
         Nonterminal Ntest = new("test");
         Nonterminal Ttest = new("test");
-        Grammar grammar = new();
+        CFG grammar = new();
 
         Rule rule1 = grammar.AddRule("test1");
         Nonterminal test1 = rule1.Nonterminal;
@@ -487,7 +487,7 @@ public class GrammarTests
     }
 
     /// <summary>
-    /// Tests the <see cref="Grammar.ReplaceSymbol(ISymbol, ISymbol, bool)"/> function for replacing a <see cref="Terminal"/> with a <see cref="Terminal"/>.
+    /// Tests the <see cref="CFG.ReplaceSymbol(ISymbol, ISymbol, bool)"/> function for replacing a <see cref="Terminal"/> with a <see cref="Terminal"/>.
     /// </summary>
     /// <param name="symbol">The value of the symbol to replace.</param>
     /// <param name="newSymbol">The value of the symbol to replace the original with.</param>
@@ -501,7 +501,7 @@ public class GrammarTests
         => TestReplaceSymbol(new Terminal(symbol), new Terminal(newSymbol), removeSymbol);
 
     /// <summary>
-    /// Tests the <see cref="Grammar.ReplaceSymbol(ISymbol, ISymbol, bool)"/> function for replacing a <see cref="Terminal"/> with a <see cref="Nonterminal"/>.
+    /// Tests the <see cref="CFG.ReplaceSymbol(ISymbol, ISymbol, bool)"/> function for replacing a <see cref="Terminal"/> with a <see cref="Nonterminal"/>.
     /// </summary>
     /// <param name="symbol">The value of the symbol to replace.</param>
     /// <param name="newSymbol">The value of the symbol to replace the original with.</param>
@@ -515,7 +515,7 @@ public class GrammarTests
         => TestReplaceSymbol(new Terminal(symbol), new Nonterminal(newSymbol), removeSymbol);
 
     /// <summary>
-    /// Tests the <see cref="Grammar.ReplaceSymbol(ISymbol, ISymbol, bool)"/> function for replacing a <see cref="Terminal"/> with an <see cref="EmptyString"/>.
+    /// Tests the <see cref="CFG.ReplaceSymbol(ISymbol, ISymbol, bool)"/> function for replacing a <see cref="Terminal"/> with an <see cref="EmptyString"/>.
     /// </summary>
     /// <param name="removeSymbol"><see langword="true"/> if the original symbol should be removed; <see langword="false"/> otherwise.</param>
     [DataTestMethod]
@@ -525,7 +525,7 @@ public class GrammarTests
         => TestReplaceSymbol(new Terminal("a"), EmptyString.Instance, removeSymbol);
 
     /// <summary>
-    /// Tests the <see cref="Grammar.ReplaceSymbol(ISymbol, ISymbol, bool)"/> function for replacing a <see cref="Nonterminal"/> with a <see cref="Nonterminal"/>.
+    /// Tests the <see cref="CFG.ReplaceSymbol(ISymbol, ISymbol, bool)"/> function for replacing a <see cref="Nonterminal"/> with a <see cref="Nonterminal"/>.
     /// </summary>
     /// <param name="symbol">The value of the symbol to replace.</param>
     /// <param name="newSymbol">The value of the symbol to replace the original with.</param>
@@ -539,7 +539,7 @@ public class GrammarTests
         => TestReplaceSymbol(new Nonterminal(symbol), new Nonterminal(newSymbol), removeSymbol);
 
     /// <summary>
-    /// Tests the <see cref="Grammar.ReplaceSymbol(ISymbol, ISymbol, bool)"/> function for replacing a <see cref="Nonterminal"/> with a <see cref="Terminal"/>.
+    /// Tests the <see cref="CFG.ReplaceSymbol(ISymbol, ISymbol, bool)"/> function for replacing a <see cref="Nonterminal"/> with a <see cref="Terminal"/>.
     /// </summary>
     /// <param name="symbol">The value of the symbol to replace.</param>
     /// <param name="newSymbol">The value of the symbol to replace the original with.</param>
@@ -553,7 +553,7 @@ public class GrammarTests
         => TestReplaceSymbol(new Nonterminal(symbol), new Terminal(newSymbol), removeSymbol);
 
     /// <summary>
-    /// Tests the <see cref="Grammar.ReplaceSymbol(ISymbol, ISymbol, bool)"/> function for replacing a <see cref="Nonterminal"/> with an <see cref="EmptyString"/>.
+    /// Tests the <see cref="CFG.ReplaceSymbol(ISymbol, ISymbol, bool)"/> function for replacing a <see cref="Nonterminal"/> with an <see cref="EmptyString"/>.
     /// </summary>
     /// <param name="removeSymbol"><see langword="true"/> if the original symbol should be removed; <see langword="false"/> otherwise.</param>
     [DataTestMethod]
@@ -563,7 +563,7 @@ public class GrammarTests
         => TestReplaceSymbol(new Nonterminal("a"), EmptyString.Instance, removeSymbol);
 
     /// <summary>
-    /// Tests the <see cref="Grammar.ReplaceSymbol(ISymbol, ISymbol, bool)"/> function for replacing an <see cref="EmptyString"/> with a <see cref="Terminal"/>.
+    /// Tests the <see cref="CFG.ReplaceSymbol(ISymbol, ISymbol, bool)"/> function for replacing an <see cref="EmptyString"/> with a <see cref="Terminal"/>.
     /// </summary>
     /// <param name="removeSymbol"><see langword="true"/> if the original symbol should be removed; <see langword="false"/> otherwise.</param>
     [DataTestMethod]
@@ -573,7 +573,7 @@ public class GrammarTests
         => TestReplaceSymbol(EmptyString.Instance, new Terminal("a"), removeSymbol);
 
     /// <summary>
-    /// Tests the <see cref="Grammar.ReplaceSymbol(ISymbol, ISymbol, bool)"/> function for replacing an <see cref="EmptyString"/> with a <see cref="Nonterminal"/>.
+    /// Tests the <see cref="CFG.ReplaceSymbol(ISymbol, ISymbol, bool)"/> function for replacing an <see cref="EmptyString"/> with a <see cref="Nonterminal"/>.
     /// </summary>
     /// <param name="removeSymbol"><see langword="true"/> if the original symbol should be removed; <see langword="false"/> otherwise.</param>
     [DataTestMethod]
@@ -583,12 +583,12 @@ public class GrammarTests
         => TestReplaceSymbol(EmptyString.Instance, new Nonterminal("a"), removeSymbol);
 
     /// <summary>
-    /// Tests the <see cref="Grammar.ToString"/> function for a non-empty grammar.
+    /// Tests the <see cref="CFG.ToString"/> function for a non-empty grammar.
     /// </summary>
     [TestMethod]
     public void TestToStringNotEmpty()
     {
-        Grammar grammar = new();
+        CFG grammar = new();
 
         Rule rule1 = grammar.AddRule("S");
         rule1.Productions.Add(new() { new Nonterminal("B"), new Terminal("c") });

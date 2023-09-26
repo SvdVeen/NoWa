@@ -15,7 +15,7 @@ public sealed class SeparateTerminalsStep : BaseConversionStep
     /// Separates all terminals in productions of more than one symbol into their own productions.
     /// </summary>
     /// <inheritdoc/>
-    public override void Convert(Grammar grammar)
+    public override void Convert(CFG grammar)
     {
         Logger.LogInfo("Separating terminals from large bodies...");
         int initialRuleCount = grammar.RuleCount;
@@ -37,7 +37,7 @@ public sealed class SeparateTerminalsStep : BaseConversionStep
     /// </summary>
     /// <param name="grammar">The grammar to separate terminals in.</param>
     /// <param name="rule">The rule to separate terminals in.</param>
-    private void SeparateTerminalsInRule(Grammar grammar, Rule rule)
+    private void SeparateTerminalsInRule(CFG grammar, Rule rule)
     {
         foreach (Expression production in rule.Productions)
         {
@@ -54,7 +54,7 @@ public sealed class SeparateTerminalsStep : BaseConversionStep
     /// </summary>
     /// <param name="grammar">The grammar to separate the terminals in.</param>
     /// <param name="production">The production to separate the terminals in.</param>
-    private void SeparateTerminalsInProduction(Grammar grammar, Expression production)
+    private void SeparateTerminalsInProduction(CFG grammar, Expression production)
     {
         for (int i = 0; i < production.Count; i++)
         {
@@ -70,7 +70,7 @@ public sealed class SeparateTerminalsStep : BaseConversionStep
     /// </summary>
     /// <param name="grammar">The grammar to replace the terminal in.</param>
     /// <param name="terminal">The terminal to replace.</param>
-    private void ReplaceTerminalInGrammar(Grammar grammar, Terminal terminal)
+    private void ReplaceTerminalInGrammar(CFG grammar, Terminal terminal)
     {
         Logger.LogDebug($"Replacing terminal: {terminal}");
         Rule newRule = grammar.AddRule($"T-{terminal.Value}"); // This could fail if a rule with that name already existed, but that is pretty unlikely. If it does: too bad!

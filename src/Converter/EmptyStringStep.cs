@@ -12,10 +12,10 @@ public sealed class EmptyStringStep : BaseConversionStep
     public EmptyStringStep(ILogger logger) : base(logger) { }
 
     /// <summary>
-    /// Eliminates all empty string productions in the given <see cref="Grammar"/>.
+    /// Eliminates all empty string productions in the given <see cref="CFG"/>.
     /// </summary>
     /// <inheritdoc/>
-    public override void Convert(Grammar grammar)
+    public override void Convert(CFG grammar)
     {
         Logger.LogInfo("Eliminating ε-productions...");
         int initialRuleCount = grammar.RuleCount;
@@ -39,7 +39,7 @@ public sealed class EmptyStringStep : BaseConversionStep
     /// Removes rules that entirely consist of ε-productions iteratively until all rules that would only have ε-productions are eliminatied.
     /// </summary>
     /// <param name="grammar">The grammar to eliminate empty rules from.</param>
-    private void EliminateEmptyRules(Grammar grammar)
+    private void EliminateEmptyRules(CFG grammar)
     {
         bool ruleRemoved;
         do
@@ -91,7 +91,7 @@ public sealed class EmptyStringStep : BaseConversionStep
     /// </summary>
     /// <param name="grammar">The grammar to get the nullables for.</param>
     /// <returns>The set of all nullable nonterminals in the grammar.</returns>
-    private ISet<Nonterminal> GetNullables(Grammar grammar)
+    private ISet<Nonterminal> GetNullables(CFG grammar)
     {
         ISet<Nonterminal> nullables = GetFirstLevelNullables(grammar);
         int lastCount;
@@ -120,7 +120,7 @@ public sealed class EmptyStringStep : BaseConversionStep
     /// </summary>
     /// <param name="grammar">The grammar to get the nullables for.</param>
     /// <returns>A dictionary of all nullable nonterminals, with booleans indicating whether they produced only ε.</returns>
-    private ISet<Nonterminal> GetFirstLevelNullables(Grammar grammar)
+    private ISet<Nonterminal> GetFirstLevelNullables(CFG grammar)
     {
         HashSet<Nonterminal> nullables = new();
         for (int i = 0; i < grammar.RuleCount; i++)
@@ -157,7 +157,7 @@ public sealed class EmptyStringStep : BaseConversionStep
     /// <param name="nullables">All nullables in the grammar.</param>
     /// <param name="grammar">The grammar to convert.</param>
     /// <param name="ruleIndex">The index of the rule in the grammar to process.</param>
-    private void ProcessRule(ISet<Nonterminal> nullables, Grammar grammar, int ruleIndex)
+    private void ProcessRule(ISet<Nonterminal> nullables, CFG grammar, int ruleIndex)
     {
         Rule rule = grammar.GetRule(ruleIndex);
         HashSet<Expression> uniqueProductions = new();

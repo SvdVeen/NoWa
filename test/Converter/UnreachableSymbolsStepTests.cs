@@ -18,7 +18,7 @@ public class UnreachableSymbolsStepTests
     [TestMethod]
     public void TestUnreachableSymbols()
     {
-        Grammar grammar = new();
+        CFG grammar = new();
         Terminal a = grammar.AddTerminal("a");
         Terminal b = grammar.AddTerminal("b");
         Nonterminal S = grammar.AddNonterminal("S");
@@ -51,7 +51,7 @@ public class UnreachableSymbolsStepTests
     [TestMethod]
     public void TestManyUnreachableSymbols()
     {
-        Grammar grammar = new();
+        CFG grammar = new();
         Terminal a = grammar.AddTerminal("a");
         Terminal b = grammar.AddTerminal("b");
         Terminal c = grammar.AddTerminal("c");

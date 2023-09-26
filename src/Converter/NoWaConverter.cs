@@ -38,13 +38,13 @@ public class NoWaConverter
     }
 
     /// <summary>
-    /// Convert the given <see cref="Grammar"/> to Chomsky Normal Form.
+    /// Convert the given <see cref="CFG"/> to Chomsky Normal Form.
     /// </summary>
     /// <param name="grammar">The grammar to convert.</param>
     /// <returns>The converted grammar.</returns>
-    public Grammar? Convert(Grammar grammar, bool continueOnError = false)
+    public CFG? Convert(CFG grammar, bool continueOnError = false)
     {
-        Grammar result = grammar;
+        CFG result = grammar;
         Logger.LogInfo("Starting CNF conversion...");
         Logger.LogDebug($"Initial grammar:{Environment.NewLine}{result}");
 

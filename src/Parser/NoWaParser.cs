@@ -7,17 +7,17 @@ using GParser = NoWa.Parser.Generated.NoWaParser;
 namespace NoWa.Parser;
 
 /// <summary>
-/// Parses a grammar from a file and converts it to a <see cref="Grammar"/>.
+/// Parses a grammar from a file and converts it to a <see cref="CFG"/>.
 /// </summary>
 public static class NoWaParser
 {
     /// <summary>
-    /// Parse a grammar from a file and convert it to a <see cref="Grammar"/>.
+    /// Parse a grammar from a file and convert it to a <see cref="CFG"/>.
     /// </summary>
     /// <param name="path">The path to the file to parse.</param>
     /// <returns></returns>
     /// <exception cref="FileNotFoundException">The file path was not valid.</exception>
-    public static Grammar Parse(string path)
+    public static CFG Parse(string path)
     {
         if (!Path.Exists(path))
             throw new FileNotFoundException($"Could not find the file: {path}");

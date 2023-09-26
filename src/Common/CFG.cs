@@ -5,7 +5,7 @@ namespace NoWa.Common;
 /// <summary>
 /// Represents a context-free grammar.
 /// </summary>
-public class Grammar
+public class CFG
 {
     private readonly Dictionary<string, Nonterminal> _nonterminalsByValue = new();
     private readonly Dictionary<string, Terminal> _terminalsByValue = new();

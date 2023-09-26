@@ -14,7 +14,7 @@ public class SplitNonterminalsStepTests
     [TestMethod]
     public void TestSplitThree()
     {
-        Grammar grammar = new();
+        CFG grammar = new();
         Terminal a = grammar.AddTerminal("a");
         Terminal b = grammar.AddTerminal("b");
         Terminal c = grammar.AddTerminal("c");
@@ -55,7 +55,7 @@ public class SplitNonterminalsStepTests
     [TestMethod]
     public void TestSplitFive()
     {
-        Grammar grammar = new();
+        CFG grammar = new();
         Terminal a = grammar.AddTerminal("a");
         Terminal b = grammar.AddTerminal("b");
         Terminal c = grammar.AddTerminal("c");
@@ -112,7 +112,7 @@ public class SplitNonterminalsStepTests
     [TestMethod]
     public void TestSplitMultipleProductions()
     {
-        Grammar grammar = new();
+        CFG grammar = new();
         Terminal a = grammar.AddTerminal("a");
         Terminal b = grammar.AddTerminal("b");
         Terminal c = grammar.AddTerminal("c");
@@ -174,7 +174,7 @@ public class SplitNonterminalsStepTests
     [TestMethod]
     public void TestSplitNone()
     {
-        Grammar grammar = new Grammar();
+        CFG grammar = new CFG();
         Terminal a = grammar.AddTerminal("a");
         Nonterminal A = grammar.AddNonterminal("A");
 
@@ -200,7 +200,7 @@ public class SplitNonterminalsStepTests
     [TestMethod]
     public void TestPerformStepTwice()
     {
-        Grammar grammar = new();
+        CFG grammar = new();
         Terminal a = grammar.AddTerminal("a");
         Terminal b = grammar.AddTerminal("b");
         Terminal c = grammar.AddTerminal("c");
