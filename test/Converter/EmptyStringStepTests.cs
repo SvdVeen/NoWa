@@ -19,24 +19,17 @@ public class EmptyStringStepTests
     public void TestRemoveEmptyStringProductionsA()
     {
         CFG grammar = new();
-        Nonterminal A = grammar.AddNonterminal("A");
-        Nonterminal B = grammar.AddNonterminal("B");
-        Terminal a = grammar.AddTerminal("a");
-        Terminal b = grammar.AddTerminal("b");
 
         // Add rule S = A B ;
-        Rule rule = grammar.AddRule("S");
-        rule.AddProduction(A, B);
+        grammar.AddProduction(new(Nonterminal.Get("S"), Nonterminal.Get("A"), Nonterminal.Get("B")));
 
         // add rule A = 'a' A A | '' ;
-        rule = grammar.AddRule("A");
-        rule.AddProduction(a, A, A);
-        rule.AddProduction(EmptyString.Instance);
+        grammar.AddProduction(new(Nonterminal.Get("A"), Terminal.Get("a"), Nonterminal.Get("A"), Nonterminal.Get("A")));
+        grammar.AddProduction(new(Nonterminal.Get("A"), EmptyString.Instance));
 
         // Add rule B = 'b' B B | '' ;
-        rule = grammar.AddRule("B");
-        rule.AddProduction(b, B, B);
-        rule.AddProduction(EmptyString.Instance);
+        grammar.AddProduction(new(Nonterminal.Get("B"), Terminal.Get("b"), Nonterminal.Get("B"), Nonterminal.Get("B")));
+        grammar.AddProduction(new(Nonterminal.Get("B"), EmptyString.Instance));
 
         EmptyStringStep step = new(new TestLogger());
         step.Convert(grammar);
@@ -57,32 +50,22 @@ public class EmptyStringStepTests
     public void TestRemoveEmptyStringProductionsB()
     {
         CFG grammar = new();
-        Nonterminal A = grammar.AddNonterminal("A");
-        Nonterminal B = grammar.AddNonterminal("B");
-        Nonterminal C = grammar.AddNonterminal("C");
-        Terminal a = grammar.AddTerminal("a");
-        Terminal b = grammar.AddTerminal("b");
-        Terminal c = grammar.AddTerminal("c");
 
         // Add rule S = A 'b' B | C;
-        Rule rule = grammar.AddRule("S");
-        rule.AddProduction(A, b, B);
-        rule.AddProduction(C);
+        grammar.AddProduction(new(Nonterminal.Get("S"), Nonterminal.Get("A"), Terminal.Get("b"), Nonterminal.Get("B")));
+        grammar.AddProduction(new(Nonterminal.Get("S"), Nonterminal.Get("C")));
 
         // add rule B = A A | A C ;
-        rule = grammar.AddRule("B");
-        rule.AddProduction(A, A);
-        rule.AddProduction(A, C);
+        grammar.AddProduction(new(Nonterminal.Get("B"), Nonterminal.Get("A"), Nonterminal.Get("A")));
+        grammar.AddProduction(new(Nonterminal.Get("B"), Nonterminal.Get("A"), Nonterminal.Get("C")));
 
         // Add rule C = 'b' | 'c' ;
-        rule = grammar.AddRule("C");
-        rule.AddProduction(b);
-        rule.AddProduction(c);
+        grammar.AddProduction(new(Nonterminal.Get("C"), Terminal.Get("b")));
+        grammar.AddProduction(new(Nonterminal.Get("C"), Terminal.Get("c")));
 
         // Add rule A = 'a' | '' ;
-        rule = grammar.AddRule("A");
-        rule.AddProduction(a);
-        rule.AddProduction(EmptyString.Instance);
+        grammar.AddProduction(new(Nonterminal.Get("A"), Terminal.Get("a")));
+        grammar.AddProduction(new(Nonterminal.Get("A"), EmptyString.Instance));
 
         EmptyStringStep step = new(new TestLogger());
         step.Convert(grammar);
@@ -101,22 +84,16 @@ public class EmptyStringStepTests
     public void TestRemoveEmptyRule()
     {
         CFG grammar = new();
-        Terminal b = grammar.AddTerminal("b");
-        Nonterminal A = grammar.AddNonterminal("A");
-        Nonterminal B = grammar.AddNonterminal("B");
-        
+
         // Add rule S = A B ;
-        Rule rule = grammar.AddRule("S");
-        rule.AddProduction(A, B);
+        grammar.AddProduction(new(Nonterminal.Get("S"), Nonterminal.Get("A"), Nonterminal.Get("B")));
 
         // Add rule A = '' '' | '' ;
-        rule = grammar.AddRule("A");
-        rule.AddProduction(EmptyString.Instance, EmptyString.Instance);
-        rule.AddProduction(EmptyString.Instance);
+        grammar.AddProduction(new(Nonterminal.Get("A"), EmptyString.Instance, EmptyString.Instance));
+        grammar.AddProduction(new(Nonterminal.Get("A"), EmptyString.Instance));
 
         // Add rule B = 'b' ;
-        rule = grammar.AddRule("B");
-        rule.AddProduction(b);
+        grammar.AddProduction(new(Nonterminal.Get("B"), Terminal.Get("b")));
 
         EmptyStringStep step = new(new TestLogger());
         step.Convert(grammar);
@@ -133,26 +110,18 @@ public class EmptyStringStepTests
     public void TestRemoveNestedEmptyRule()
     {
         CFG grammar = new();
-        Terminal b = grammar.AddTerminal("b");
-        Nonterminal A = grammar.AddNonterminal("A");
-        Nonterminal B = grammar.AddNonterminal("B");
-        Nonterminal C = grammar.AddNonterminal("C");
 
         // Add rule S = A B ;
-        Rule rule = grammar.AddRule("S");
-        rule.AddProduction(A, B);
+        grammar.AddProduction(new(Nonterminal.Get("S"), Nonterminal.Get("A"), Nonterminal.Get("B")));
 
         // Add rule A = C ;
-        rule = grammar.AddRule("A");
-        rule.AddProduction(C);
+        grammar.AddProduction(new(Nonterminal.Get("A"), Nonterminal.Get("C")));
 
         // Add rule B = 'b' ;
-        rule = grammar.AddRule("B");
-        rule.AddProduction(b);
+        grammar.AddProduction(new(Nonterminal.Get("B"), Terminal.Get("b")));
 
         // Add rule C = '' ;
-        rule = grammar.AddRule("C");
-        rule.AddProduction(EmptyString.Instance);
+        grammar.AddProduction(new(Nonterminal.Get("C"), EmptyString.Instance));
 
         EmptyStringStep step = new(new TestLogger());
         step.Convert(grammar);
@@ -169,13 +138,9 @@ public class EmptyStringStepTests
     public void TestRemoveNothing()
     {
         CFG grammar = new();
-        Terminal a = grammar.AddTerminal("a");
-        Terminal b = grammar.AddTerminal("b");
 
         // Add rule S = 'a' | 'b' ;
-        Rule rule = grammar.AddRule("S");
-        rule.AddProduction(a);
-        rule.AddProduction(b);
+        grammar.AddProduction(new(Nonterminal.Get("S"), Terminal.Get("a"), Terminal.Get("b")));
 
         EmptyStringStep step = new(new TestLogger());
         step.Convert(grammar);
@@ -191,26 +156,18 @@ public class EmptyStringStepTests
     public void TestPerformStepTwice()
     {
         CFG grammar = new();
-        Terminal b = grammar.AddTerminal("b");
-        Nonterminal A = grammar.AddNonterminal("A");
-        Nonterminal B = grammar.AddNonterminal("B");
-        Nonterminal C = grammar.AddNonterminal("C");
 
         // Add rule S = A B ;
-        Rule rule = grammar.AddRule("S");
-        rule.AddProduction(A, B);
+        grammar.AddProduction(new(Nonterminal.Get("S"), Nonterminal.Get("A"), Nonterminal.Get("B")));
 
         // Add rule A = C ;
-        rule = grammar.AddRule("A");
-        rule.AddProduction(C);
+        grammar.AddProduction(new(Nonterminal.Get("A"), Nonterminal.Get("C")));
 
         // Add rule B = 'b' ;
-        rule = grammar.AddRule("B");
-        rule.AddProduction(b);
+        grammar.AddProduction(new(Nonterminal.Get("B"), Terminal.Get("b")));
 
         // Add rule C = '' ;
-        rule = grammar.AddRule("C");
-        rule.AddProduction(EmptyString.Instance);
+        grammar.AddProduction(new(Nonterminal.Get("C"), EmptyString.Instance));
 
         EmptyStringStep step = new(new TestLogger());
         step.Convert(grammar);

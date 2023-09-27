@@ -15,22 +15,14 @@ public class SeparateTerminalsStepTests
     public void TestSeparateTerminals()
     {
         CFG grammar = new();
-        Terminal a = grammar.AddTerminal("a");
-        Terminal b = grammar.AddTerminal("b");
-        Terminal c = grammar.AddTerminal("c");
-        Terminal d = grammar.AddTerminal("d");
-        Terminal e = grammar.AddTerminal("e");
-        Nonterminal B = grammar.AddNonterminal("B");
 
         // Add rule A = 'a' B | 'c' ;
-        Rule rule = grammar.AddRule("A");
-        rule.AddProduction(a, B);
-        rule.AddProduction(c);
+        grammar.AddProduction(new(Nonterminal.Get("A"), Terminal.Get("a"), Nonterminal.Get("B")));
+        grammar.AddProduction(new(Nonterminal.Get("A"), Terminal.Get("c")));
 
         // Add rule B = 'b' | 'd' 'e' ;
-        rule = grammar.AddRule("B");
-        rule.AddProduction(b);
-        rule.AddProduction(d, e);
+        grammar.AddProduction(new(Nonterminal.Get("B"), Terminal.Get("b")));
+        grammar.AddProduction(new(Nonterminal.Get("B"), Terminal.Get("d"), Terminal.Get("e")));
 
         SeparateTerminalsStep step = new(new TestLogger());
         step.Convert(grammar);
@@ -50,18 +42,13 @@ public class SeparateTerminalsStepTests
     public void TestNoTerminalsToSeparate()
     {
         CFG grammar = new();
-        Terminal a = grammar.AddTerminal("a");
-        Terminal b = grammar.AddTerminal("b");
-        Terminal c = grammar.AddTerminal("c");
 
         // Add rule A = 'a' | 'b' ;
-        Rule rule = grammar.AddRule("A");
-        rule.AddProduction(a);
-        rule.AddProduction(b);
+        grammar.AddProduction(new(Nonterminal.Get("A"), Terminal.Get("a")));
+        grammar.AddProduction(new(Nonterminal.Get("A"), Terminal.Get("b")));
 
         // Add rule C = 'c' ;
-        rule = grammar.AddRule("C");
-        rule.AddProduction(c);
+        grammar.AddProduction(new(Nonterminal.Get("C"), Terminal.Get("c")));
 
         SeparateTerminalsStep step = new(new TestLogger());
         step.Convert(grammar);
@@ -78,25 +65,17 @@ public class SeparateTerminalsStepTests
     public void TestSeparateTerminalsTwice()
     {
         CFG grammar = new();
-        Terminal a = grammar.AddTerminal("a");
-        Terminal b = grammar.AddTerminal("b");
-        Terminal c = grammar.AddTerminal("c");
-        Nonterminal B = grammar.AddNonterminal("B");
-        Nonterminal C = grammar.AddNonterminal("C");
 
         // Add rule A = 'a' B | 'a' C ;
-        Rule rule = grammar.AddRule("A");
-        rule.AddProduction(a, B);
-        rule.AddProduction(a, C);
-        
+        grammar.AddProduction(new(Nonterminal.Get("A"), Terminal.Get("a"), Nonterminal.Get("B")));
+        grammar.AddProduction(new(Nonterminal.Get("A"), Terminal.Get("a"), Nonterminal.Get("C")));
+
         // Add rule B = 'b' | 'a' C ;
-        rule = grammar.AddRule("B");
-        rule.AddProduction(b);
-        rule.AddProduction(a, C);
+        grammar.AddProduction(new(Nonterminal.Get("B"), Terminal.Get("b")));
+        grammar.AddProduction(new(Nonterminal.Get("B"), Terminal.Get("a"), Nonterminal.Get("C")));
 
         // Add rule C = 'c' ;
-        rule = grammar.AddRule("C");
-        rule.AddProduction(c);
+        grammar.AddProduction(new(Nonterminal.Get("C"), Terminal.Get("c")));
 
         SeparateTerminalsStep step = new(new TestLogger());
         step.Convert(grammar);

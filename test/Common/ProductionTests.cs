@@ -78,8 +78,8 @@ public class ProductionTests
     [TestMethod]
     public void TestEqualsEqual()
     {
-        Production a = new Production(Nonterminal.Get("A"), Terminal.Get("a"));
-        Production b = new Production(Nonterminal.Get("A"), Terminal.Get("a"));
+        Production a = new(Nonterminal.Get("A"), Terminal.Get("a"));
+        Production b = new(Nonterminal.Get("A"), Terminal.Get("a"));
         Assert.AreEqual(a, b);
     }
 
@@ -89,8 +89,8 @@ public class ProductionTests
     [TestMethod]
     public void TestEqualsNotEqual()
     {
-        Production a = new Production(Nonterminal.Get("A"), Terminal.Get("a"));
-        Production b = new Production(Nonterminal.Get("B"), Terminal.Get("b"));
+        Production a = new(Nonterminal.Get("A"), Terminal.Get("a"));
+        Production b = new(Nonterminal.Get("B"), Terminal.Get("b"));
         Assert.AreNotEqual(a, b);
     }
 
@@ -100,8 +100,8 @@ public class ProductionTests
     [TestMethod]
     public void TestGetHashCodeEqual()
     {
-        Production a = new Production(Nonterminal.Get("A"), Terminal.Get("a"));
-        Production b = new Production(Nonterminal.Get("A"), Terminal.Get("a"));
+        Production a = new(Nonterminal.Get("A"), Terminal.Get("a"));
+        Production b = new(Nonterminal.Get("A"), Terminal.Get("a"));
         Assert.AreEqual(a.GetHashCode(), b.GetHashCode());
     }
 
@@ -111,8 +111,8 @@ public class ProductionTests
     [TestMethod]
     public void TestGetHashCodeNotEqual()
     {
-        Production a = new Production(Nonterminal.Get("A"), Terminal.Get("a"));
-        Production b = new Production(Nonterminal.Get("B"), Terminal.Get("b"));
+        Production a = new(Nonterminal.Get("A"), Terminal.Get("a"));
+        Production b = new(Nonterminal.Get("B"), Terminal.Get("b"));
         Assert.AreNotEqual(a.GetHashCode(), b.GetHashCode());
     }
 }

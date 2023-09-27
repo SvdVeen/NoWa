@@ -18,65 +18,28 @@ public sealed class UnitProductionsStep : BaseConversionStep
     public override void Convert(CFG grammar)
     {
         Logger.LogInfo("Eliminating unit productions...");
-        int initialRuleCount = grammar.RuleCount;
-        int initialNonterminalCount = grammar.Nonterminals.Count;
+        GrammarStats stats = new(grammar);
 
         var unitPairs = GetUnitPairs(grammar);
 
-        // First, we save all original rules and replace them with versions that only contain their non-unit productions.
-        List<Rule> originalRules = new(grammar.RuleCount);
-        for (int i = 0; i < grammar.RuleCount; i++)
-        {
-            Rule rule = grammar.GetRule(i);
-            originalRules.Add(rule);
+        List<Production> originalProductions = new(grammar.Productions);
+        var lookup = originalProductions.ToLookup(p => p.Head);
 
-            Rule newRule = new(rule.Nonterminal);
-            foreach (Expression production in rule.Productions)
-            {
-                if (production.Count > 1 || production[0] is not Nonterminal)
-                {
-                    newRule.Productions.Add(production);
-                }
-            }
+        grammar.Clear();
 
-            grammar.RemoveRuleAt(i);
-            if (i <= grammar.RuleCount - 1)
-            {
-                grammar.InsertRule(i, newRule);
-            }
-            else
-            {
-                grammar.AddRule(newRule);
-            }
-        }
-
-        // Then, we go through the pairs and add all non-unit productions for unit pairs that aren't symmetrical.
         foreach (var pair in unitPairs)
         {
-            Rule rule1 = grammar.GetRule(pair.Item1);
-            Rule rule2 = originalRules.Where(r => r.Nonterminal.Equals(pair.Item2)).Single();
-            
-            if (!pair.Item1.Equals(pair.Item2))
+            foreach(Production production in lookup[pair.Item2])
             {
-                for (int i = 0; i < rule2.Productions.Count; i++)
+                if (production.Body.Count > 1 || production.Body.Count == 1 && production.Body[0] is not Nonterminal)
                 {
-                    if (rule2.Productions[i].Count > 1 || rule2.Productions[i][0] is not Nonterminal)
-                    {
-                        rule1.Productions.Add(rule2.Productions[i]);
-                    }
+                    grammar.AddProduction(new(pair.Item1, production.Body.ToArray()));
                 }
             }
         }
 
         Logger.LogInfo("Elminated unit productions.");
-        if (initialRuleCount != grammar.RuleCount)
-        {
-            Logger.LogInfo($"\tRemoved {initialRuleCount - grammar.RuleCount} rules.");
-        }
-        if (initialNonterminalCount != grammar.Nonterminals.Count)
-        {
-            Logger.LogInfo($"\tRemoved {initialNonterminalCount - grammar.Nonterminals.Count} nonterminals.");
-        }
+        stats.LogDiff(grammar, Logger);
     }
 
     /// <summary>
@@ -102,16 +65,20 @@ public sealed class UnitProductionsStep : BaseConversionStep
         do
         {
             oldPairs = new(pairs);
-            foreach (var pair in pairs.ToArray())
+            foreach (var pair in oldPairs)
             {
-                Rule rule = grammar.GetRule(pair.Item2);
-                for (int i = 0; i < rule.Productions.Count; i++)
+                foreach (Production producion in grammar.GetProductionsByHead(pair.Item2))
                 {
-                    if (rule.Productions[i].Count == 1 && rule.Productions[i][0] is Nonterminal nonterminal 
-                        && pairs.Add(new(pair.Item1, nonterminal)))
+                    if (producion.Body.Count == 1 && producion.Body[0] is Nonterminal nonterminal)
                     {
-                        Logger.LogDebug($"Adding unit pair ({pair.Item1}, {nonterminal})");
+                        Tuple<Nonterminal, Nonterminal> newPair = new(pair.Item1, nonterminal);
+                        if (pairs.Add(newPair))
+                        {
+                            Logger.LogDebug($"Adding unit pair {newPair}");
+                        }
+
                     }
+
                 }
             }
         } while (oldPairs.Count < pairs.Count);

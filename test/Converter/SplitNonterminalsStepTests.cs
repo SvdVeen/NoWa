@@ -15,28 +15,18 @@ public class SplitNonterminalsStepTests
     public void TestSplitThree()
     {
         CFG grammar = new();
-        Terminal a = grammar.AddTerminal("a");
-        Terminal b = grammar.AddTerminal("b");
-        Terminal c = grammar.AddTerminal("c");
-        Nonterminal A = grammar.AddNonterminal("A");
-        Nonterminal B = grammar.AddNonterminal("B");
-        Nonterminal C = grammar.AddNonterminal("C");
 
         // Add rule S = A B C ;
-        Rule rule = grammar.AddRule("S");
-        rule.AddProduction(A, B, C);
+        grammar.AddProduction(new(Nonterminal.Get("S"), Nonterminal.Get("A"), Nonterminal.Get("B"), Nonterminal.Get("C")));
 
         // Add rule A = 'a' ;
-        rule = grammar.AddRule("A");
-        rule.AddProduction(a);
+        grammar.AddProduction(new(Nonterminal.Get("A"), Terminal.Get("a")));
 
         // Add rule B = 'b' ;
-        rule = grammar.AddRule("B");
-        rule.AddProduction(b);
+        grammar.AddProduction(new(Nonterminal.Get("B"), Terminal.Get("b")));
 
         // Add rule C = 'c' ;
-        rule = grammar.AddRule("C");
-        rule.AddProduction(c);
+        grammar.AddProduction(new(Nonterminal.Get("C"), Terminal.Get("c")));
 
         SplitNonterminalsStep step = new(new TestLogger());
         step.Convert(grammar);
@@ -56,40 +46,24 @@ public class SplitNonterminalsStepTests
     public void TestSplitFive()
     {
         CFG grammar = new();
-        Terminal a = grammar.AddTerminal("a");
-        Terminal b = grammar.AddTerminal("b");
-        Terminal c = grammar.AddTerminal("c");
-        Terminal d = grammar.AddTerminal("d");
-        Terminal e = grammar.AddTerminal("e");
-        Nonterminal A = grammar.AddNonterminal("A");
-        Nonterminal B = grammar.AddNonterminal("B");
-        Nonterminal C = grammar.AddNonterminal("C");
-        Nonterminal D = grammar.AddNonterminal("D");
-        Nonterminal E = grammar.AddNonterminal("E");
 
         // Add rule S = A B C D E ;
-        Rule rule = grammar.AddRule("S");
-        rule.AddProduction(A, B, C, D, E);
+        grammar.AddProduction(new(Nonterminal.Get("S"), Nonterminal.Get("A"), Nonterminal.Get("B"), Nonterminal.Get("C"), Nonterminal.Get("D"), Nonterminal.Get("E")));
 
         // Add rule A = 'a' ;
-        rule = grammar.AddRule("A");
-        rule.AddProduction(a);
+        grammar.AddProduction(new(Nonterminal.Get("A"), Terminal.Get("a")));
 
         // Add rule B = 'b' ;
-        rule = grammar.AddRule("B");
-        rule.AddProduction(b);
+        grammar.AddProduction(new(Nonterminal.Get("B"), Terminal.Get("b")));
 
         // Add rule C = 'c' ;
-        rule = grammar.AddRule("C");
-        rule.AddProduction(c);
+        grammar.AddProduction(new(Nonterminal.Get("C"), Terminal.Get("c")));
 
         // Add rule D = 'd' ;
-        rule = grammar.AddRule("D");
-        rule.AddProduction(d);
+        grammar.AddProduction(new(Nonterminal.Get("D"), Terminal.Get("d")));
 
         // Add rule E = 'e' ;
-        rule = grammar.AddRule("E");
-        rule.AddProduction(e);
+        grammar.AddProduction(new(Nonterminal.Get("E"), Terminal.Get("e")));
 
         SplitNonterminalsStep step = new(new TestLogger());
         step.Convert(grammar);
@@ -113,45 +87,28 @@ public class SplitNonterminalsStepTests
     public void TestSplitMultipleProductions()
     {
         CFG grammar = new();
-        Terminal a = grammar.AddTerminal("a");
-        Terminal b = grammar.AddTerminal("b");
-        Terminal c = grammar.AddTerminal("c");
-        Terminal d = grammar.AddTerminal("d");
-        Nonterminal S1 = grammar.AddNonterminal("S1");
-        Nonterminal S2 = grammar.AddNonterminal("S2");
-        Nonterminal A = grammar.AddNonterminal("A");
-        Nonterminal B = grammar.AddNonterminal("B");
-        Nonterminal C = grammar.AddNonterminal("C");
-        Nonterminal D = grammar.AddNonterminal("D");
 
         // Add rule S = S1 | S2 ;
-        Rule rule = grammar.AddRule("S");
-        rule.AddProduction(S1);
-        rule.AddProduction(S2);
+        grammar.AddProduction(new(Nonterminal.Get("S"), Nonterminal.Get("S1")));
+        grammar.AddProduction(new(Nonterminal.Get("S"), Nonterminal.Get("S2")));
 
         // Add rule S1 = A B C D ;
-        rule = grammar.AddRule("S1");
-        rule.AddProduction(A, B, C, D);
+        grammar.AddProduction(new(Nonterminal.Get("S1"), Nonterminal.Get("A"), Nonterminal.Get("B"), Nonterminal.Get("C"), Nonterminal.Get("D")));
 
         // Add rule S2 = A C D ;
-        rule = grammar.AddRule("S2");
-        rule.AddProduction(A, C, D);
+        grammar.AddProduction(new(Nonterminal.Get("S2"), Nonterminal.Get("A"), Nonterminal.Get("C"), Nonterminal.Get("D")));
 
         // Add rule A = 'a' ;
-        rule = grammar.AddRule("A");
-        rule.AddProduction(a);
+        grammar.AddProduction(new(Nonterminal.Get("A"), Terminal.Get("a")));
 
         // Add rule B = 'b' ;
-        rule = grammar.AddRule("B");
-        rule.AddProduction(b);
+        grammar.AddProduction(new(Nonterminal.Get("B"), Terminal.Get("b")));
 
         // Add rule C = 'C' ;
-        rule = grammar.AddRule("C");
-        rule.AddProduction(c);
+        grammar.AddProduction(new(Nonterminal.Get("C"), Terminal.Get("c")));
 
         // Add rule D = 'd' ;
-        rule = grammar.AddRule("D");
-        rule.AddProduction(d);
+        grammar.AddProduction(new(Nonterminal.Get("D"), Terminal.Get("d")));
 
         SplitNonterminalsStep step = new(new TestLogger());
         step.Convert(grammar);
@@ -174,17 +131,13 @@ public class SplitNonterminalsStepTests
     [TestMethod]
     public void TestSplitNone()
     {
-        CFG grammar = new CFG();
-        Terminal a = grammar.AddTerminal("a");
-        Nonterminal A = grammar.AddNonterminal("A");
+        CFG grammar = new();
 
         // Add rule S = A ;
-        Rule rule = grammar.AddRule("S");
-        rule.AddProduction(A);
+        grammar.AddProduction(new(Nonterminal.Get("S"), Nonterminal.Get("A")));
 
         // Add rule A = 'a' ;
-        rule = grammar.AddRule("A");
-        rule.AddProduction(a);
+        grammar.AddProduction(new(Nonterminal.Get("A"), Terminal.Get("a")));
 
         SplitNonterminalsStep step = new(new TestLogger());
         step.Convert(grammar);
@@ -201,45 +154,28 @@ public class SplitNonterminalsStepTests
     public void TestPerformStepTwice()
     {
         CFG grammar = new();
-        Terminal a = grammar.AddTerminal("a");
-        Terminal b = grammar.AddTerminal("b");
-        Terminal c = grammar.AddTerminal("c");
-        Terminal d = grammar.AddTerminal("d");
-        Nonterminal S1 = grammar.AddNonterminal("S1");
-        Nonterminal S2 = grammar.AddNonterminal("S2");
-        Nonterminal A = grammar.AddNonterminal("A");
-        Nonterminal B = grammar.AddNonterminal("B");
-        Nonterminal C = grammar.AddNonterminal("C");
-        Nonterminal D = grammar.AddNonterminal("D");
 
         // Add rule S = S1 | S2 ;
-        Rule rule = grammar.AddRule("S");
-        rule.AddProduction(S1);
-        rule.AddProduction(S2);
+        grammar.AddProduction(new(Nonterminal.Get("S"), Nonterminal.Get("S1")));
+        grammar.AddProduction(new(Nonterminal.Get("S"), Nonterminal.Get("S2")));
 
         // Add rule S1 = A B C D ;
-        rule = grammar.AddRule("S1");
-        rule.AddProduction(A, B, C, D);
+        grammar.AddProduction(new(Nonterminal.Get("S1"), Nonterminal.Get("A"), Nonterminal.Get("B"), Nonterminal.Get("C"), Nonterminal.Get("D")));
 
         // Add rule S2 = A C D ;
-        rule = grammar.AddRule("S2");
-        rule.AddProduction(A, C, D);
+        grammar.AddProduction(new(Nonterminal.Get("S2"), Nonterminal.Get("A"), Nonterminal.Get("C"), Nonterminal.Get("D")));
 
         // Add rule A = 'a' ;
-        rule = grammar.AddRule("A");
-        rule.AddProduction(a);
+        grammar.AddProduction(new(Nonterminal.Get("A"), Terminal.Get("a")));
 
         // Add rule B = 'b' ;
-        rule = grammar.AddRule("B");
-        rule.AddProduction(b);
+        grammar.AddProduction(new(Nonterminal.Get("B"), Terminal.Get("b")));
 
         // Add rule C = 'C' ;
-        rule = grammar.AddRule("C");
-        rule.AddProduction(c);
+        grammar.AddProduction(new(Nonterminal.Get("C"), Terminal.Get("c")));
 
         // Add rule D = 'd' ;
-        rule = grammar.AddRule("D");
-        rule.AddProduction(d);
+        grammar.AddProduction(new(Nonterminal.Get("D"), Terminal.Get("d")));
 
         SplitNonterminalsStep step = new(new TestLogger());
         step.Convert(grammar);

@@ -19,42 +19,26 @@ public class UnitProductionsStepTests
     public void TestUnitProductions()
     {
         CFG grammar = new();
-        Terminal a = grammar.AddTerminal("a");
-        Terminal b = grammar.AddTerminal("b");
-        Terminal zero = grammar.AddTerminal("0");
-        Terminal one = grammar.AddTerminal("1");
-        Terminal openParen = grammar.AddTerminal("(");
-        Terminal closeParen = grammar.AddTerminal(")");
-        Terminal times = grammar.AddTerminal("*");
-        Terminal plus = grammar.AddTerminal("+");
-        Nonterminal E = grammar.AddNonterminal("E");
-        Nonterminal T = grammar.AddNonterminal("T");
-        Nonterminal F = grammar.AddNonterminal("F");
-        Nonterminal I = grammar.AddNonterminal("I");
 
         // Add rule E = T | E '+' T ;
-        Rule rule = grammar.AddRule("E");
-        rule.AddProduction(T);
-        rule.AddProduction(E, plus, T);
+        grammar.AddProduction(new(Nonterminal.Get("E"), Nonterminal.Get("T")));
+        grammar.AddProduction(new(Nonterminal.Get("E"), Nonterminal.Get("E"), Terminal.Get("+"), Nonterminal.Get("T")));
 
         // Add rule T = F | T '*' F ;
-        rule = grammar.AddRule("T");
-        rule.AddProduction(F);
-        rule.AddProduction(T, times, F);
+        grammar.AddProduction(new(Nonterminal.Get("T"), Nonterminal.Get("F")));
+        grammar.AddProduction(new(Nonterminal.Get("T"), Nonterminal.Get("T"), Terminal.Get("*"), Nonterminal.Get("F")));
 
         // Add rule F = I | ( E ) ;
-        rule = grammar.AddRule("F");
-        rule.AddProduction(I);
-        rule.AddProduction(openParen, E, closeParen);
+        grammar.AddProduction(new(Nonterminal.Get("F"), Nonterminal.Get("I")));
+        grammar.AddProduction(new(Nonterminal.Get("F"), Terminal.Get("("), Nonterminal.Get("E"), Terminal.Get(")")));
 
         // Add rule I = 'a' | 'b' | I 'a' | I 'b' | I '0' | I '1' ;
-        rule = grammar.AddRule("I");
-        rule.AddProduction(a);
-        rule.AddProduction(b);
-        rule.AddProduction(I, a);
-        rule.AddProduction(I, b);
-        rule.AddProduction(I, zero);
-        rule.AddProduction(I, one);
+        grammar.AddProduction(new(Nonterminal.Get("I"), Terminal.Get("a")));
+        grammar.AddProduction(new(Nonterminal.Get("I"), Terminal.Get("b")));
+        grammar.AddProduction(new(Nonterminal.Get("I"), Nonterminal.Get("I"), Terminal.Get("a")));
+        grammar.AddProduction(new(Nonterminal.Get("I"), Nonterminal.Get("I"), Terminal.Get("b")));
+        grammar.AddProduction(new(Nonterminal.Get("I"), Nonterminal.Get("I"), Terminal.Get("0")));
+        grammar.AddProduction(new(Nonterminal.Get("I"), Nonterminal.Get("I"), Terminal.Get("1")));
 
         UnitProductionsStep step = new(new TestLogger());
         step.Convert(grammar);

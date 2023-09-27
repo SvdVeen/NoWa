@@ -18,38 +18,16 @@ public sealed class SplitNonterminalsStep : BaseConversionStep
     public override void Convert(CFG grammar)
     {
         Logger.LogInfo("Splitting production bodies longer than 2...");
-        int initialRuleCount = grammar.RuleCount;
-        int initialNonterminalCount = grammar.Nonterminals.Count;
+        GrammarStats stats = new(grammar);
 
         Dictionary<string, Nonterminal> newNonterminals = new();
-        for (int i = 0; i < grammar.RuleCount; i++)
+        for (int i = 0; i < grammar.Productions.Count; i++)
         {
-            SplitRule(grammar, newNonterminals, grammar.GetRule(i));
+            SplitProduction(grammar, newNonterminals, grammar.Productions[i]);
         }
 
         Logger.LogInfo("Production bodies longer than 2 split.");
-        if (initialRuleCount != grammar.RuleCount)
-        {
-            Logger.LogInfo($"\tIntroduced {grammar.RuleCount - initialRuleCount} rules.");
-        }
-        if (initialNonterminalCount != grammar.Nonterminals.Count)
-        {
-            Logger.LogInfo($"\tIntroduced {grammar.Nonterminals.Count - initialNonterminalCount} nonterminals.");
-        }
-    }
-
-    /// <summary>
-    /// Splits all productions in a rule if they are longer than 3 symbols.
-    /// </summary>
-    /// <param name="grammar">The grammar to convert.</param>
-    /// <param name="newNonterminals">The newly introduced nonterminals in the step.</param>
-    /// <param name="rule">The rule to split productions in.</param>
-    private void SplitRule(CFG grammar, IDictionary<string, Nonterminal> newNonterminals, Rule rule)
-    {
-        foreach (Expression production in rule.Productions)
-        {
-            SplitProduction(grammar, newNonterminals, production);
-        }
+        stats.LogDiff(grammar, Logger);
     }
 
     /// <summary>
@@ -58,24 +36,24 @@ public sealed class SplitNonterminalsStep : BaseConversionStep
     /// <param name="grammar">The grammar to convert.</param>
     /// <param name="newNonterminals">The newly introduced nonterminals in the step.</param>
     /// <param name="production">The production to split.</param>
-    private void SplitProduction(CFG grammar, IDictionary<string, Nonterminal> newNonterminals, Expression production)
+    private void SplitProduction(CFG grammar, IDictionary<string, Nonterminal> newNonterminals, Production production)
     {
-        while (production.Count > 2)
+        while (production.Body.Count > 2)
         {
             Logger.LogDebug($"Replacing in production {production}.");
-            string newName = $"{production[^2]}-{production[^1]}";
+            string newName = $"{production.Body[^2]}-{production.Body[^1]}";
             if (!newNonterminals.TryGetValue(newName, out Nonterminal? newNonterminal))
             {
-                Rule newRule = grammar.AddRule(newName);
-                newRule.AddProduction(production[^2], production[^1]);
-                newNonterminal = newRule.Nonterminal;
+                Production newProduction = new(Nonterminal.Get(newName), production.Body[^2], production.Body[^1]);
+                grammar.AddProduction(newProduction);
+                newNonterminal = newProduction.Head;
                 newNonterminals.Add(newName, newNonterminal);
-                Logger.LogDebug($"Added rule {newRule}");
+                Logger.LogDebug($"Added production {newProduction}");
             }
-            production.RemoveAt(production.Count - 1);
-            production.RemoveAt(production.Count - 1);
-            production.Add(newNonterminal);
-            Logger.LogDebug($"New production: {production}");
+            production.Body.RemoveAt(production.Body.Count - 1);
+            production.Body.RemoveAt(production.Body.Count - 1);
+            production.Body.Add(newNonterminal);
+            Logger.LogDebug($"Updated production: {production}");
         }
     }
 }

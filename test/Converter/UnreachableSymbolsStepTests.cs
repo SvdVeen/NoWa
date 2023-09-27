@@ -19,30 +19,22 @@ public class UnreachableSymbolsStepTests
     public void TestUnreachableSymbols()
     {
         CFG grammar = new();
-        Terminal a = grammar.AddTerminal("a");
-        Terminal b = grammar.AddTerminal("b");
-        Nonterminal S = grammar.AddNonterminal("S");
-        Nonterminal A = grammar.AddNonterminal("A");
-        Nonterminal B = grammar.AddNonterminal("B");
 
-        // Add rule S = A B ;
-        Rule rule = grammar.AddRule("S");
-        rule.AddProduction(A, B);
-        rule.AddProduction(a);
+        // Add rule S = A B | 'a' ;
+        grammar.AddProduction(new(Nonterminal.Get("S"), Nonterminal.Get("A"), Nonterminal.Get("B")));
+        grammar.AddProduction(new(Nonterminal.Get("S"), Terminal.Get("a")));
 
-        // Add rule A = 'a' | 'b'
-        rule = grammar.AddRule("A");
-        rule.AddProduction(a);
-        rule.AddProduction(b);
+        // Add rule A = 'a' ;
+        grammar.AddProduction(new(Nonterminal.Get("A"), Terminal.Get("b")));
 
         UnreachableSymbolsStep step = new(new TestLogger());
         step.Convert(grammar);
 
         Assert.AreEqual("S = 'a' ;", grammar.ToString());
         Assert.AreEqual(1, grammar.Nonterminals.Count);
-        Assert.AreSame(S, grammar.Nonterminals[0]);
+        Assert.AreSame(Nonterminal.Get("S"), grammar.Nonterminals[0]);
         Assert.AreEqual(1, grammar.Terminals.Count);
-        Assert.AreSame(a, grammar.Terminals[0]);
+        Assert.AreSame(Terminal.Get("a"), grammar.Terminals[0]);
     }
 
     /// <summary>
@@ -52,32 +44,21 @@ public class UnreachableSymbolsStepTests
     public void TestManyUnreachableSymbols()
     {
         CFG grammar = new();
-        Terminal a = grammar.AddTerminal("a");
-        Terminal b = grammar.AddTerminal("b");
-        Terminal c = grammar.AddTerminal("c");
-        Terminal d = grammar.AddTerminal("d");
-        Nonterminal A = grammar.AddNonterminal("A");
-        Nonterminal B = grammar.AddNonterminal("B");
-        Nonterminal C = grammar.AddNonterminal("C");
 
         // Add rule S = A B C | A | 'a' ;
-        Rule rule = grammar.AddRule("S");
-        rule.AddProduction(A, B, C);
-        rule.AddProduction(A);
-        rule.AddProduction(a);
+        grammar.AddProduction(new(Nonterminal.Get("S"), Nonterminal.Get("A"), Nonterminal.Get("B"), Nonterminal.Get("C")));
+        grammar.AddProduction(new(Nonterminal.Get("S"), Nonterminal.Get("A")));
+        grammar.AddProduction(new(Nonterminal.Get("S"), Terminal.Get("a")));
 
         // Add rule A = C | 'a' ;
-        rule = grammar.AddRule("A");
-        rule.AddProduction(C);
-        rule.AddProduction(a);
+        grammar.AddProduction(new(Nonterminal.Get("A"), Nonterminal.Get("C")));
+        grammar.AddProduction(new(Nonterminal.Get("A"), Terminal.Get("a")));
 
         // Add rule C = 'c' ;
-        rule = grammar.AddRule("C");
-        rule.AddProduction(c);
+        grammar.AddProduction(new(Nonterminal.Get("C"), Terminal.Get("c")));
 
         // Add rule D = 'd' ;
-        rule = grammar.AddRule("D");
-        rule.AddProduction(d);
+        grammar.AddProduction(new(Nonterminal.Get("D"), Terminal.Get("d")));
 
         UnreachableSymbolsStep step = new(new TestLogger());
         step.Convert(grammar);

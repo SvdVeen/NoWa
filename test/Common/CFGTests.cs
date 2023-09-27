@@ -92,10 +92,10 @@ public class CFGTests
         CFG grammar = new();
         Assert.AreEqual(0, grammar.Terminals.Count);
 
-        Terminal a = grammar.AddTerminal("a");
+        _ = grammar.AddTerminal("a");
         Assert.AreEqual(1, grammar.Terminals.Count);
 
-        Terminal b = grammar.AddTerminal("b");
+        _ = grammar.AddTerminal("b");
         Assert.AreEqual(2, grammar.Terminals.Count);
 
         grammar.RemoveTerminalAt(1);
@@ -215,10 +215,10 @@ public class CFGTests
         CFG grammar = new();
         Assert.AreEqual(0, grammar.Nonterminals.Count);
 
-        Nonterminal a = grammar.AddNonterminal("a");
+        _ = grammar.AddNonterminal("a");
         Assert.AreEqual(1, grammar.Nonterminals.Count);
 
-        Nonterminal b = grammar.AddNonterminal("b");
+        _ = grammar.AddNonterminal("b");
         Assert.AreEqual(2, grammar.Nonterminals.Count);
 
         grammar.RemoveNonterminalAt(1);
