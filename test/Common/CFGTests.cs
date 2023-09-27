@@ -4,7 +4,7 @@
 /// Contains unit tests for the <see cref="CFG"/> class.
 /// </summary>
 [TestClass]
-public class GrammarTests
+public class CFGTests
 {
     /// <summary>
     /// Tests an empty grammar.
