@@ -19,7 +19,7 @@ public sealed class SplitNonterminalsStep : BaseConversionStep
     {
         Logger.LogInfo("Splitting production bodies longer than 2...");
         int initialRuleCount = grammar.RuleCount;
-        int initialNonterminalCount = grammar.NonterminalCount;
+        int initialNonterminalCount = grammar.Nonterminals.Count;
 
         Dictionary<string, Nonterminal> newNonterminals = new();
         for (int i = 0; i < grammar.RuleCount; i++)
@@ -32,9 +32,9 @@ public sealed class SplitNonterminalsStep : BaseConversionStep
         {
             Logger.LogInfo($"\tIntroduced {grammar.RuleCount - initialRuleCount} rules.");
         }
-        if (initialNonterminalCount != grammar.NonterminalCount)
+        if (initialNonterminalCount != grammar.Nonterminals.Count)
         {
-            Logger.LogInfo($"\tIntroduced {grammar.NonterminalCount - initialNonterminalCount} nonterminals.");
+            Logger.LogInfo($"\tIntroduced {grammar.Nonterminals.Count - initialNonterminalCount} nonterminals.");
         }
     }
 

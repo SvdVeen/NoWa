@@ -19,7 +19,7 @@ public sealed class UnitProductionsStep : BaseConversionStep
     {
         Logger.LogInfo("Eliminating unit productions...");
         int initialRuleCount = grammar.RuleCount;
-        int initialNonterminalCount = grammar.NonterminalCount;
+        int initialNonterminalCount = grammar.Nonterminals.Count;
 
         var unitPairs = GetUnitPairs(grammar);
 
@@ -73,9 +73,9 @@ public sealed class UnitProductionsStep : BaseConversionStep
         {
             Logger.LogInfo($"\tRemoved {initialRuleCount - grammar.RuleCount} rules.");
         }
-        if (initialNonterminalCount != grammar.NonterminalCount)
+        if (initialNonterminalCount != grammar.Nonterminals.Count)
         {
-            Logger.LogInfo($"\tRemoved {initialNonterminalCount - grammar.NonterminalCount} nonterminals.");
+            Logger.LogInfo($"\tRemoved {initialNonterminalCount - grammar.Nonterminals.Count} nonterminals.");
         }
     }
 
@@ -88,9 +88,9 @@ public sealed class UnitProductionsStep : BaseConversionStep
     {
         HashSet<Tuple<Nonterminal,Nonterminal>> pairs = new();
         // Base step: every nonterminal pairs with itself.
-        for (int i = 0; i < grammar.NonterminalCount; i++)
+        for (int i = 0; i < grammar.Nonterminals.Count; i++)
         {
-            Nonterminal nonterminal = grammar.GetNonterminal(i);
+            Nonterminal nonterminal = grammar.Nonterminals[i];
             if (pairs.Add(new(nonterminal, nonterminal)))
             {
                 Logger.LogDebug($"Adding unit pair ({nonterminal}, {nonterminal})");

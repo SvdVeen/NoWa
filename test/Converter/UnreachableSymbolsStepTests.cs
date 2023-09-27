@@ -39,8 +39,8 @@ public class UnreachableSymbolsStepTests
         step.Convert(grammar);
 
         Assert.AreEqual("S = 'a' ;", grammar.ToString());
-        Assert.AreEqual(1, grammar.NonterminalCount);
-        Assert.AreSame(S, grammar.GetNonterminal(0));
+        Assert.AreEqual(1, grammar.Nonterminals.Count);
+        Assert.AreSame(S, grammar.Nonterminals[0]);
         Assert.AreEqual(1, grammar.Terminals.Count);
         Assert.AreSame(a, grammar.Terminals[0]);
     }
@@ -87,7 +87,7 @@ public class UnreachableSymbolsStepTests
             $"A = C | 'a' ;{Environment.NewLine}" +
             $"C = 'c' ;", grammar.ToString());
         Assert.AreEqual(3, grammar.RuleCount);
-        Assert.AreEqual(3, grammar.NonterminalCount);
+        Assert.AreEqual(3, grammar.Nonterminals.Count);
         Assert.AreEqual(2, grammar.Terminals.Count);
     }
 }

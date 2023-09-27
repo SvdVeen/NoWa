@@ -19,7 +19,7 @@ public sealed class UnreachableSymbolsStep : BaseConversionStep
     {
         Logger.LogInfo("Eliminating unreachable symbols...");
         int initialRuleCount = grammar.RuleCount;
-        int initialNonterminalCount = grammar.NonterminalCount;
+        int initialNonterminalCount = grammar.Nonterminals.Count;
         int initialTerminalCount = grammar.Terminals.Count;
 
         EliminateNonGenerating(grammar);
@@ -30,9 +30,9 @@ public sealed class UnreachableSymbolsStep : BaseConversionStep
         {
             Logger.LogInfo($"\tRemoved {initialRuleCount - grammar.RuleCount} rules");
         }
-        if (initialNonterminalCount != grammar.NonterminalCount)
+        if (initialNonterminalCount != grammar.Nonterminals.Count)
         {
-            Logger.LogInfo($"\tRemoved {initialNonterminalCount - grammar.NonterminalCount} nonterminals");
+            Logger.LogInfo($"\tRemoved {initialNonterminalCount - grammar.Nonterminals.Count} nonterminals");
         }
         if (initialTerminalCount != grammar.Terminals.Count)
         {
@@ -97,9 +97,9 @@ public sealed class UnreachableSymbolsStep : BaseConversionStep
     {
         ISet<ISymbol> generatingSymbols = GetGeneratingSymbols(grammar);
         HashSet<Nonterminal> nongeneratingSymbols = new();
-        for (int i = 0; i < grammar.NonterminalCount; i++)
+        for (int i = 0; i < grammar.Nonterminals.Count; i++)
         {
-            Nonterminal nonterminal = grammar.GetNonterminal(i);
+            Nonterminal nonterminal = grammar.Nonterminals[i];
             if (!generatingSymbols.Contains(nonterminal))
             {
                 Logger.LogDebug($"Found nongenerating symbol: {nonterminal}");
@@ -196,9 +196,9 @@ public sealed class UnreachableSymbolsStep : BaseConversionStep
     /// <param name="grammar">The grammar to remove the nonterminals from.</param>
     private void RemoveNongeneratingNonterminals(ISet<Nonterminal> nongeneratingSymbols, CFG grammar)
     {
-        for (int i = 0; i < grammar.NonterminalCount; i++)
+        for (int i = 0; i < grammar.Nonterminals.Count; i++)
         {
-            Nonterminal nonterminal = grammar.GetNonterminal(i);
+            Nonterminal nonterminal = grammar.Nonterminals[i];
             if (nongeneratingSymbols.Contains(nonterminal))
             {
                 Logger.LogDebug($"Removing nongenerating nonterminal: {nonterminal}");
@@ -232,9 +232,9 @@ public sealed class UnreachableSymbolsStep : BaseConversionStep
             }
         }
 
-        for (int i = 0; i < grammar.NonterminalCount; i++)
+        for (int i = 0; i < grammar.Nonterminals.Count; i++)
         {
-            Nonterminal nonterminal = grammar.GetNonterminal(i);
+            Nonterminal nonterminal = grammar.Nonterminals[i];
             if (!reachableSymbols.Contains(nonterminal))
             {
                 Logger.LogDebug($"Removing unreachable nonterminal {nonterminal}");

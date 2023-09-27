@@ -7,9 +7,7 @@ namespace NoWa.Common;
 /// </summary>
 public class CFG
 {
-    protected readonly Dictionary<string, Nonterminal> _nonterminalsByValue = new();
     protected readonly Dictionary<Nonterminal, Rule> _rulesByNonterminal = new();
-    protected readonly List<Nonterminal> _nonterminals = new();
     protected readonly List<Rule> _rules = new();
 
     #region Symbols
@@ -68,41 +66,13 @@ public class CFG
     #endregion Terminals
 
     #region Nonterminals
+    protected readonly List<Nonterminal> _nonterminalsList = new();
+    protected readonly HashSet<Nonterminal> _nonterminalsSet = new();
 
     /// <summary>
-    /// Gets the number of nonterminals in the grammar.
+    /// Gets the list of all nonterminals in the grammar.
     /// </summary>
-    public int NonterminalCount { get => _nonterminals.Count; }
-
-    /// <summary>
-    /// Gets a nonterminal in the grammar with the given index.
-    /// </summary>
-    /// <param name="index">The index of the nonterminal to get.</param>
-    /// <returns>The <see cref="Nonterminal"/> with the given index.</returns>
-    /// <exception cref="ArgumentOutOfRangeException">The index is outside the bounds of the nonterminal list.</exception>
-    public Nonterminal GetNonterminal(int index)
-    {
-        if (index < 0 || index >= _nonterminals.Count)
-        {
-            throw new ArgumentOutOfRangeException(nameof(index));
-        }
-        return _nonterminals[index];
-    }
-
-    /// <summary>
-    /// Gets a nonterminal in the grammar if one with the given value exists.
-    /// </summary>
-    /// <param name="value">The value of nonterminal.</param>
-    /// <returns>The nonterminal with the given value.</returns>
-    /// <exception cref="ArgumentException">No nonterminal with the given value exists in the grammar.</exception>
-    public Nonterminal GetNonterminal(string value)
-    {
-        if (!_nonterminalsByValue.TryGetValue(value, out Nonterminal? nonterminal))
-        {
-            throw new ArgumentException($"Could not find a terminal with the value '{value}'", nameof(value));
-        }
-        return nonterminal;
-    }
+    public IReadOnlyList<Nonterminal> Nonterminals { get => _nonterminalsList; }
 
     /// <summary>
     /// Adds nonterminal to the grammar.
@@ -111,11 +81,10 @@ public class CFG
     /// <returns>The added nonterminal or an existing nonterminal with the same value.</returns>
     public Nonterminal AddNonterminal(string value)
     {
-        if (!_nonterminalsByValue.TryGetValue(value, out Nonterminal? nonterminal))
+        Nonterminal nonterminal = Nonterminal.Get(value);
+        if (_nonterminalsSet.Add(nonterminal))
         {
-            nonterminal = Nonterminal.Get(value);
-            _nonterminals.Add(nonterminal);
-            _nonterminalsByValue[value] = nonterminal;
+            _nonterminalsList.Add(nonterminal);
         }
         return nonterminal;
     }
@@ -127,15 +96,24 @@ public class CFG
     /// <exception cref="ArgumentOutOfRangeException">The index is outside of the bounds of the nonterminal list.</exception>
     public void RemoveNonterminalAt(int index)
     {
-        if (index < 0 || index >= _nonterminals.Count)
+        if (index < 0 || index >= _nonterminalsList.Count)
         {
             throw new ArgumentOutOfRangeException(nameof(index));
         }
-        Nonterminal nonterminal = _nonterminals[index];
-        _nonterminals.RemoveAt(index);
-        _nonterminalsByValue.Remove(nonterminal.Value);
+        Nonterminal nonterminal = _nonterminalsList[index];
+        _nonterminalsList.RemoveAt(index);
+        _nonterminalsSet.Remove(nonterminal);
     }
 
+    /// <summary>
+    /// Checks whether the grammar contains a nonterminal.
+    /// </summary>
+    /// <param name="nonterminal">The nonterminal to check for.</param>
+    /// <returns><see langword="true"/> if the grammar contains the given <paramref name="nonterminal"/>, <see langword="false"/> otherwise.</returns>
+    public bool ContainsNonterminal(Nonterminal nonterminal)
+    {
+        return _nonterminalsSet.Contains(nonterminal);
+    }
     #endregion Nonterminals
 
     /// <summary>
@@ -146,9 +124,9 @@ public class CFG
     {
         if (symbol is Nonterminal nonterminal)
         {
-            if (_nonterminalsByValue.Remove(symbol.Value))
+            if (_nonterminalsSet.Remove(nonterminal))
             {
-                _ = _nonterminals.Remove(nonterminal);
+                _ = _nonterminalsList.Remove(nonterminal);
             }
         }
         else if (symbol is Terminal terminal)
@@ -168,9 +146,9 @@ public class CFG
     {
         if (symbol is Nonterminal nonterminal)
         {
-            if (_nonterminalsByValue.TryAdd(nonterminal.Value, nonterminal))
+            if (_nonterminalsSet.Add(nonterminal))
             {
-                _nonterminals.Add(nonterminal);
+                _nonterminalsList.Add(nonterminal);
             }
         }
         else if (symbol is Terminal terminal)
@@ -241,9 +219,10 @@ public class CFG
     /// <exception cref="ArgumentException">No rule with the given nonterminal value was found.</exception>
     public Rule GetRule(string nonterminal)
     {
-        if (_nonterminalsByValue.TryGetValue(nonterminal, out Nonterminal? nt) && _rulesByNonterminal.TryGetValue(nt!, out Rule? rule))
+        Nonterminal nt = Nonterminal.Get(nonterminal);
+        if (_nonterminalsSet.Contains(nt) && _rulesByNonterminal.TryGetValue(nt, out Rule? rule))
         {
-            return rule;
+            return rule!;
         }
         throw new ArgumentException($"Could not find a rule with the nonterminal '{nonterminal}'.", nameof(nonterminal));
     }
@@ -258,7 +237,7 @@ public class CFG
     {
         if (_rulesByNonterminal.TryGetValue(nonterminal, out Rule? rule))
         {
-            return rule;
+            return rule!;
         }
         throw new ArgumentException($"Could not find a rule with the nonterminal '{nonterminal}'.", nameof(nonterminal));
     }
@@ -271,7 +250,8 @@ public class CFG
     /// <returns><see langword="true"/> if a nonterminal was found. <see langword="false"/> if it was not found.</returns>
     public bool TryGetRule(string nonterminal, out Rule? rule)
     {
-        if (_nonterminalsByValue.TryGetValue(nonterminal, out Nonterminal? nt) && _rulesByNonterminal.TryGetValue(nt!, out rule))
+        Nonterminal nt = Nonterminal.Get(nonterminal);
+        if (_nonterminalsSet.Contains(nt) && _rulesByNonterminal.TryGetValue(nt, out rule))
         {
             return true;
         }
@@ -302,7 +282,10 @@ public class CFG
     /// <param name="nonterminal">The value of the nonterminal matching the rule.</param>
     /// <returns><see langword="true"/> if a rule with this nonterminal already exists; <see langword="false"/> otherwise/</returns>
     private bool RuleExists(string nonterminal)
-        => _nonterminalsByValue.TryGetValue(nonterminal, out Nonterminal? nt) && RuleExists(nt!);
+    {
+        Nonterminal nt = Nonterminal.Get(nonterminal);
+        return _nonterminalsSet.Contains(nt) && RuleExists(nt);
+    }
 
     /// <summary>
     /// Checks whether a rule already exists in the grammar.
@@ -403,8 +386,8 @@ public class CFG
             throw new ArgumentOutOfRangeException(nameof(index));
         }
         Rule rule = _rules[index];
-        _nonterminalsByValue.Remove(rule.Nonterminal.Value);
-        _nonterminals.Remove(rule.Nonterminal);
+        _nonterminalsSet.Remove(rule.Nonterminal);
+        _nonterminalsList.Remove(rule.Nonterminal);
         _rulesByNonterminal.Remove(rule.Nonterminal);
         _rules.RemoveAt(index);
     }
