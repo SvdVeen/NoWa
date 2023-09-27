@@ -122,7 +122,8 @@ public class Expression : IList<ISymbol>
     /// <inheritdoc/>
     public override bool Equals(object? obj)
     {
-        return obj is Expression expression && _symbols.SequenceEqual(expression._symbols);
+        return obj is Expression expression &&
+               _symbols.SequenceEqual(expression._symbols);
     }
 
     /// <inheritdoc/>
@@ -134,5 +135,15 @@ public class Expression : IList<ISymbol>
             result = result * 19 + symbol.GetHashCode();
         }
         return result;
+    }
+
+    public static bool operator ==(Expression? left, Expression? right)
+    {
+        return EqualityComparer<Expression>.Default.Equals(left, right);
+    }
+
+    public static bool operator !=(Expression? left, Expression? right)
+    {
+        return !(left == right);
     }
 }

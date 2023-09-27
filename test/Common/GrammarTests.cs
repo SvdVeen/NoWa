@@ -64,7 +64,7 @@ public class GrammarTests
     public void TestGetRuleNonterminal()
     {
         CFG grammar = new();
-        Nonterminal a = new("a");
+        Nonterminal a = Nonterminal.Get("a");
         Rule rule = new(a);
         grammar.AddRule(rule);
         Assert.AreSame(rule, grammar.GetRule(a));
@@ -77,7 +77,7 @@ public class GrammarTests
     public void TestGetRuleNonterminalNotExists()
     {
         CFG grammar = new();
-        _ = Assert.ThrowsException<ArgumentException>(() => grammar.GetRule(new Nonterminal("a")));
+        _ = Assert.ThrowsException<ArgumentException>(() => grammar.GetRule(Nonterminal.Get("a")));
     }
 
     /// <summary>
@@ -87,7 +87,7 @@ public class GrammarTests
     public void TestAddRule()
     {
         CFG grammar = new();
-        Rule rule = new(new("a"));
+        Rule rule = new(Nonterminal.Get("a"));
         grammar.AddRule(rule);
         Assert.AreEqual(1, grammar.RuleCount, "RuleCount does not match.");
         Assert.AreSame(rule, grammar.GetRule(0), "Rule does not match.");
@@ -100,7 +100,7 @@ public class GrammarTests
     public void TestTryGetRuleString()
     {
         CFG grammar = new();
-        Rule rule = new(new("a"));
+        Rule rule = new(Nonterminal.Get("a"));
         grammar.AddRule(rule);
         Assert.IsTrue(grammar.TryGetRule("a", out Rule? res), "TryGetRule did not return true.");
         Assert.AreSame(rule, res, "Rules do not match.");
@@ -124,7 +124,7 @@ public class GrammarTests
     public void TestTryGetRuleNonterminal()
     {
         CFG grammar = new();
-        Nonterminal a = new("a");
+        Nonterminal a = Nonterminal.Get("a");
         Rule rule = new(a);
         grammar.AddRule(rule);
         Assert.IsTrue(grammar.TryGetRule(a, out Rule? res), "TryGetRule did not return true.");
@@ -138,7 +138,7 @@ public class GrammarTests
     public void TestTryGetRuleNonterminalNotExists()
     {
         CFG grammar = new();
-        Assert.IsFalse(grammar.TryGetRule(new Nonterminal("a"), out Rule? res), "TryGetRule did not return false.");
+        Assert.IsFalse(grammar.TryGetRule(Nonterminal.Get("a"), out Rule? res), "TryGetRule did not return false.");
         Assert.IsNull(res, "Result is not null.");
     }
 
@@ -149,8 +149,8 @@ public class GrammarTests
     public void TestAddRuleAlreadyExists()
     {
         CFG grammar = new();
-        grammar.AddRule(new Rule(new("a")));
-        Rule rule = new(new("a"));
+        grammar.AddRule(new Rule(Nonterminal.Get("a")));
+        Rule rule = new(Nonterminal.Get("a"));
         _ = Assert.ThrowsException<ArgumentException>(() => grammar.AddRule(rule), "Adding the rule did not throw an exception.");
         Assert.AreEqual(1, grammar.RuleCount);
     }
@@ -187,7 +187,7 @@ public class GrammarTests
     {
         CFG grammar = new();
         _ = grammar.AddRule("a");
-        Rule rule = new(new("b"));
+        Rule rule = new(Nonterminal.Get("b"));
         grammar.InsertRule(0, rule);
         Assert.AreEqual(2, grammar.RuleCount, "RuleCount does not match.");
         Assert.AreSame(rule, grammar.GetRule(0), "Rule does not match.");
@@ -201,7 +201,7 @@ public class GrammarTests
     {
         CFG grammar = new();
         _ = grammar.AddRule("a");
-        Rule rule = new(new("a"));
+        Rule rule = new(Nonterminal.Get("a"));
         _ = Assert.ThrowsException<ArgumentException>(() => grammar.InsertRule(0, rule), "The insertion did not throw an exception.");
         Assert.AreEqual(1, grammar.RuleCount, "RuleCount does not match.");
     }
@@ -218,7 +218,7 @@ public class GrammarTests
     {
         CFG grammar = new();
         _ = grammar.AddRule("a");
-        _ = Assert.ThrowsException<ArgumentOutOfRangeException>(() => grammar.InsertRule(index, new Rule(new("b"))), "The insertion did not throw an exception.");
+        _ = Assert.ThrowsException<ArgumentOutOfRangeException>(() => grammar.InsertRule(index, new Rule(Nonterminal.Get("b"))), "The insertion did not throw an exception.");
         Assert.AreEqual(1, grammar.RuleCount, "RuleCount does not match.");
     }
 
@@ -332,7 +332,7 @@ public class GrammarTests
     public void TestAddNonterminalAlreadyExists()
     {
         CFG grammar = new();
-        Nonterminal a = new("a");
+        Nonterminal a = Nonterminal.Get("a");
         Rule rule = new(a);
         grammar.AddRule(rule);
         Assert.AreSame(rule.Nonterminal, grammar.AddNonterminal("a"));
@@ -449,8 +449,8 @@ public class GrammarTests
     /// <param name="newSymbol"></param>
     private static void TestReplaceSymbol(ISymbol symbol, ISymbol newSymbol, bool removeSymbol)
     {
-        Nonterminal Ntest = new("test");
-        Nonterminal Ttest = new("test");
+        Nonterminal Ntest = Nonterminal.Get("test");
+        Nonterminal Ttest = Nonterminal.Get("test");
         CFG grammar = new();
 
         Rule rule1 = grammar.AddRule("test1");
@@ -498,7 +498,7 @@ public class GrammarTests
     [DataRow("a", "a", false)]
     [DataRow("a", "b", false)]
     public void TestReplaceTT(string symbol, string newSymbol, bool removeSymbol)
-        => TestReplaceSymbol(new Terminal(symbol), new Terminal(newSymbol), removeSymbol);
+        => TestReplaceSymbol(Terminal.Get(symbol), Terminal.Get(newSymbol), removeSymbol);
 
     /// <summary>
     /// Tests the <see cref="CFG.ReplaceSymbol(ISymbol, ISymbol, bool)"/> function for replacing a <see cref="Terminal"/> with a <see cref="Nonterminal"/>.
@@ -512,7 +512,7 @@ public class GrammarTests
     [DataRow("a", "a", false)]
     [DataRow("a", "b", false)]
     public void TestReplaceTNT(string symbol, string newSymbol, bool removeSymbol)
-        => TestReplaceSymbol(new Terminal(symbol), new Nonterminal(newSymbol), removeSymbol);
+        => TestReplaceSymbol(Terminal.Get(symbol), Nonterminal.Get(newSymbol), removeSymbol);
 
     /// <summary>
     /// Tests the <see cref="CFG.ReplaceSymbol(ISymbol, ISymbol, bool)"/> function for replacing a <see cref="Terminal"/> with an <see cref="EmptyString"/>.
@@ -522,7 +522,7 @@ public class GrammarTests
     [DataRow(true)]
     [DataRow(false)]
     public void TestReplaceTE(bool removeSymbol)
-        => TestReplaceSymbol(new Terminal("a"), EmptyString.Instance, removeSymbol);
+        => TestReplaceSymbol(Terminal.Get("a"), EmptyString.Instance, removeSymbol);
 
     /// <summary>
     /// Tests the <see cref="CFG.ReplaceSymbol(ISymbol, ISymbol, bool)"/> function for replacing a <see cref="Nonterminal"/> with a <see cref="Nonterminal"/>.
@@ -536,7 +536,7 @@ public class GrammarTests
     [DataRow("a", "a", false)]
     [DataRow("a", "b", false)]
     public void TestReplaceNTNT(string symbol, string newSymbol, bool removeSymbol)
-        => TestReplaceSymbol(new Nonterminal(symbol), new Nonterminal(newSymbol), removeSymbol);
+        => TestReplaceSymbol(Nonterminal.Get(symbol), Nonterminal.Get(newSymbol), removeSymbol);
 
     /// <summary>
     /// Tests the <see cref="CFG.ReplaceSymbol(ISymbol, ISymbol, bool)"/> function for replacing a <see cref="Nonterminal"/> with a <see cref="Terminal"/>.
@@ -550,7 +550,7 @@ public class GrammarTests
     [DataRow("a", "a", false)]
     [DataRow("a", "b", false)]
     public void TestReplaceNTT(string symbol, string newSymbol, bool removeSymbol)
-        => TestReplaceSymbol(new Nonterminal(symbol), new Terminal(newSymbol), removeSymbol);
+        => TestReplaceSymbol(Nonterminal.Get(symbol), Terminal.Get(newSymbol), removeSymbol);
 
     /// <summary>
     /// Tests the <see cref="CFG.ReplaceSymbol(ISymbol, ISymbol, bool)"/> function for replacing a <see cref="Nonterminal"/> with an <see cref="EmptyString"/>.
@@ -560,7 +560,7 @@ public class GrammarTests
     [DataRow(true)]
     [DataRow(false)]
     public void TestReplaceNTE(bool removeSymbol)
-        => TestReplaceSymbol(new Nonterminal("a"), EmptyString.Instance, removeSymbol);
+        => TestReplaceSymbol(Nonterminal.Get("a"), EmptyString.Instance, removeSymbol);
 
     /// <summary>
     /// Tests the <see cref="CFG.ReplaceSymbol(ISymbol, ISymbol, bool)"/> function for replacing an <see cref="EmptyString"/> with a <see cref="Terminal"/>.
@@ -570,7 +570,7 @@ public class GrammarTests
     [DataRow(true)]
     [DataRow(false)]
     public void TestReplaceET(bool removeSymbol)
-        => TestReplaceSymbol(EmptyString.Instance, new Terminal("a"), removeSymbol);
+        => TestReplaceSymbol(EmptyString.Instance, Terminal.Get("a"), removeSymbol);
 
     /// <summary>
     /// Tests the <see cref="CFG.ReplaceSymbol(ISymbol, ISymbol, bool)"/> function for replacing an <see cref="EmptyString"/> with a <see cref="Nonterminal"/>.
@@ -580,7 +580,7 @@ public class GrammarTests
     [DataRow(true)]
     [DataRow(false)]
     public void TestReplaceENT(bool removeSymbol)
-        => TestReplaceSymbol(EmptyString.Instance, new Nonterminal("a"), removeSymbol);
+        => TestReplaceSymbol(EmptyString.Instance, Nonterminal.Get("a"), removeSymbol);
 
     /// <summary>
     /// Tests the <see cref="CFG.ToString"/> function for a non-empty grammar.
@@ -591,11 +591,11 @@ public class GrammarTests
         CFG grammar = new();
 
         Rule rule1 = grammar.AddRule("S");
-        rule1.Productions.Add(new() { new Nonterminal("B"), new Terminal("c") });
+        rule1.Productions.Add(new() { Nonterminal.Get("B"), Terminal.Get("c") });
         rule1.Productions.Add(new() { EmptyString.Instance });
 
         Rule rule2 = grammar.AddRule("B");
-        rule2.Productions.Add(new() { new Terminal("b") });
+        rule2.Productions.Add(new() { Terminal.Get("b") });
 
         Assert.AreEqual($"S = B 'c' | '' ;{Environment.NewLine}B = 'b' ;", grammar.ToString());
     }

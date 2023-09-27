@@ -5,31 +5,39 @@
 /// </summary>
 public class Nonterminal : ISymbol
 {
-    private string _value;
+    #region Flyweight
+    private static readonly Dictionary<string, Nonterminal> _nonterminals = new();
 
     /// <summary>
-    /// Gets or sets the value of the nonterminal.
+    /// Gets an instance of the <see cref="Nonterminal"/> class with the given value.
     /// </summary>
-    /// <exception cref="ArgumentNullException">Thrown when an empty value is passed.</exception>
-    public string Value
+    /// <param name="value">The value to get a nonterminal for.</param>
+    /// <returns>A shared instance of a <see cref="Nonterminal"/> with the given value.</returns>
+    /// <exception cref="ArgumentNullException">The value passed is empty or whitespace.</exception>
+    public static Nonterminal Get(string value)
     {
-        get => _value;
-        set
+        if (!_nonterminals.TryGetValue(value, out Nonterminal? nonterminal))
         {
-            if (string.IsNullOrWhiteSpace(value))
-            {
-                throw new ArgumentNullException(nameof(value), "Cannot give an empty value to a nonterminal.");
-            }
-            _value = value;
+            nonterminal = new Nonterminal(value);
+            _nonterminals[value] = nonterminal;
         }
+        return nonterminal!;
     }
+    #endregion Flyweight
+
+    private readonly string _value;
+
+    /// <summary>
+    /// Gets the value of the nonterminal.
+    /// </summary>
+    public string Value { get => _value; }
 
     /// <summary>
     /// Construct a new nonterminal with the given value.
     /// </summary>
     /// <param name="value">The value of the nonterminal.</param>
     /// <exception cref="ArgumentNullException">Thrown when an empty <paramref name="value"/> is passed.</exception>
-    public Nonterminal(string value)
+    private Nonterminal(string value)
     {
         if (string.IsNullOrWhiteSpace(value))
         {
@@ -47,4 +55,14 @@ public class Nonterminal : ISymbol
 
     /// <inheritdoc/>
     public override int GetHashCode() => HashCode.Combine(Value);
+
+    public static bool operator ==(Nonterminal? left, Nonterminal? right)
+    {
+        return EqualityComparer<Nonterminal>.Default.Equals(left, right);
+    }
+
+    public static bool operator !=(Nonterminal? left, Nonterminal? right)
+    {
+        return !(left == right);
+    }
 }

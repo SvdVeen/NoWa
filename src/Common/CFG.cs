@@ -7,21 +7,16 @@ namespace NoWa.Common;
 /// </summary>
 public class CFG
 {
-    private readonly Dictionary<string, Nonterminal> _nonterminalsByValue = new();
-    private readonly Dictionary<string, Terminal> _terminalsByValue = new();
-    private readonly Dictionary<Nonterminal, Rule> _rulesByNonterminal = new();
-    private readonly List<Nonterminal> _nonterminals = new();
-    private readonly List<Terminal> _terminals = new();
-    private readonly List<Rule> _rules = new();
+    protected readonly Dictionary<string, Nonterminal> _nonterminalsByValue = new();
+    protected readonly Dictionary<string, Terminal> _terminalsByValue = new();
+    protected readonly Dictionary<Nonterminal, Rule> _rulesByNonterminal = new();
+    protected readonly List<Nonterminal> _nonterminals = new();
+    protected readonly List<Terminal> _terminals = new();
+    protected readonly List<Rule> _rules = new();
 
     #region Symbols
 
     #region Terminals
-
-    /// <summary>
-    /// Gets a list of terminals in the grammar.
-    /// </summary>
-    public IReadOnlyList<Terminal> Terminals { get => _terminals; }
 
     /// <summary>
     /// Gets the number of terminals in the grammar.
@@ -67,7 +62,7 @@ public class CFG
     {
         if (!_terminalsByValue.TryGetValue(value, out Terminal? terminal))
         {
-            terminal = new(value);
+            terminal = Terminal.Get(value);
             _terminals.Add(terminal);
             _terminalsByValue[value] = terminal;
         }
@@ -93,11 +88,6 @@ public class CFG
     #endregion Terminals
 
     #region Nonterminals
-
-    /// <summary>
-    /// Gets a list of nonterminals in the grammar.
-    /// </summary>
-    public IReadOnlyList<Nonterminal> Nonterminals { get => _nonterminals; }
 
     /// <summary>
     /// Gets the number of nonterminals in the grammar.
@@ -143,7 +133,7 @@ public class CFG
     {
         if (!_nonterminalsByValue.TryGetValue(value, out Nonterminal? nonterminal))
         {
-            nonterminal = new(value);
+            nonterminal = Nonterminal.Get(value);
             _nonterminals.Add(nonterminal);
             _nonterminalsByValue[value] = nonterminal;
         }

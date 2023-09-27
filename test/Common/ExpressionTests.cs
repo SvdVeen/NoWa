@@ -114,8 +114,8 @@ public class ExpressionTests
     [TestMethod]
     public void TestPrefilled()
     {
-        Nonterminal a = new("a");
-        Terminal b = new("b");
+        Nonterminal a = Nonterminal.Get("a");
+        Terminal b = Terminal.Get("b");
         Expression expression = new(new ISymbol[] { a, EmptyString.Instance, b });
         Assert.AreEqual(3, expression.Count, "The count of a pre-filled expression does not match.");
         Assert.AreSame(a, expression[0], "The index accessor of a pre-filled expression does not match.");
@@ -129,7 +129,7 @@ public class ExpressionTests
     public void TestAdd()
     {
         Expression expression = new();
-        Nonterminal a = new("a");
+        Nonterminal a = Nonterminal.Get("a");
         expression.Add(a);
         Assert.AreSame(a, expression[0]);
     }
@@ -151,7 +151,7 @@ public class ExpressionTests
     [TestMethod]
     public void TestContains()
     {
-        Nonterminal a = new("a");
+        Nonterminal a = Nonterminal.Get("a");
         Expression expression = new() { EmptyString.Instance, a };
         Assert.IsTrue(expression.Contains(a));
     }
@@ -162,8 +162,8 @@ public class ExpressionTests
     [TestMethod]
     public void TestCopyTo()
     {
-        Nonterminal a = new("a");
-        Terminal b = new("b");
+        Nonterminal a = Nonterminal.Get("a");
+        Terminal b = Terminal.Get("b");
         Expression expression = new() { a, b };
         ISymbol[] array = new ISymbol[2];
         expression.CopyTo(array, 0);
@@ -179,9 +179,9 @@ public class ExpressionTests
     {
         Expression expression = new()
         {
-            new Nonterminal("a"),
-            new Nonterminal("b"),
-            new Terminal("c"),
+            Nonterminal.Get("a"),
+            Nonterminal.Get("b"),
+            Terminal.Get("c"),
             EmptyString.Instance
         };
 
@@ -198,8 +198,8 @@ public class ExpressionTests
     [TestMethod]
     public void TestIndexOf()
     {
-        Nonterminal a = new("a");
-        Expression expression = new() { new Nonterminal("n"), a, EmptyString.Instance };
+        Nonterminal a = Nonterminal.Get("a");
+        Expression expression = new() { Nonterminal.Get("n"), a, EmptyString.Instance };
         Assert.AreEqual(1, expression.IndexOf(a));
     }
 
@@ -209,8 +209,8 @@ public class ExpressionTests
     [TestMethod]
     public void TestInsert()
     {
-        Nonterminal a = new("a");
-        Expression expression = new() { EmptyString.Instance, EmptyString.Instance, new Terminal("b") };
+        Nonterminal a = Nonterminal.Get("a");
+        Expression expression = new() { EmptyString.Instance, EmptyString.Instance, Terminal.Get("b") };
         expression.Insert(1, a);
         Assert.AreSame(a, expression[1]);
     }
@@ -221,8 +221,8 @@ public class ExpressionTests
     [TestMethod]
     public void TestRemove()
     {
-        Terminal b = new("b");
-        Expression expression = new() { new Nonterminal("c"), b, EmptyString.Instance };
+        Terminal b = Terminal.Get("b");
+        Expression expression = new() { Nonterminal.Get("c"), b, EmptyString.Instance };
         expression.Remove(b);
         Assert.AreEqual(2, expression.Count, "Count did not match");
         Assert.IsFalse(expression.Contains(b), "Expression contains removed item.");
@@ -234,7 +234,7 @@ public class ExpressionTests
     [TestMethod]
     public void TestRemoveAt()
     {
-        Expression expression = new() { new Nonterminal("b"), new Terminal("c"), EmptyString.Instance };
+        Expression expression = new() { Nonterminal.Get("b"), Terminal.Get("c"), EmptyString.Instance };
         expression.RemoveAt(1);
         Assert.AreEqual(2, expression.Count);
     }
@@ -247,8 +247,8 @@ public class ExpressionTests
     /// <param name="newSymbol">The symbol to replace the original with.</param>
     private static void TestReplaceSymbol(ISymbol symbol, ISymbol newSymbol)
     {
-        Nonterminal NTest = new("test");
-        Terminal TTest = new("test");
+        Nonterminal NTest = Nonterminal.Get("test");
+        Terminal TTest = Terminal.Get("test");
         Expression expression = new() { NTest, symbol, NTest, NTest, symbol, symbol, TTest };
         expression.Replace(symbol, newSymbol);
         ExpressionAssert.AreSameEntries(expression, NTest, newSymbol, NTest, NTest, newSymbol, newSymbol, TTest);
@@ -263,7 +263,7 @@ public class ExpressionTests
     [DataRow("a", "a")]
     [DataRow("a", "b")]
     public void TestReplaceTT(string symbol, string newSymbol) =>
-        TestReplaceSymbol(new Terminal(symbol), new Terminal(newSymbol));
+        TestReplaceSymbol(Terminal.Get(symbol), Terminal.Get(newSymbol));
 
     /// <summary>
     /// Tests the <see cref="Expression.Replace(ISymbol, ISymbol)"/> function for replacing a <see cref="Terminal"/> with a <see cref="Nonterminal"/>.
@@ -274,14 +274,14 @@ public class ExpressionTests
     [DataRow("a", "a")]
     [DataRow("a", "b")]
     public void TestReplaceTNT(string symbol, string newSymbol) =>
-        TestReplaceSymbol(new Terminal(symbol), new Nonterminal(newSymbol));
+        TestReplaceSymbol(Terminal.Get(symbol), Nonterminal.Get(newSymbol));
 
     /// <summary>
     /// Tests the <see cref="Expression.Replace(ISymbol, ISymbol)"/> function for replacing a <see cref="Terminal"/> with an <see cref="EmptyString"/>.
     /// </summary>
     [TestMethod]
     public void TestReplaceTE() =>
-        TestReplaceSymbol(new Terminal("a"), EmptyString.Instance);
+        TestReplaceSymbol(Terminal.Get("a"), EmptyString.Instance);
 
     /// <summary>
     /// Tests the <see cref="Expression.Replace(ISymbol, ISymbol)"/> function for replacing a <see cref="Nonterminal"/> with a <see cref="Nonterminal"/>.
@@ -292,7 +292,7 @@ public class ExpressionTests
     [DataRow("a", "a")]
     [DataRow("a", "b")]
     public void TestReplaceNTNT(string symbol, string newSymbol) =>
-        TestReplaceSymbol(new Nonterminal(symbol), new Nonterminal(newSymbol));
+        TestReplaceSymbol(Nonterminal.Get(symbol), Nonterminal.Get(newSymbol));
 
     /// <summary>
     /// Tests the <see cref="Expression.Replace(ISymbol, ISymbol)"/> function for replacing a <see cref="Nonterminal"/> with a <see cref="Terminal"/>.
@@ -303,26 +303,26 @@ public class ExpressionTests
     [DataRow("a", "a")]
     [DataRow("a", "b")]
     public void TestReplaceNTT(string symbol, string newSymbol) =>
-        TestReplaceSymbol(new Nonterminal(symbol), new Terminal(newSymbol));
+        TestReplaceSymbol(Nonterminal.Get(symbol), Terminal.Get(newSymbol));
 
     /// <summary>
     /// Tests the <see cref="Expression.Replace(ISymbol, ISymbol)"/> function for replacing a <see cref="Nonterminal"/> with an <see cref="EmptyString"/>.
     /// </summary>
     [TestMethod]
     public void TestReplaceNTE() =>
-        TestReplaceSymbol(new Nonterminal("a"), EmptyString.Instance);
+        TestReplaceSymbol(Nonterminal.Get("a"), EmptyString.Instance);
 
     /// <summary>
     /// Tests the <see cref="Expression.Replace(ISymbol, ISymbol)"/> function for replacing an <see cref="EmptyString"/> with a <see cref="Terminal"/>.
     /// </summary>
     [TestMethod]
-    public void TestReplaceET() => TestReplaceSymbol(EmptyString.Instance, new Terminal("a"));
+    public void TestReplaceET() => TestReplaceSymbol(EmptyString.Instance, Terminal.Get("a"));
 
     /// <summary>
     /// Tests the <see cref="Expression.Replace(ISymbol, ISymbol)"/> function for replacing an <see cref="EmptyString"/> with a <see cref="Nonterminal"/>.
     /// </summary>
     [TestMethod]
-    public void TestReplaceENT() => TestReplaceSymbol(EmptyString.Instance, new Nonterminal("a"));
+    public void TestReplaceENT() => TestReplaceSymbol(EmptyString.Instance, Nonterminal.Get("a"));
 
     /// <summary>
     /// Tests the <see cref="Expression.ToString"/> function for a non-empty expression.
@@ -330,7 +330,7 @@ public class ExpressionTests
     [TestMethod]
     public void TestToStringNotEmpty()
     {
-        Expression expression = new() { new Nonterminal("a"), new Terminal("b"), EmptyString.Instance };
+        Expression expression = new() { Nonterminal.Get("a"), Terminal.Get("b"), EmptyString.Instance };
         Assert.AreEqual("a 'b' ''", expression.ToString());
     }
 
@@ -340,7 +340,7 @@ public class ExpressionTests
     [TestMethod]
     public void TestEqualsEqual()
     {
-        Expression a = new() { new Nonterminal("a"), new Terminal("b"), new Nonterminal("c") };
+        Expression a = new() { Nonterminal.Get("a"), Terminal.Get("b"), Nonterminal.Get("c") };
         Expression b = new(a);
         Assert.IsTrue(a.Equals(b));
     }
@@ -351,8 +351,8 @@ public class ExpressionTests
     [TestMethod]
     public void TestEqualsNotEqual()
     {
-        Expression a = new() { new Nonterminal("a"), new Terminal("b"), new Nonterminal("c") };
-        Expression b = new() { new Terminal("q"), new Nonterminal("f"), EmptyString.Instance };
+        Expression a = new() { Nonterminal.Get("a"), Terminal.Get("b"), Nonterminal.Get("c") };
+        Expression b = new() { Terminal.Get("q"), Nonterminal.Get("f"), EmptyString.Instance };
         Assert.IsFalse(a.Equals(b));
     }
 
@@ -362,7 +362,7 @@ public class ExpressionTests
     [TestMethod]
     public void TestHashCodeEqual()
     {
-        Expression a = new() { new Nonterminal("a"), new Terminal("b"), new Nonterminal("c") };
+        Expression a = new() { Nonterminal.Get("a"), Terminal.Get("b"), Nonterminal.Get("c") };
         Expression b = new(a);
         Assert.AreEqual(a.GetHashCode(), b.GetHashCode());
     }
@@ -373,8 +373,8 @@ public class ExpressionTests
     [TestMethod]
     public void TestHashCodeNotEqual()
     {
-        Expression a = new() { new Nonterminal("a"), new Terminal("b"), new Nonterminal("c") };
-        Expression b = new() { new Terminal("q"), new Nonterminal("f"), EmptyString.Instance };
+        Expression a = new() { Nonterminal.Get("a"), Terminal.Get("b"), Nonterminal.Get("c") };
+        Expression b = new() { Terminal.Get("q"), Nonterminal.Get("f"), EmptyString.Instance };
         Assert.AreNotEqual(a.GetHashCode(), b.GetHashCode());
     }
 }

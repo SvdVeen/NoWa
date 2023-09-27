@@ -7,64 +7,42 @@
 public class NonterminalTests
 {
     /// <summary>
-    /// Tests whether the constructor properly instantiates <see cref="Nonterminal.Value"/>.
+    /// Tests whether the <see cref="Nonterminal.Get(string)"/> method properly instantiates <see cref="Nonterminal.Value"/>.
     /// </summary>
     [TestMethod]
-    public void ConstructorTest()
+    public void GetTest()
     {
-        Nonterminal nonterminal = new("test");
+        Nonterminal nonterminal = Nonterminal.Get("test");
         Assert.AreEqual("test", nonterminal.Value);
     }
 
     /// <summary>
-    /// Tests whether the constructor throws an <see cref="ArgumentNullException"/> if an empty value is passed.
+    /// Tests whether the <see cref="Nonterminal.Get(string)"/> method throws an <see cref="ArgumentNullException"/> if an empty value is passed.
     /// </summary>
     [TestMethod]
-    public void ConstructorTestEmptyValue()
+    public void GetTestEmptyValue()
     {
-        _ = Assert.ThrowsException<ArgumentNullException>(() => _ = new Nonterminal(""));
+        _ = Assert.ThrowsException<ArgumentNullException>(() => _ = Nonterminal.Get(""));
     }
 
     /// <summary>
-    /// Tests whether the constructor throws an <see cref="ArgumentNullException"/> if a whitespace value is passed.
+    /// Tests whether the <see cref="Nonterminal.Get(string)"/> method throws an <see cref="ArgumentNullException"/> if a whitespace value is passed.
     /// </summary>
     [TestMethod]
-    public void ConstructorTestWhiteSpaceValue()
+    public void GetTestWhiteSpaceValue()
     {
-        _ = Assert.ThrowsException<ArgumentNullException>(() => _ = new Nonterminal("    "));
+        _ = Assert.ThrowsException<ArgumentNullException>(() => _ = Nonterminal.Get("    "));
     }
 
     /// <summary>
-    /// Tests whether the setter of <see cref="Nonterminal.Value"/> and its getter work properly.
+    /// Tests whether the <see cref="Nonterminal.Get(string)"/> method returns the same instance for the same value.
     /// </summary>
     [TestMethod]
-    public void ValueTest()
+    public void GetTestSame()
     {
-#pragma warning disable IDE0017 // Simplify object initialization
-        Nonterminal nonterminal = new("a");
-#pragma warning restore IDE0017 // Simplify object initialization
-        nonterminal.Value = "b";
-        Assert.AreEqual("b", nonterminal.Value);
-    }
-
-    /// <summary>
-    /// Tests whether the setter of <see cref="Nonterminal.Value"/> throws an <see cref="ArgumentNullException"/> if an empty value is passed.
-    /// </summary>
-    [TestMethod]
-    public void ValueTestEmpty()
-    {
-        Nonterminal nonterminal = new("test");
-        _ = Assert.ThrowsException<ArgumentNullException>(() => nonterminal.Value = "");
-    }
-
-    /// <summary>
-    /// Tests whether the setter of <see cref="Nonterminal.Value"/> throws an <see cref="ArgumentNullException"/> if a whitespace value is passed.
-    /// </summary>
-    [TestMethod]
-    public void ValueTestWhiteSpace()
-    {
-        Nonterminal nonterminal = new("test");
-        _ = Assert.ThrowsException<ArgumentNullException>(() => nonterminal.Value = "     ");
+        Nonterminal a = Nonterminal.Get("test");
+        Nonterminal b = Nonterminal.Get("test");
+        Assert.AreSame(a, b);
     }
 
     /// <summary>
@@ -73,7 +51,7 @@ public class NonterminalTests
     [TestMethod]
     public void ToStringTest()
     {
-        Nonterminal nonterminal = new("test");
+        Nonterminal nonterminal = Nonterminal.Get("test");
         Assert.AreEqual("test", nonterminal.ToString());
     }
 
@@ -83,8 +61,8 @@ public class NonterminalTests
     [TestMethod]
     public void EqualsTestEqual()
     {
-        Nonterminal a = new("test");
-        Nonterminal b = new("test");
+        Nonterminal a = Nonterminal.Get("test");
+        Nonterminal b = Nonterminal.Get("test");
         Assert.AreEqual(a, b);
     }
 
@@ -94,8 +72,8 @@ public class NonterminalTests
     [TestMethod]
     public void EqualsTestNotEqual()
     {
-        Nonterminal a = new("test");
-        Nonterminal b = new("nope");
+        Nonterminal a = Nonterminal.Get("test");
+        Nonterminal b = Nonterminal.Get("nope");
         Assert.AreNotEqual(a, b);
     }
 
@@ -105,8 +83,8 @@ public class NonterminalTests
     [TestMethod]
     public void GetHashCodeTestEqual()
     {
-        Nonterminal a = new("test");
-        Nonterminal b = new("test");
+        Nonterminal a = Nonterminal.Get("test");
+        Nonterminal b = Nonterminal.Get("test");
         Assert.AreEqual(a.GetHashCode(), b.GetHashCode());
     }
 
@@ -116,8 +94,8 @@ public class NonterminalTests
     [TestMethod]
     public void GetHashCodeTestNotEqual()
     {
-        Nonterminal a = new("test");
-        Nonterminal b = new("nope");
+        Nonterminal a = Nonterminal.Get("test");
+        Nonterminal b = Nonterminal.Get("nope");
         Assert.AreNotEqual(a.GetHashCode(), b.GetHashCode());
     }
 }

@@ -7,64 +7,42 @@
 public class TerminalTests
 {
     /// <summary>
-    /// Tests whether the constructor properly instantiates <see cref="Terminal.Value"/>.
+    /// Tests whether the <see cref="Terminal.Get(string)"/> method properly instantiates <see cref="Terminal.Value"/>.
     /// </summary>
     [TestMethod]
-    public void ConstructorTest()
+    public void GetTest()
     {
-        Terminal terminal = new("test");
+        Terminal terminal = Terminal.Get("test");
         Assert.AreEqual("test", terminal.Value);
     }
 
     /// <summary>
-    /// Tests whether the constructor throws an <see cref="ArgumentNullException"/> if an empty value is passed.
+    /// Tests whether the <see cref="Terminal.Get(string)"/> method throws an <see cref="ArgumentNullException"/> if an empty value is passed.
     /// </summary>
     [TestMethod]
-    public void ConstructorTestEmptyValue()
+    public void GetTestEmptyValue()
     {
-        _ = Assert.ThrowsException<ArgumentNullException>(() => _ = new Terminal(""));
+        _ = Assert.ThrowsException<ArgumentNullException>(() => _ = Terminal.Get(""));
     }
 
     /// <summary>
-    /// Tests whether the constructor throws an <see cref="ArgumentNullException"/> if a whitespace value is passed.
+    /// Tests whether the <see cref="Terminal.Get(string)"/> method throws an <see cref="ArgumentNullException"/> if a whitespace value is passed.
     /// </summary>
     [TestMethod]
-    public void ConstructorTestWhiteSpaceValue()
+    public void GetTestWhiteSpaceValue()
     {
-        _ = Assert.ThrowsException<ArgumentNullException>(() => _ = new Terminal("    "));
+        _ = Assert.ThrowsException<ArgumentNullException>(() => _ = Terminal.Get("    "));
     }
 
     /// <summary>
-    /// Tests whether the setter of <see cref="Terminal.Value"/> and its getter work properly.
+    /// Tests whether the <see cref="Terminal.Get(string)"/> method returns the same instance for the same value.
     /// </summary>
     [TestMethod]
-    public void ValueTest()
+    public void GetTestSame()
     {
-#pragma warning disable IDE0017 // Simplify object initialization
-        Terminal terminal = new("a");
-#pragma warning restore IDE0017 // Simplify object initialization
-        terminal.Value = "b";
-        Assert.AreEqual("b", terminal.Value);
-    }
-
-    /// <summary>
-    /// Tests whether the setter of <see cref="Terminal.Value"/> throws an <see cref="ArgumentNullException"/> if an empty value is passed.
-    /// </summary>
-    [TestMethod]
-    public void ValueTestEmpty()
-    {
-        Terminal terminal = new("test");
-        _ = Assert.ThrowsException<ArgumentNullException>(() => terminal.Value = "");
-    }
-
-    /// <summary>
-    /// Tests whether the setter of <see cref="Terminal.Value"/> throws an <see cref="ArgumentNullException"/> if a whitespace value is passed.
-    /// </summary>
-    [TestMethod]
-    public void ValueTestWhiteSpace()
-    {
-        Terminal terminal = new("test");
-        _ = Assert.ThrowsException<ArgumentNullException>(() => terminal.Value = "     ");
+        Terminal a = Terminal.Get("test");
+        Terminal b = Terminal.Get("test");
+        Assert.AreSame(a, b);
     }
 
     /// <summary>
@@ -73,7 +51,7 @@ public class TerminalTests
     [TestMethod]
     public void ToStringTest()
     {
-        Terminal Terminal = new("test");
+        Terminal Terminal = Terminal.Get("test");
         Assert.AreEqual("'test'", Terminal.ToString());
     }
 
@@ -83,8 +61,8 @@ public class TerminalTests
     [TestMethod]
     public void EqualsTestEqual()
     {
-        Terminal a = new("test");
-        Terminal b = new("test");
+        Terminal a = Terminal.Get("test");
+        Terminal b = Terminal.Get("test");
         Assert.AreEqual(a, b);
     }
 
@@ -94,8 +72,8 @@ public class TerminalTests
     [TestMethod]
     public void EqualsTestNotEqual()
     {
-        Terminal a = new("test");
-        Terminal b = new("nope");
+        Terminal a = Terminal.Get("test");
+        Terminal b = Terminal.Get("nope");
         Assert.AreNotEqual(a, b);
     }
 
@@ -105,8 +83,8 @@ public class TerminalTests
     [TestMethod]
     public void GetHashCodeTestEqual()
     {
-        Terminal a = new("test");
-        Terminal b = new("test");
+        Terminal a = Terminal.Get("test");
+        Terminal b = Terminal.Get("test");
         Assert.AreEqual(a.GetHashCode(), b.GetHashCode());
     }
 
@@ -116,8 +94,8 @@ public class TerminalTests
     [TestMethod]
     public void GetHashCodeTestNotEqual()
     {
-        Terminal a = new("test");
-        Terminal b = new("nope");
+        Terminal a = Terminal.Get("test");
+        Terminal b = Terminal.Get("nope");
         Assert.AreNotEqual(a.GetHashCode(), b.GetHashCode());
     }
 }

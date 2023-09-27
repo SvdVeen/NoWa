@@ -34,4 +34,14 @@ public class EmptyString : ISymbol
 
     /// <inheritdoc/>
     public override int GetHashCode() => HashCode.Combine(Value);
+
+    public static bool operator ==(EmptyString? left, EmptyString? right)
+    {
+        return EqualityComparer<EmptyString>.Default.Equals(left, right);
+    }
+
+    public static bool operator !=(EmptyString? left, EmptyString? right)
+    {
+        return !(left == right);
+    }
 }
