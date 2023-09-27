@@ -97,9 +97,8 @@ public sealed class UnreachableSymbolsStep : BaseConversionStep
     {
         ISet<ISymbol> generatingSymbols = GetGeneratingSymbols(grammar);
         HashSet<Nonterminal> nongeneratingSymbols = new();
-        for (int i = 0; i < grammar.Nonterminals.Count; i++)
+        foreach (Nonterminal nonterminal in grammar.Nonterminals)
         {
-            Nonterminal nonterminal = grammar.Nonterminals[i];
             if (!generatingSymbols.Contains(nonterminal))
             {
                 Logger.LogDebug($"Found nongenerating symbol: {nonterminal}");
@@ -119,9 +118,8 @@ public sealed class UnreachableSymbolsStep : BaseConversionStep
         HashSet<ISymbol> generatingSymbols = new();
 
         // All terminals are generating.
-        for (int i = 0; i < grammar.Terminals.Count; i++)
+        foreach (Terminal terminal in grammar.Terminals)
         {
-            Terminal terminal = grammar.Terminals[i];
             Logger.LogDebug($"Found generating symbol: {terminal}");
             generatingSymbols.Add(terminal);
         }

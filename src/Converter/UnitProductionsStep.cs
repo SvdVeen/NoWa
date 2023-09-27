@@ -88,9 +88,8 @@ public sealed class UnitProductionsStep : BaseConversionStep
     {
         HashSet<Tuple<Nonterminal,Nonterminal>> pairs = new();
         // Base step: every nonterminal pairs with itself.
-        for (int i = 0; i < grammar.Nonterminals.Count; i++)
+        foreach (Nonterminal nonterminal in grammar.Nonterminals)
         {
-            Nonterminal nonterminal = grammar.Nonterminals[i];
             if (pairs.Add(new(nonterminal, nonterminal)))
             {
                 Logger.LogDebug($"Adding unit pair ({nonterminal}, {nonterminal})");
