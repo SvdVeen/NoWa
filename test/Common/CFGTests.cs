@@ -19,6 +19,241 @@ public class CFGTests
         Assert.AreEqual("Empty grammar", grammar.ToString(), "ToString does not match.");
     }
 
+    #region Terminals
+
+    /// <summary>
+    /// Tests the <see cref="CFG.Terminals"/> property after adding a terminal.
+    /// </summary>
+    [TestMethod]
+    public void TestTerminals()
+    {
+        CFG grammar = new();
+        Terminal a = grammar.AddTerminal("a");
+        Terminal b = grammar.Terminals[0];
+        Assert.AreSame(a, b);
+    }
+
+    /// <summary>
+    /// Tests whether <see cref="CFG.Tonterminal(int)"/> throws an exception for an index outside the acceptable range.
+    /// </summary>
+    [TestMethod]
+    [DataTestMethod]
+    [DataRow(int.MinValue)]
+    [DataRow(-1)]
+    [DataRow(1)]
+    [DataRow(int.MaxValue)]
+    public void TestGetTerminalIndexOutOfRange(int index)
+    {
+        CFG grammar = new();
+        Terminal a = grammar.AddTerminal("a");
+        _ = Assert.ThrowsException<ArgumentOutOfRangeException>(() => grammar.Terminals[index]);
+    }
+
+    /// <summary>
+    /// Tests adding a terminal with the <see cref="CFG.AddTerminal(Terminal)"/> method.
+    /// </summary>
+    [TestMethod]
+    public void TestAddTerminal()
+    {
+        CFG grammar = new();
+        Terminal a = Terminal.Get("a");
+        Assert.IsTrue(grammar.AddTerminal(a));
+    }
+
+    /// <summary>
+    /// Tests adding a terminal twice with the <see cref="CFG.AddTerminal(Terminal)"/> method.
+    /// </summary>
+    [TestMethod]
+    public void TestAddTerminalTwice()
+    {
+        CFG grammar = new();
+        Terminal a = Terminal.Get("a");
+        _ = grammar.AddTerminal(a);
+        Assert.IsFalse(grammar.AddTerminal(a));
+    }
+
+    /// <summary>
+    /// Test the <see cref="CFG.AddNonterminal(string)"/> function.
+    /// </summary>
+    [TestMethod]
+    public void TestAddTerminalValue()
+    {
+        CFG grammar = new();
+        Terminal a = grammar.AddTerminal("a");
+        Assert.AreSame(a, grammar.AddTerminal("a"));
+    }
+
+    /// <summary>
+    /// Tests the <see cref="CFG.Terminals"/> property's count after adding and removing various terminals.
+    /// </summary>
+    [TestMethod]
+    public void TestTerminalsCount()
+    {
+        CFG grammar = new();
+        Assert.AreEqual(0, grammar.Terminals.Count);
+
+        Terminal a = grammar.AddTerminal("a");
+        Assert.AreEqual(1, grammar.Terminals.Count);
+
+        Terminal b = grammar.AddTerminal("b");
+        Assert.AreEqual(2, grammar.Terminals.Count);
+
+        grammar.RemoveTerminalAt(1);
+        Assert.AreEqual(1, grammar.Terminals.Count);
+
+        grammar.RemoveTerminalAt(0);
+        Assert.AreEqual(0, grammar.Terminals.Count);
+    }
+
+    /// <summary>
+    /// Tests the <see cref="CFG.ContainsTerminal(Terminal)"/> method for a terminal that exists in the grammar.
+    /// </summary>
+    [TestMethod]
+    public void TestContainsTerminal()
+    {
+        CFG grammar = new();
+        Terminal a = grammar.AddTerminal("a");
+        Assert.IsTrue(grammar.ContainsTerminal(a));
+    }
+
+    /// <summary>
+    /// Tests the <see cref="CFG.ContainsTerminal(Terminal)"/> method for a terminal that does not exist in the grammar.
+    /// </summary>
+    [TestMethod]
+    public void TestDoesNotContainTerminal()
+    {
+        CFG grammar = new();
+        _ = grammar.AddTerminal("b");
+        Assert.IsFalse(grammar.ContainsTerminal(Terminal.Get("a")));
+    }
+
+    #endregion Terminals
+
+    #region Nonterminals
+
+    /// <summary>
+    /// Tests the <see cref="CFG.Nonterminals"/> property after adding a nonterminal.
+    /// </summary>
+    [TestMethod]
+    public void TestGetNonterminalIndex()
+    {
+        CFG grammar = new();
+        Nonterminal a = grammar.AddNonterminal("a");
+        Nonterminal b = grammar.Nonterminals[0];
+        Assert.AreSame(a, b);
+    }
+
+    /// <summary>
+    /// Tests whether <see cref="CFG.Nonterminals"/> throws an exception for an index outside the acceptable range.
+    /// </summary>
+    [TestMethod]
+    [DataTestMethod]
+    [DataRow(int.MinValue)]
+    [DataRow(-1)]
+    [DataRow(1)]
+    [DataRow(int.MaxValue)]
+    public void TestGetNonterminalIndexOutOfRange(int index)
+    {
+        CFG grammar = new();
+        Nonterminal a = grammar.AddNonterminal("a");
+        _ = Assert.ThrowsException<ArgumentOutOfRangeException>(() => grammar.Nonterminals[index]);
+    }
+
+    /// <summary>
+    /// Tests adding a nonterminal with the <see cref="CFG.AddNonterminal(Nonterminal)"/> method.
+    /// </summary>
+    [TestMethod]
+    public void TestAddNonterminal()
+    {
+        CFG grammar = new();
+        Nonterminal A = Nonterminal.Get("A");
+        Assert.IsTrue(grammar.AddNonterminal(A));
+    }
+
+    /// <summary>
+    /// Tests adding a nonterminal twice with the <see cref="CFG.AddNonterminal(Nonterminal)"/> method.
+    /// </summary>
+    [TestMethod]
+    public void TestAddNonterminalTwice()
+    {
+        CFG grammar = new();
+        Nonterminal A = Nonterminal.Get("A");
+        _ = grammar.AddNonterminal(A);
+        Assert.IsFalse(grammar.AddNonterminal(A));
+    }
+
+    /// <summary>
+    /// Test the <see cref="CFG.AddNonterminal(string)"/> function.
+    /// </summary>
+    [TestMethod]
+    public void TestAddNonterminalValue()
+    {
+        CFG grammar = new();
+        Nonterminal a = grammar.AddNonterminal("a");
+        Assert.AreSame(a, grammar.AddNonterminal("a"));
+    }
+
+    /// <summary>
+    /// Test the <see cref="CFG.AddNonterminal(string)"/> function.
+    /// </summary>
+    [TestMethod]
+    public void TestAddNonterminalAlreadyExists()
+    {
+        CFG grammar = new();
+        Nonterminal a = Nonterminal.Get("a");
+        Rule rule = new(a);
+        grammar.AddRule(rule);
+        Assert.AreSame(rule.Nonterminal, grammar.AddNonterminal("a"));
+    }
+
+    /// <summary>
+    /// Tests the <see cref="CFG.Nonterminals"/>.Count property after adding and removing various nonterminals.
+    /// </summary>
+    [TestMethod]
+    public void TestNonterminalCount()
+    {
+        CFG grammar = new();
+        Assert.AreEqual(0, grammar.Nonterminals.Count);
+
+        Nonterminal a = grammar.AddNonterminal("a");
+        Assert.AreEqual(1, grammar.Nonterminals.Count);
+
+        Nonterminal b = grammar.AddNonterminal("b");
+        Assert.AreEqual(2, grammar.Nonterminals.Count);
+
+        grammar.RemoveNonterminalAt(1);
+        Assert.AreEqual(1, grammar.Nonterminals.Count);
+
+        grammar.RemoveNonterminalAt(0);
+        Assert.AreEqual(0, grammar.Nonterminals.Count);
+    }
+
+    /// <summary>
+    /// Tests the <see cref="CFG.ContainsNonterminal(Nonterminal)"/> method for a nonterminal that exists in the grammar.
+    /// </summary>
+    [TestMethod]
+    public void TestContainsNonterminal()
+    {
+        CFG grammar = new();
+        Nonterminal A = grammar.AddNonterminal("A");
+        Assert.IsTrue(grammar.ContainsNonterminal(A));
+    }
+
+    /// <summary>
+    /// Tests the <see cref="CFG.ContainsNonterminal(Nonterminal)"/> method for a nonterminal that does not exist in the grammar.
+    /// </summary>
+    [TestMethod]
+    public void TestDoesNotContainNonterminal()
+    {
+        CFG grammar = new();
+        _ = grammar.AddNonterminal("B");
+        Assert.IsFalse(grammar.ContainsNonterminal(Nonterminal.Get("A")));
+    }
+
+    #endregion Nonterminals
+
+    #region Rules
+
     /// <summary>
     /// Tests the <see cref="CFG.GetRule(int)"/> function for a rule index outside the bounds of the rule list.
     /// </summary>
@@ -265,184 +500,9 @@ public class CFGTests
         Assert.AreEqual(1, grammar.RuleCount, "RuleCount does not match.");
     }
 
-    /// <summary>
-    /// Tests the <see cref="CFG.Nonterminals"/> property after adding a nonterminal.
-    /// </summary>
-    [TestMethod]
-    public void TestGetNonterminalIndex()
-    {
-        CFG grammar = new();
-        Nonterminal a = grammar.AddNonterminal("a");
-        Nonterminal b = grammar.Nonterminals[0];
-        Assert.AreSame(a, b);
-    }
+    #endregion Rules
 
-    /// <summary>
-    /// Tests whether <see cref="CFG.Nonterminals"/> throws an exception for an index outside the acceptable range.
-    /// </summary>
-    [TestMethod]
-    [DataTestMethod]
-    [DataRow(int.MinValue)]
-    [DataRow(-1)]
-    [DataRow(1)]
-    [DataRow(int.MaxValue)]
-    public void TestGetNonterminalIndexOutOfRange(int index)
-    {
-        CFG grammar = new();
-        Nonterminal a = grammar.AddNonterminal("a");
-        _ = Assert.ThrowsException<ArgumentOutOfRangeException>(() => grammar.Nonterminals[index]);
-    }
-
-    /// <summary>
-    /// Test the <see cref="CFG.AddNonterminal(string)"/> function.
-    /// </summary>
-    [TestMethod]
-    public void TestAddNonterminal()
-    {
-        CFG grammar = new();
-        Nonterminal a = grammar.AddNonterminal("a");
-        Assert.AreSame(a, grammar.AddNonterminal("a"));
-    }
-
-    /// <summary>
-    /// Test the <see cref="CFG.AddNonterminal(string)"/> function.
-    /// </summary>
-    [TestMethod]
-    public void TestAddNonterminalAlreadyExists()
-    {
-        CFG grammar = new();
-        Nonterminal a = Nonterminal.Get("a");
-        Rule rule = new(a);
-        grammar.AddRule(rule);
-        Assert.AreSame(rule.Nonterminal, grammar.AddNonterminal("a"));
-    }
-
-    /// <summary>
-    /// Tests the <see cref="CFG.Nonterminals"/>.Count property after adding and removing various nonterminals.
-    /// </summary>
-    [TestMethod]
-    public void TestNonterminalCount()
-    {
-        CFG grammar = new();
-        Assert.AreEqual(0, grammar.Nonterminals.Count);
-
-        Nonterminal a = grammar.AddNonterminal("a");
-        Assert.AreEqual(1, grammar.Nonterminals.Count);
-
-        Nonterminal b = grammar.AddNonterminal("b");
-        Assert.AreEqual(2, grammar.Nonterminals.Count);
-
-        grammar.RemoveNonterminalAt(1);
-        Assert.AreEqual(1, grammar.Nonterminals.Count);
-
-        grammar.RemoveNonterminalAt(0);
-        Assert.AreEqual(0, grammar.Nonterminals.Count);
-    }
-
-    /// <summary>
-    /// Tests the <see cref="CFG.ContainsNonterminal(Nonterminal)"/> method for a nonterminal that exists in the grammar.
-    /// </summary>
-    [TestMethod]
-    public void TestContainsNonterminal()
-    {
-        CFG grammar = new();
-        Nonterminal A = grammar.AddNonterminal("A");
-        Assert.IsTrue(grammar.ContainsNonterminal(A));
-    }
-
-    /// <summary>
-    /// Tests the <see cref="CFG.ContainsNonterminal(Nonterminal)"/> method for a nonterminal that does not exist in the grammar.
-    /// </summary>
-    [TestMethod]
-    public void TestDoesNotContainNonterminal()
-    {
-        CFG grammar = new();
-        _ = grammar.AddNonterminal("B");
-        Assert.IsFalse(grammar.ContainsNonterminal(Nonterminal.Get("A")));
-    }
-
-    /// <summary>
-    /// Tests the <see cref="CFG.Terminals"/> property after adding a terminal.
-    /// </summary>
-    [TestMethod]
-    public void TestTerminals()
-    {
-        CFG grammar = new();
-        Terminal a = grammar.AddTerminal("a");
-        Terminal b = grammar.Terminals[0];
-        Assert.AreSame(a, b);
-    }
-
-    /// <summary>
-    /// Tests whether <see cref="CFG.Tonterminal(int)"/> throws an exception for an index outside the acceptable range.
-    /// </summary>
-    [TestMethod]
-    [DataTestMethod]
-    [DataRow(int.MinValue)]
-    [DataRow(-1)]
-    [DataRow(1)]
-    [DataRow(int.MaxValue)]
-    public void TestGetTerminalIndexOutOfRange(int index)
-    {
-        CFG grammar = new();
-        Terminal a = grammar.AddTerminal("a");
-        _ = Assert.ThrowsException<ArgumentOutOfRangeException>(() => grammar.Terminals[index]);
-    }
-
-    /// <summary>
-    /// Test the <see cref="CFG.AddNonterminal(string)"/> function.
-    /// </summary>
-    [TestMethod]
-    public void TestAddTerminal()
-    {
-        CFG grammar = new();
-        Terminal a = grammar.AddTerminal("a");
-        Assert.AreSame(a, grammar.AddTerminal("a"));
-    }
-
-    /// <summary>
-    /// Tests the <see cref="CFG.Terminals"/> property's count after adding and removing various terminals.
-    /// </summary>
-    [TestMethod]
-    public void TestTerminalsCount()
-    {
-        CFG grammar = new();
-        Assert.AreEqual(0, grammar.Terminals.Count);
-
-        Terminal a = grammar.AddTerminal("a");
-        Assert.AreEqual(1, grammar.Terminals.Count);
-
-        Terminal b = grammar.AddTerminal("b");
-        Assert.AreEqual(2, grammar.Terminals.Count);
-
-        grammar.RemoveTerminalAt(1);
-        Assert.AreEqual(1, grammar.Terminals.Count);
-
-        grammar.RemoveTerminalAt(0);
-        Assert.AreEqual(0, grammar.Terminals.Count);
-    }
-
-    /// <summary>
-    /// Tests the <see cref="CFG.ContainsTerminal(Terminal)"/> method for a terminal that exists in the grammar.
-    /// </summary>
-    [TestMethod]
-    public void TestContainsTerminal()
-    {
-        CFG grammar = new();
-        Terminal a = grammar.AddTerminal("a");
-        Assert.IsTrue(grammar.ContainsTerminal(a));
-    }
-
-    /// <summary>
-    /// Tests the <see cref="CFG.ContainsTerminal(Terminal)"/> method for a terminal that does not exist in the grammar.
-    /// </summary>
-    [TestMethod]
-    public void TestDoesNotContainTerminal()
-    {
-        CFG grammar = new();
-        _ = grammar.AddTerminal("b");
-        Assert.IsFalse(grammar.ContainsTerminal(Terminal.Get("a")));
-    }
+    #region ReplaceSymbol
 
     /// <summary>
     /// Helper for testing the <see cref="CFG.ReplaceSymbol(ISymbol, ISymbol, bool)"/> function
@@ -581,6 +641,8 @@ public class CFGTests
     [DataRow(false)]
     public void TestReplaceENT(bool removeSymbol)
         => TestReplaceSymbol(EmptyString.Instance, Nonterminal.Get("a"), removeSymbol);
+
+    #endregion ReplaceSymbol
 
     /// <summary>
     /// Tests the <see cref="CFG.ToString"/> function for a non-empty grammar.

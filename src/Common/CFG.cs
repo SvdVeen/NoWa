@@ -7,9 +7,6 @@ namespace NoWa.Common;
 /// </summary>
 public class CFG
 {
-    protected readonly Dictionary<Nonterminal, Rule> _rulesByNonterminal = new();
-    protected readonly List<Rule> _rules = new();
-
     #region Symbols
 
     #region Terminals
@@ -25,16 +22,39 @@ public class CFG
     /// <summary>
     /// Adds a terminal to the grammar.
     /// </summary>
-    /// <param name="value">The value of the terminal.</param>
-    /// <returns>Either a preexisting terminal with the given value, or a newly created one.</returns>
-    public Terminal AddTerminal(string value)
+    /// <param name="terminal">The terminal to add.</param>
+    /// <returns><see langword="true"/> if the terminal did not exist in the grammar yet, otherwise <see langword="false"/>.</returns>
+    public bool AddTerminal(Terminal terminal)
     {
-        Terminal terminal = Terminal.Get(value);
         if (_terminalsSet.Add(terminal))
         {
             _terminalsList.Add(terminal);
+            return true;
         }
+        return false;
+    }
+
+    /// <summary>
+    /// Creates a new terminal and adds it to the grammar.
+    /// </summary>
+    /// <param name="value">The value of the terminal.</param>
+    /// <returns>Either a preexisting terminal with the given <paramref name="value"/>, or a newly created one.</returns>
+    /// <exception cref="ArgumentNullException">The <paramref name="value"/> was empty or whitespace.</exception>
+    public Terminal AddTerminal(string value)
+    {
+        Terminal terminal = Terminal.Get(value);
+        _ = AddTerminal(terminal);
         return terminal;
+    }
+
+    /// <summary>
+    /// Checks whether the grammar contains a terminal.
+    /// </summary>
+    /// <param name="terminal">The terminal to check for.</param>
+    /// <returns><see langword="true"/> if the grammar contains the given <paramref name="terminal"/>, <see langword="false"/> otherwise.</returns>
+    public bool ContainsTerminal(Terminal terminal)
+    {
+        return _terminalsSet.Contains(terminal);
     }
 
     /// <summary>
@@ -53,16 +73,6 @@ public class CFG
         _terminalsSet.Remove(terminal);
     }
 
-    /// <summary>
-    /// Checks whether the grammar contains a terminal.
-    /// </summary>
-    /// <param name="terminal">The terminal to check for.</param>
-    /// <returns><see langword="true"/> if the grammar contains the given <paramref name="terminal"/>, <see langword="false"/> otherwise.</returns>
-    public bool ContainsTerminal(Terminal terminal)
-    {
-        return _terminalsSet.Contains(terminal);
-    }
-
     #endregion Terminals
 
     #region Nonterminals
@@ -75,18 +85,41 @@ public class CFG
     public IReadOnlyList<Nonterminal> Nonterminals { get => _nonterminalsList; }
 
     /// <summary>
-    /// Adds nonterminal to the grammar.
+    /// Adds a nonterminal to the grammar.
     /// </summary>
-    /// <param name="value">The value of the nonterminal.</param>
-    /// <returns>The added nonterminal or an existing nonterminal with the same value.</returns>
-    public Nonterminal AddNonterminal(string value)
+    /// <param name="nonterminal">The nonterminal to add.</param>
+    /// <returns><see langword="true"/> if the nonterminal did not exist in the grammar yet, otherwise <see langword="false"/>.</returns>
+    public bool AddNonterminal(Nonterminal nonterminal)
     {
-        Nonterminal nonterminal = Nonterminal.Get(value);
         if (_nonterminalsSet.Add(nonterminal))
         {
             _nonterminalsList.Add(nonterminal);
+            return true;
         }
+        return false;
+    }
+
+    /// <summary>
+    /// Adds nonterminal to the grammar.
+    /// </summary>
+    /// <param name="value">The value of the nonterminal.</param>
+    /// <returns>Either a preexisting nonterminal with the given <paramref name="value"/>, or a newly created one.</returns>
+    /// <exception cref="ArgumentNullException">The <paramref name="value"/> was empty or whitespace.</exception>
+    public Nonterminal AddNonterminal(string value)
+    {
+        Nonterminal nonterminal = Nonterminal.Get(value);
+        _ = AddNonterminal(nonterminal);
         return nonterminal;
+    }
+
+    /// <summary>
+    /// Checks whether the grammar contains a nonterminal.
+    /// </summary>
+    /// <param name="nonterminal">The nonterminal to check for.</param>
+    /// <returns><see langword="true"/> if the grammar contains the given <paramref name="nonterminal"/>, <see langword="false"/> otherwise.</returns>
+    public bool ContainsNonterminal(Nonterminal nonterminal)
+    {
+        return _nonterminalsSet.Contains(nonterminal);
     }
 
     /// <summary>
@@ -103,16 +136,6 @@ public class CFG
         Nonterminal nonterminal = _nonterminalsList[index];
         _nonterminalsList.RemoveAt(index);
         _nonterminalsSet.Remove(nonterminal);
-    }
-
-    /// <summary>
-    /// Checks whether the grammar contains a nonterminal.
-    /// </summary>
-    /// <param name="nonterminal">The nonterminal to check for.</param>
-    /// <returns><see langword="true"/> if the grammar contains the given <paramref name="nonterminal"/>, <see langword="false"/> otherwise.</returns>
-    public bool ContainsNonterminal(Nonterminal nonterminal)
-    {
-        return _nonterminalsSet.Contains(nonterminal);
     }
     #endregion Nonterminals
 
@@ -185,6 +208,8 @@ public class CFG
     #endregion Symbols
 
     #region Rules
+    protected readonly Dictionary<Nonterminal, Rule> _rulesByNonterminal = new();
+    protected readonly List<Rule> _rules = new();
 
     /// <summary>
     /// Gets a list of rules in this grammar.
@@ -391,6 +416,7 @@ public class CFG
         _rulesByNonterminal.Remove(rule.Nonterminal);
         _rules.RemoveAt(index);
     }
+
     #endregion Rules
 
     /// <inheritdoc/>
