@@ -15,7 +15,7 @@ public class GrammarTests
         CFG grammar = new();
         Assert.AreEqual(0, grammar.RuleCount, "RuleCount does not match.");
         Assert.AreEqual(0, grammar.NonterminalCount, "NonterminalCount does not match.");
-        Assert.AreEqual(0, grammar.TerminalCount, "NonterminalCount does not match.");
+        Assert.AreEqual(0, grammar.Terminals.Count, "NonterminalCount does not match.");
         Assert.AreEqual("Empty grammar", grammar.ToString(), "ToString does not match.");
     }
 
@@ -361,14 +361,14 @@ public class GrammarTests
     }
 
     /// <summary>
-    /// Tests the <see cref="CFG.GetTerminal(int)"/> after adding a terminal.
+    /// Tests the <see cref="CFG.Terminals"/> property after adding a terminal.
     /// </summary>
     [TestMethod]
-    public void TestGetTerminalIndex()
+    public void TestTerminals()
     {
         CFG grammar = new();
         Terminal a = grammar.AddTerminal("a");
-        Terminal b = grammar.GetTerminal(0);
+        Terminal b = grammar.Terminals[0];
         Assert.AreSame(a, b);
     }
 
@@ -385,28 +385,7 @@ public class GrammarTests
     {
         CFG grammar = new();
         Terminal a = grammar.AddTerminal("a");
-        _ = Assert.ThrowsException<ArgumentOutOfRangeException>(() => grammar.GetTerminal(index));
-    }
-
-    /// <summary>
-    /// Tests the <see cref="CFG.GetTerminal(string)"/> after adding a terminal.
-    /// </summary>
-    [TestMethod]
-    public void TestGetTerminalString()
-    {
-        CFG grammar = new();
-        Terminal a = grammar.AddTerminal("a");
-        Assert.AreSame(a, grammar.GetTerminal("a"));
-    }
-
-    /// <summary>
-    /// Tests the <see cref="CFG.GetTerminal(string)"/> if the terminal does not exist.
-    /// </summary>
-    [TestMethod]
-    public void TestGetTerminalStringNotExists()
-    {
-        CFG grammar = new();
-        Assert.ThrowsException<ArgumentException>(() => grammar.GetTerminal("a"));
+        _ = Assert.ThrowsException<ArgumentOutOfRangeException>(() => grammar.Terminals[index]);
     }
 
     /// <summary>
@@ -421,32 +400,30 @@ public class GrammarTests
     }
 
     /// <summary>
-    /// Tests the <see cref="CFG.TerminalCount"/> property.
+    /// Tests the <see cref="CFG.Terminals"/> property's count after adding and removing various terminals.
     /// </summary>
     [TestMethod]
-    public void TestTerminalCount()
+    public void TestTerminalsCount()
     {
         CFG grammar = new();
-        Assert.AreEqual(0, grammar.TerminalCount);
+        Assert.AreEqual(0, grammar.Terminals.Count);
 
         Terminal a = grammar.AddTerminal("a");
-        Assert.AreEqual(1, grammar.TerminalCount);
+        Assert.AreEqual(1, grammar.Terminals.Count);
 
         Terminal b = grammar.AddTerminal("b");
-        Assert.AreEqual(2, grammar.TerminalCount);
+        Assert.AreEqual(2, grammar.Terminals.Count);
 
         grammar.RemoveTerminalAt(1);
-        Assert.AreEqual(1, grammar.TerminalCount);
+        Assert.AreEqual(1, grammar.Terminals.Count);
 
         grammar.RemoveTerminalAt(0);
-        Assert.AreEqual(0, grammar.TerminalCount);
+        Assert.AreEqual(0, grammar.Terminals.Count);
     }
 
     /// <summary>
     /// Helper for testing the <see cref="CFG.ReplaceSymbol(ISymbol, ISymbol, bool)"/> function
     /// </summary>
-    /// <param name="symbol"></param>
-    /// <param name="newSymbol"></param>
     private static void TestReplaceSymbol(ISymbol symbol, ISymbol newSymbol, bool removeSymbol)
     {
         Nonterminal Ntest = Nonterminal.Get("test");
@@ -475,9 +452,9 @@ public class GrammarTests
 
         if (removeSymbol)
         {
-            if (symbol is Terminal && newSymbol.Value != symbol.Value)
+            if (symbol is Terminal terminal && newSymbol.Value != symbol.Value)
             {
-                _ = Assert.ThrowsException<ArgumentException>(() => grammar.GetTerminal(symbol.Value), "The original terminal was not removed.");
+                Assert.IsFalse(grammar.ContainsTerminal(terminal), "The original terminal was not removed.");
             }
             else if (symbol is Nonterminal && newSymbol.Value != symbol.Value)
             {

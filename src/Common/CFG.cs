@@ -8,50 +8,21 @@ namespace NoWa.Common;
 public class CFG
 {
     protected readonly Dictionary<string, Nonterminal> _nonterminalsByValue = new();
-    protected readonly Dictionary<string, Terminal> _terminalsByValue = new();
     protected readonly Dictionary<Nonterminal, Rule> _rulesByNonterminal = new();
     protected readonly List<Nonterminal> _nonterminals = new();
-    protected readonly List<Terminal> _terminals = new();
     protected readonly List<Rule> _rules = new();
 
     #region Symbols
 
     #region Terminals
+    protected readonly List<Terminal> _terminalsList = new();
+    protected readonly HashSet<Terminal> _terminalsSet = new();
+
 
     /// <summary>
-    /// Gets the number of terminals in the grammar.
+    /// Gets the list of all terminals in the grammar.
     /// </summary>
-    public int TerminalCount { get => _terminals.Count; }
-
-    /// <summary>
-    /// Gets a terminal in the grammar with the given index.
-    /// </summary>
-    /// <param name="index">The index of the terminal to get.</param>
-    /// <returns>The <see cref="Terminal"/> with the given index.</returns>
-    /// <exception cref="ArgumentOutOfRangeException">The index is outside the bounds of the terminal list.</exception>
-    public Terminal GetTerminal(int index)
-    {
-        if (index < 0 || index >= _terminals.Count)
-        {
-            throw new ArgumentOutOfRangeException(nameof(index));
-        }
-        return _terminals[index];
-    }
-
-    /// <summary>
-    /// Gets a terminal in the grammar if one with the given value exists.
-    /// </summary>
-    /// <param name="value">The value of the terminal.</param>
-    /// <returns>The terminal with the given value.</returns>
-    /// <exception cref="ArgumentException">No terminal with the given value exists in the grammar.</exception>
-    public Terminal GetTerminal(string value)
-    {
-        if (!_terminalsByValue.TryGetValue(value, out Terminal? terminal))
-        {
-            throw new ArgumentException($"Could not find a terminal '{value}'", nameof(value));
-        }
-        return terminal;
-    }
+    public IReadOnlyList<Terminal> Terminals { get => _terminalsList; }
 
     /// <summary>
     /// Adds a terminal to the grammar.
@@ -60,29 +31,38 @@ public class CFG
     /// <returns>Either a preexisting terminal with the given value, or a newly created one.</returns>
     public Terminal AddTerminal(string value)
     {
-        if (!_terminalsByValue.TryGetValue(value, out Terminal? terminal))
+        Terminal terminal = Terminal.Get(value);
+        if (_terminalsSet.Add(terminal))
         {
-            terminal = Terminal.Get(value);
-            _terminals.Add(terminal);
-            _terminalsByValue[value] = terminal;
+            _terminalsList.Add(terminal);
         }
         return terminal;
     }
 
     /// <summary>
-    /// Remove the terminal at the given index.
+    /// Removes the terminal at the given index.
     /// </summary>
     /// <param name="index">The index of the terminal to remove.</param>
     /// <exception cref="ArgumentOutOfRangeException">The index is outside of the bounds of the nonterminal list.</exception>
     public void RemoveTerminalAt(int index)
     {
-        if (index < 0 || index >= _terminals.Count)
+        if (index < 0 || index >= _terminalsList.Count)
         {
             throw new ArgumentOutOfRangeException(nameof(index));
         }
-        Terminal terminal = _terminals[index];
-        _terminals.RemoveAt(index);
-        _terminalsByValue.Remove(terminal.Value);
+        Terminal terminal = _terminalsList[index];
+        _terminalsList.RemoveAt(index);
+        _terminalsSet.Remove(terminal);
+    }
+
+    /// <summary>
+    /// Checks whether the grammar contains a terminal.
+    /// </summary>
+    /// <param name="terminal">The terminal to check for.</param>
+    /// <returns><see langword="true"/> if the grammar contains the given <paramref name="terminal"/>, <see langword="false"/> otherwise.</returns>
+    public bool ContainsTerminal(Terminal terminal)
+    {
+        return _terminalsSet.Contains(terminal);
     }
 
     #endregion Terminals
@@ -173,9 +153,9 @@ public class CFG
         }
         else if (symbol is Terminal terminal)
         {
-            if (_terminalsByValue.Remove(symbol.Value))
+            if (_terminalsSet.Remove(terminal))
             {
-                _ = _terminals.Remove(terminal);
+                _ = _terminalsList.Remove(terminal);
             }
         }
     }
@@ -195,9 +175,9 @@ public class CFG
         }
         else if (symbol is Terminal terminal)
         {
-            if (_terminalsByValue.TryAdd(terminal.Value, terminal))
+            if (_terminalsSet.Add(terminal))
             {
-                _terminals.Add(terminal);
+                _terminalsList.Add(terminal);
             }
         }
     }

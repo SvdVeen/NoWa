@@ -20,7 +20,7 @@ public sealed class UnreachableSymbolsStep : BaseConversionStep
         Logger.LogInfo("Eliminating unreachable symbols...");
         int initialRuleCount = grammar.RuleCount;
         int initialNonterminalCount = grammar.NonterminalCount;
-        int initialTerminalCount = grammar.TerminalCount;
+        int initialTerminalCount = grammar.Terminals.Count;
 
         EliminateNonGenerating(grammar);
         EliminateUnreachable(grammar);
@@ -34,9 +34,9 @@ public sealed class UnreachableSymbolsStep : BaseConversionStep
         {
             Logger.LogInfo($"\tRemoved {initialNonterminalCount - grammar.NonterminalCount} nonterminals");
         }
-        if (initialTerminalCount != grammar.TerminalCount)
+        if (initialTerminalCount != grammar.Terminals.Count)
         {
-            Logger.LogInfo($"\tRemoved {initialTerminalCount - grammar.TerminalCount} terminals");
+            Logger.LogInfo($"\tRemoved {initialTerminalCount - grammar.Terminals.Count} terminals");
         }
     }
 
@@ -119,9 +119,9 @@ public sealed class UnreachableSymbolsStep : BaseConversionStep
         HashSet<ISymbol> generatingSymbols = new();
 
         // All terminals are generating.
-        for (int i = 0; i < grammar.TerminalCount; i++)
+        for (int i = 0; i < grammar.Terminals.Count; i++)
         {
-            Terminal terminal = grammar.GetTerminal(i);
+            Terminal terminal = grammar.Terminals[i];
             Logger.LogDebug($"Found generating symbol: {terminal}");
             generatingSymbols.Add(terminal);
         }
@@ -242,9 +242,9 @@ public sealed class UnreachableSymbolsStep : BaseConversionStep
             }
         }
 
-        for (int i = 0; i < grammar.TerminalCount; i++)
+        for (int i = 0; i < grammar.Terminals.Count; i++)
         {
-            Terminal terminal = grammar.GetTerminal(i);
+            Terminal terminal = grammar.Terminals[i];
             if (!reachableSymbols.Contains(terminal))
             {
                 Logger.LogDebug($"Removing unreachable terminal {terminal}");
