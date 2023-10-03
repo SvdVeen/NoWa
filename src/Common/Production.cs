@@ -20,7 +20,7 @@ public class Production
     /// </summary>
     /// <param name="head">The head of the production rule.</param>
     /// <param name="body">The body of the production rule.</param>
-    public Production(Nonterminal head, Expression body)
+    private Production(Nonterminal head, Expression body)
     {
         Head = head;
         Body = body;

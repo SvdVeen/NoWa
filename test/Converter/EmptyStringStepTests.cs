@@ -71,64 +71,10 @@ public class EmptyStringStepTests
         step.Convert(grammar);
 
         Assert.AreEqual(
-            $"S = A 'b' B | 'b' B | 'b' | A 'b' | C ;{Environment.NewLine}" +
-            $"B = A A | A | A C | C ;{Environment.NewLine}" +
+            $"S = A 'b' B | C | 'b' B | A 'b' | 'b' ;{Environment.NewLine}" +
+            $"B = A A | A C | A | C ;{Environment.NewLine}" +
             $"C = 'b' | 'c' ;{Environment.NewLine}" +
             $"A = 'a' ;", grammar.ToString());
-    }
-
-    /// <summary>
-    /// Tests whether the step removes empty rules (rules that only produce empty strings).
-    /// </summary>
-    [TestMethod]
-    public void TestRemoveEmptyRule()
-    {
-        CFG grammar = new();
-
-        // Add rule S = A B ;
-        grammar.AddProduction(new(Nonterminal.Get("S"), Nonterminal.Get("A"), Nonterminal.Get("B")));
-
-        // Add rule A = '' '' | '' ;
-        grammar.AddProduction(new(Nonterminal.Get("A"), EmptyString.Instance, EmptyString.Instance));
-        grammar.AddProduction(new(Nonterminal.Get("A"), EmptyString.Instance));
-
-        // Add rule B = 'b' ;
-        grammar.AddProduction(new(Nonterminal.Get("B"), Terminal.Get("b")));
-
-        EmptyStringStep step = new(new TestLogger());
-        step.Convert(grammar);
-
-        Assert.AreEqual(
-            $"S = B ;{Environment.NewLine}" +
-            $"B = 'b' ;", grammar.ToString());
-    }
-
-    /// <summary>
-    /// Tests whether the step removes empty rules several levels deep (those that contain only rules that would only produce empty strings).
-    /// </summary>
-    [TestMethod]
-    public void TestRemoveNestedEmptyRule()
-    {
-        CFG grammar = new();
-
-        // Add rule S = A B ;
-        grammar.AddProduction(new(Nonterminal.Get("S"), Nonterminal.Get("A"), Nonterminal.Get("B")));
-
-        // Add rule A = C ;
-        grammar.AddProduction(new(Nonterminal.Get("A"), Nonterminal.Get("C")));
-
-        // Add rule B = 'b' ;
-        grammar.AddProduction(new(Nonterminal.Get("B"), Terminal.Get("b")));
-
-        // Add rule C = '' ;
-        grammar.AddProduction(new(Nonterminal.Get("C"), EmptyString.Instance));
-
-        EmptyStringStep step = new(new TestLogger());
-        step.Convert(grammar);
-
-        Assert.AreEqual(
-            $"S = B ;{Environment.NewLine}" +
-            $"B = 'b' ;", grammar.ToString());
     }
 
     /// <summary>
@@ -140,7 +86,8 @@ public class EmptyStringStepTests
         CFG grammar = new();
 
         // Add rule S = 'a' | 'b' ;
-        grammar.AddProduction(new(Nonterminal.Get("S"), Terminal.Get("a"), Terminal.Get("b")));
+        grammar.AddProduction(new(Nonterminal.Get("S"), Terminal.Get("a")));
+        grammar.AddProduction(new(Nonterminal.Get("S"), Terminal.Get("b")));
 
         EmptyStringStep step = new(new TestLogger());
         step.Convert(grammar);
@@ -160,21 +107,21 @@ public class EmptyStringStepTests
         // Add rule S = A B ;
         grammar.AddProduction(new(Nonterminal.Get("S"), Nonterminal.Get("A"), Nonterminal.Get("B")));
 
-        // Add rule A = C ;
-        grammar.AddProduction(new(Nonterminal.Get("A"), Nonterminal.Get("C")));
+        // add rule A = 'a' A A | '' ;
+        grammar.AddProduction(new(Nonterminal.Get("A"), Terminal.Get("a"), Nonterminal.Get("A"), Nonterminal.Get("A")));
+        grammar.AddProduction(new(Nonterminal.Get("A"), EmptyString.Instance));
 
-        // Add rule B = 'b' ;
-        grammar.AddProduction(new(Nonterminal.Get("B"), Terminal.Get("b")));
-
-        // Add rule C = '' ;
-        grammar.AddProduction(new(Nonterminal.Get("C"), EmptyString.Instance));
+        // Add rule B = 'b' B B | '' ;
+        grammar.AddProduction(new(Nonterminal.Get("B"), Terminal.Get("b"), Nonterminal.Get("B"), Nonterminal.Get("B")));
+        grammar.AddProduction(new(Nonterminal.Get("B"), EmptyString.Instance));
 
         EmptyStringStep step = new(new TestLogger());
         step.Convert(grammar);
         step.Convert(grammar);
 
         Assert.AreEqual(
-            $"S = B ;{Environment.NewLine}" +
-            $"B = 'b' ;", grammar.ToString());
+            $"S = A B | B | A ;{Environment.NewLine}" +
+            $"A = 'a' A A | 'a' A | 'a' ;{Environment.NewLine}" +
+            $"B = 'b' B B | 'b' B | 'b' ;", grammar.ToString());
     }
 }

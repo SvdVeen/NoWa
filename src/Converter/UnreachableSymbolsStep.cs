@@ -1,8 +1,5 @@
 ﻿using NoWa.Common;
 using NoWa.Common.Logging;
-using System.ComponentModel;
-using System.Data;
-using System.Net.Http.Headers;
 
 namespace NoWa.Converter;
 
