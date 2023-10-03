@@ -67,7 +67,7 @@ public class UnreachableSymbolsStepTests
             $"S = A | 'a' ;{Environment.NewLine}" +
             $"A = C | 'a' ;{Environment.NewLine}" +
             $"C = 'c' ;", grammar.ToString());
-        Assert.AreEqual(3, grammar.RuleCount);
+        Assert.AreEqual(5, grammar.Productions.Count);
         Assert.AreEqual(3, grammar.Nonterminals.Count);
         Assert.AreEqual(2, grammar.Terminals.Count);
     }

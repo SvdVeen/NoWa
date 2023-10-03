@@ -1,5 +1,8 @@
 ﻿using NoWa.Common;
 using NoWa.Common.Logging;
+using System.ComponentModel;
+using System.Data;
+using System.Net.Http.Headers;
 
 namespace NoWa.Converter;
 
@@ -18,26 +21,14 @@ public sealed class UnreachableSymbolsStep : BaseConversionStep
     public override void Convert(CFG grammar)
     {
         Logger.LogInfo("Eliminating unreachable symbols...");
-        int initialRuleCount = grammar.RuleCount;
-        int initialNonterminalCount = grammar.Nonterminals.Count;
-        int initialTerminalCount = grammar.Terminals.Count;
+        GrammarStats stats = new(grammar);
 
         EliminateNonGenerating(grammar);
+
         EliminateUnreachable(grammar);
 
         Logger.LogInfo("Unreachable symbols eliminated.");
-        if (initialRuleCount != grammar.RuleCount)
-        {
-            Logger.LogInfo($"\tRemoved {initialRuleCount - grammar.RuleCount} rules");
-        }
-        if (initialNonterminalCount != grammar.Nonterminals.Count)
-        {
-            Logger.LogInfo($"\tRemoved {initialNonterminalCount - grammar.Nonterminals.Count} nonterminals");
-        }
-        if (initialTerminalCount != grammar.Terminals.Count)
-        {
-            Logger.LogInfo($"\tRemoved {initialTerminalCount - grammar.Terminals.Count} terminals");
-        }
+        stats.LogDiff(grammar, Logger);
     }
 
     #region Nongenerating symbols/productions
@@ -48,33 +39,30 @@ public sealed class UnreachableSymbolsStep : BaseConversionStep
     /// <param name="grammar">The grammar to remove symbols from.</param>
     private void EliminateNonGenerating(CFG grammar)
     {
-        if (grammar.RuleCount == 0)
+        if (grammar.Productions.Count == 0)
         {
             return;
         }
 
         ISet<Nonterminal> nongeneratingSymbols = GetNongeneratingSymbols(grammar);
-
-        for (int i = 0; i < grammar.RuleCount; i++)
+        
+        for (int i = 0; i < grammar.Productions.Count; i++)
         {
-            Rule rule = grammar.GetRule(i);
-            if (nongeneratingSymbols.Contains(rule.Nonterminal))
+            Production production = grammar.Productions[i];
+            if (nongeneratingSymbols.Contains(production.Head))
             {
-                Logger.LogDebug($"Removing rule and nonterminal {rule.Nonterminal}: nonterminal is nongenerating");
-                grammar.RemoveRuleAt(i--);
+                Logger.LogDebug($"Removing nongenerating production: {production}");
+                grammar.RemoveProductionAt(i--);
             }
             else
             {
-                for (int j = 0; j < rule.Productions.Count; j++)
+                foreach (ISymbol symbol in production.Body)
                 {
-                    foreach (ISymbol symbol in rule.Productions[j])
+                    if (nongeneratingSymbols.Contains(symbol))
                     {
-                        if (symbol is Nonterminal nonterminal && nongeneratingSymbols.Contains(nonterminal))
-                        {
-                            Logger.LogDebug($"Removing production {rule.Nonterminal} = {rule.Productions[j]}: contained nongenerating nonterminal {nonterminal}");
-                            rule.Productions.RemoveAt(j--);
-                            break;
-                        }
+                        Logger.LogDebug($"Removing nongenerating production: {production}");
+                        grammar.RemoveProductionAt(i--);
+                        break;
                     }
                 }
             }
@@ -82,9 +70,9 @@ public sealed class UnreachableSymbolsStep : BaseConversionStep
 
         RemoveNongeneratingNonterminals(nongeneratingSymbols, grammar);
 
-        if (grammar.RuleCount == 0)
+        if (grammar.Productions.Count == 0)
         {
-            Logger.LogWarning("Eliminating nongenerating symbols removed all productions.");
+            Logger.LogWarning("All productions were nongenerating.");
         }
     }
 
@@ -96,6 +84,7 @@ public sealed class UnreachableSymbolsStep : BaseConversionStep
     private ISet<Nonterminal> GetNongeneratingSymbols(CFG grammar)
     {
         ISet<ISymbol> generatingSymbols = GetGeneratingSymbols(grammar);
+
         HashSet<Nonterminal> nongeneratingSymbols = new();
         foreach (Nonterminal nonterminal in grammar.Nonterminals)
         {
@@ -105,6 +94,7 @@ public sealed class UnreachableSymbolsStep : BaseConversionStep
                 nongeneratingSymbols.Add(nonterminal);
             }
         }
+
         return nongeneratingSymbols;
     }
 
@@ -129,19 +119,17 @@ public sealed class UnreachableSymbolsStep : BaseConversionStep
         do
         {
             lastGeneratingSymbolCount = generatingSymbols.Count;
-
-            for (int i = 0; i < grammar.RuleCount; i++)
+            foreach (Nonterminal nonterminal in grammar.Nonterminals)
             {
-                Rule rule = grammar.GetRule(i);
-                if (generatingSymbols.Contains(rule.Nonterminal))
+                if (generatingSymbols.Contains(nonterminal))
                 {
                     continue;
                 }
 
-                if (IsRuleGenerating(generatingSymbols, rule))
+                if (IsNonterminalGenerating(generatingSymbols, grammar, nonterminal))
                 {
-                    Logger.LogDebug($"Found generating symbol: {rule.Nonterminal}");
-                    generatingSymbols.Add(rule.Nonterminal);
+                    Logger.LogDebug($"Found generating symbol: {nonterminal}");
+                    generatingSymbols.Add(nonterminal);
                 }
             }
         } while (lastGeneratingSymbolCount < generatingSymbols.Count);
@@ -150,41 +138,47 @@ public sealed class UnreachableSymbolsStep : BaseConversionStep
     }
 
     /// <summary>
-    /// Checks whether a rule is generating, meaning that any of its productions are generating.
+    /// Checks whether a nonterminal is generating, meaning that it has at least one generating production.
     /// </summary>
-    /// <param name="generatingSymbols">The set of all generating symbols.</param>
-    /// <param name="rule">The rule to check.</param>
-    /// <returns><see langword="true"/> if any of the productions in the rule are generating; <see langword="false"/> otherwise.</returns>
-    private static bool IsRuleGenerating(ISet<ISymbol> generatingSymbols, Rule rule)
+    /// <param name="generatingSymbols">The known set of generating symbols.</param>
+    /// <param name="grammar">The grammar to check in.</param>
+    /// <param name="nonterminal">The nonterminal to check.</param>
+    /// <returns><see langword="true"/> if the <paramref name="nonterminal"/> is generating, <see langword="false"/> otherwise.</returns>
+    private static bool IsNonterminalGenerating(ISet<ISymbol> generatingSymbols, CFG grammar, Nonterminal nonterminal)
     {
-        foreach (Expression production in rule.Productions)
+        foreach (Production production in grammar.GetProductionsByHead(nonterminal))
         {
             if (IsProductionGenerating(generatingSymbols, production))
             {
                 return true;
             }
         }
+
         return false;
     }
 
     /// <summary>
-    /// Checks whether a production is generating, meaning that all of its symbols are generating symbols.
+    /// Checks whether a production is generating, meaning that it either produces ε, or all of its symbols are generating.
     /// </summary>
-    /// <param name="generatingSymbols">The set of generating symbols.</param>
+    /// <param name="generatingSymbols">The set of all known generating symbols.</param>
     /// <param name="production">The production to check.</param>
-    /// <returns><see langword="true"/> if all symbols in the production are generating; <see langword="false"/> otherwise.</returns>
-    private static bool IsProductionGenerating(ISet<ISymbol> generatingSymbols, Expression production)
+    /// <returns><see langword="true"/> if the <paramref name="production"/> is generating, <see langword="false"/> otherwise.</returns>
+    private static bool IsProductionGenerating(ISet<ISymbol> generatingSymbols, Production production)
     {
-        bool allGenerating = true;
-        foreach (ISymbol symbol in production)
+        if (production.Body.Count == 1 && production.Body[0] is EmptyString)
+        {
+            return true;
+        }
+
+        foreach (ISymbol symbol in production.Body)
         {
             if (!generatingSymbols.Contains(symbol))
             {
-                allGenerating = false;
-                break;
+                return false;
             }
         }
-        return allGenerating;
+
+        return true;
     }
 
     /// <summary>
@@ -213,20 +207,19 @@ public sealed class UnreachableSymbolsStep : BaseConversionStep
     /// <param name="grammar">The grammar to eliminate symbols from.</param>
     private void EliminateUnreachable(CFG grammar)
     {
-        if (grammar.RuleCount == 0)
+        if (grammar.Productions.Count == 0)
         {
             return;
         }
 
         ISet<ISymbol> reachableSymbols = GetReachableSymbols(grammar);
 
-        for (int i = 0; i < grammar.RuleCount; i++)
+        for (int i = 0; i < grammar.Productions.Count; i++)
         {
-            Rule rule = grammar.GetRule(i);
-            if (!reachableSymbols.Contains(rule.Nonterminal))
+            if (!reachableSymbols.Contains(grammar.Productions[i].Head))
             {
-                Logger.LogDebug($"Removing rule and nonterminal {rule.Nonterminal}: rule is unreachable.");
-                grammar.RemoveRuleAt(i--);
+                Logger.LogDebug($"Removing production {grammar.Productions[i]}: head is unreachable.");
+                grammar.RemoveProductionAt(i--);
             }
         }
 
@@ -250,9 +243,9 @@ public sealed class UnreachableSymbolsStep : BaseConversionStep
             }
         }
 
-        if (grammar.RuleCount == 0)
+        if (grammar.Productions.Count == 0)
         {
-            Logger.LogWarning("Eliminating unreachable symbols removed all productions.");
+            Logger.LogWarning("All productions were unreachable.");
         }
     }
 
@@ -266,8 +259,8 @@ public sealed class UnreachableSymbolsStep : BaseConversionStep
         HashSet<ISymbol> reachableSymbols = new();
 
         // The start rule is assumed to be reachable.
-        Logger.LogDebug($"Found reachable symbol: {grammar.GetRule(0).Nonterminal}");
-        reachableSymbols.Add(grammar.GetRule(0).Nonterminal);
+        Logger.LogDebug($"Found reachable symbol: {grammar.Nonterminals[0]}");
+        reachableSymbols.Add(grammar.Nonterminals[0]);
 
         // We inductively find further reachable symbols. This could have been a DFS or BFS, but we're sticking with the pattern in the book for now.
         int lastReachableCount;
@@ -275,15 +268,14 @@ public sealed class UnreachableSymbolsStep : BaseConversionStep
         {
             lastReachableCount = reachableSymbols.Count;
 
-            for (int i = 0; i < grammar.RuleCount; i++)
+            foreach (Nonterminal nonterminal in grammar.Nonterminals)
             {
-                Rule rule = grammar.GetRule(i);
-                if (!reachableSymbols.Contains(rule.Nonterminal))
+                if (!reachableSymbols.Contains(nonterminal))
                 {
                     continue;
                 }
 
-                foreach (ISymbol symbol in rule.Productions.SelectMany(p => p))
+                foreach (ISymbol symbol in grammar.GetProductionsByHead(nonterminal).SelectMany(p => p.Body))
                 {
                     if (reachableSymbols.Add(symbol))
                     {

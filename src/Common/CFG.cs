@@ -423,14 +423,7 @@ public class CFG
     {
         if (_productions.Remove(production))
         {
-            if (!_productionsByHead.TryGetValue(production.Head, out List<Production>? productions))
-            {
-                throw new InvalidOperationException($"{nameof(production)} does not have an entry in {nameof(_productionsByHead)}."); // This should never occur!
-            }
-            if (!productions.Remove(production))
-            {
-                throw new InvalidOperationException($"{nameof(production)} could not be removed from its entry in {nameof(_productionsByHead)}."); // This should never occur!
-            }
+            RemoveProductionByHead(production);
             return true;
         }
         return false;
@@ -449,6 +442,18 @@ public class CFG
         }
         Production production = _productions[index];
         _productions.RemoveAt(index);
+        RemoveProductionByHead(production);
+    }
+
+    /// <summary>
+    /// Removes a production from the <see cref="_productionsByHead"/> dictionary.
+    /// Automatically clears a nonterminal's entry if no productions remain.
+    /// </summary>
+    /// <param name="production">The production to remove.</param>
+    /// <exception cref="InvalidOperationException">Something went wrong while removing the production. This really should not occur unless threading shenanigans are at play.</exception>
+    /// <remarks>This must be called for a production that is actually part of the grammar!</remarks>
+    private void RemoveProductionByHead(Production production)
+    {
         if (!_productionsByHead.TryGetValue(production.Head, out List<Production>? productions))
         {
             throw new InvalidOperationException($"{nameof(production)} does not have an entry in {nameof(_productionsByHead)}."); // This should never occur!
@@ -456,6 +461,10 @@ public class CFG
         if (!productions.Remove(production))
         {
             throw new InvalidOperationException($"{nameof(production)} could not be removed from its entry in {nameof(_productionsByHead)}."); // This should never occur!
+        }
+        if (productions.Count == 0 && !_productionsByHead.Remove(production.Head))
+        {
+            throw new InvalidOperationException($"The entry for {production.Head} could not be removed from {nameof(_productionsByHead)}."); // This should never occur!
         }
     }
     #endregion Productions
