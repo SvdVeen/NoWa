@@ -6,28 +6,12 @@
 [TestClass]
 public class ProductionTests
 {
-    /// <summary>
-    /// Tests the <see cref="Production(Nonterminal, Expression)"/> constructor.
-    /// </summary>
-    [TestMethod]
-    public void TestProduction1()
-    {
-        Production production = new(Nonterminal.Get("A"), new Expression()
-        {
-            Nonterminal.Get("B"),
-            Terminal.Get("a")
-        });
-        Assert.AreSame(Nonterminal.Get("A"), production.Head);
-        Assert.AreEqual(2, production.Body.Count);
-        Assert.AreSame(Nonterminal.Get("B"), production.Body[0]);
-        Assert.AreSame(Terminal.Get("a"), production.Body[1]);
-    }
 
     /// <summary>
     /// Tests the <see cref="Production(Nonterminal, IEnumerable{ISymbol})"/> constructor.
     /// </summary>
     [TestMethod]
-    public void TestProduction2()
+    public void TestProduction1()
     {
         Production production = new(Nonterminal.Get("A"), new List<ISymbol> {
             Nonterminal.Get("B"),
@@ -43,7 +27,7 @@ public class ProductionTests
     /// Tests the <see cref="Production(Nonterminal, ISymbol[])"/> constructor.
     /// </summary>
     [TestMethod]
-    public void TestProduction3()
+    public void TestProduction2()
     {
         Production production = new(Nonterminal.Get("A"), Nonterminal.Get("B"), Terminal.Get("a"));
         Assert.AreSame(Nonterminal.Get("A"), production.Head);

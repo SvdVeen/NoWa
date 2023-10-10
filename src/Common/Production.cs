@@ -1,4 +1,6 @@
-﻿namespace NoWa.Common;
+﻿using System.Text;
+
+namespace NoWa.Common;
 
 /// <summary>
 /// Represents a production rule in a grammar.
@@ -13,14 +15,14 @@ public class Production
     /// <summary>
     /// Gets the body of the production rule.
     /// </summary>
-    public Expression Body { get; }
+    public IList<ISymbol> Body { get; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Production"/> class.
     /// </summary>
     /// <param name="head">The head of the production rule.</param>
     /// <param name="body">The body of the production rule.</param>
-    private Production(Nonterminal head, Expression body)
+    private Production(Nonterminal head, List<ISymbol> body)
     {
         Head = head;
         Body = body;
@@ -31,14 +33,14 @@ public class Production
     /// </summary>
     /// <param name="head">The head of the production rule.</param>
     /// <param name="body">The body of the production rule.</param>
-    public Production(Nonterminal head, IEnumerable<ISymbol> body) : this(head, new Expression(body)) { }
+    public Production(Nonterminal head, IEnumerable<ISymbol> body) : this(head, new List<ISymbol>(body)) { }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Production"/> class.
     /// </summary>
     /// <param name="head">The head of the production rule.</param>
     /// <param name="body">The body of the production rule.</param>
-    public Production(Nonterminal head, params ISymbol[] body) : this(head, new Expression(body)) { }
+    public Production(Nonterminal head, params ISymbol[] body) : this(head, new List<ISymbol>(body)) { }
 
     /// <inheritdoc/>
     public override string ToString()
@@ -47,7 +49,7 @@ public class Production
         {
             return $"Empty production {Head} ;";
         }
-        return $"{Head} --> {Body} ;";
+        return new StringBuilder($"{Head} --> ").AppendJoin(' ', Body).Append(" ;").ToString();
     }
 
     /// <inheritdoc/>
@@ -55,13 +57,27 @@ public class Production
     {
         return obj is Production production &&
                EqualityComparer<Nonterminal>.Default.Equals(Head, production.Head) &&
-               EqualityComparer<Expression>.Default.Equals(Body, production.Body);
+               Body.SequenceEqual(production.Body);
     }
 
     /// <inheritdoc/>
     public override int GetHashCode()
     {
-        return HashCode.Combine(Head, Body);
+        return HashCode.Combine(Head, GetBodyHashCode());
+    }
+
+    /// <summary>
+    /// Gets a hashcode for the <see cref="Body"/> that matches a combination of all elements.
+    /// </summary>
+    /// <returns></returns>
+    private int GetBodyHashCode()
+    {
+        int result = 17;
+        foreach (var symbol in Body)
+        {
+            result = HashCode.Combine(result, symbol);
+        }
+        return result;
     }
 
     public static bool operator ==(Production? left, Production? right)

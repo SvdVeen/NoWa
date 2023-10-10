@@ -131,7 +131,7 @@ public class CFG
     /// Also automatically updates the terminals and nonterminals in the grammar.
     /// </summary>
     /// <param name="production">The production to add.</param>
-    public void AddProduction(Production production)
+    public virtual void AddProduction(Production production)
     {
         _productions.Add(production);
         AddProductionByHead(production);
@@ -158,7 +158,7 @@ public class CFG
     private void AddSymbols(Production production)
     {
         _ = AddNonterminal(production.Head);
-        foreach(ISymbol symbol in production.Body)
+        foreach (ISymbol symbol in production.Body)
         {
             if (symbol is Terminal terminal)
             {
@@ -190,7 +190,7 @@ public class CFG
     /// </summary>
     /// <param name="production">The production to remove.</param>
     /// <returns><see langword="true"/> if the <paramref name="production"/> was successfully removed from the grammar, otherwise <see langword="false"/>.</returns>
-    public bool RemoveProduction(Production production)
+    public virtual bool RemoveProduction(Production production)
     {
         if (_productions.Remove(production))
         {
@@ -205,7 +205,7 @@ public class CFG
     /// </summary>
     /// <param name="index">The index of the production to remove.</param>
     /// <exception cref="ArgumentOutOfRangeException">The index is outside of the bounds of the production list.</exception>
-    public void RemoveProductionAt(int index)
+    public virtual void RemoveProductionAt(int index)
     {
         if (index < 0 || index >= _productions.Count)
         {
@@ -241,9 +241,9 @@ public class CFG
     #endregion Productions
 
     /// <summary>
-    /// Clears the grammar of all its elements.
+    /// Clears all elements in the grammar.
     /// </summary>
-    public void Clear()
+    public virtual void Clear()
     {
         _terminalsSet.Clear();
         _terminalsList.Clear();
@@ -265,12 +265,22 @@ public class CFG
     }
 
     /// <summary>
-    /// Shorthand for quickly printing entries in <see cref="_productionsByHead"/>.
+    /// Shorthand for converting entries in <see cref="_productionsByHead"/> to a string.
     /// </summary>
     /// <param name="group">A pair of a nonterminal and all productions with it as their heads.</param>
     /// <returns>A formatted string for displaying all productions of a nonterminal.</returns>
-    private string ProductionsToString(KeyValuePair<Nonterminal, List<Production>> group)
+    private static string ProductionsToString(KeyValuePair<Nonterminal, List<Production>> group)
     {
-        return new StringBuilder($"{group.Key} = ").AppendJoin(" | ", group.Value.Select(p => p.Body)).Append(" ;").ToString();
+        return new StringBuilder($"{group.Key} = ").AppendJoin(" | ", group.Value.Select(p => BodyToString(p.Body))).Append(" ;").ToString();
+    }
+
+    /// <summary>
+    /// Shorthand for converting a production body to a string.
+    /// </summary>
+    /// <param name="body">The body to get the string representation of.</param>
+    /// <returns>A formatted string for displaying the production body.</returns>
+    private static string BodyToString(IEnumerable<ISymbol> body)
+    {
+        return new StringBuilder().AppendJoin(' ', body).ToString();
     }
 }
