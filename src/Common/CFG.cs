@@ -77,7 +77,7 @@ public class CFG
     /// </summary>
     /// <param name="nonterminal">The nonterminal to add.</param>
     /// <returns><see langword="true"/> if the <paramref name="nonterminal"/> did not exist in the grammar yet, otherwise <see langword="false"/>.</returns>
-    public bool AddNonterminal(Nonterminal nonterminal)
+    public virtual bool AddNonterminal(Nonterminal nonterminal)
     {
         if (_nonterminalsSet.Add(nonterminal))
         {
@@ -102,7 +102,7 @@ public class CFG
     /// </summary>
     /// <param name="index">The index of the nonterminal to remove.</param>
     /// <exception cref="ArgumentOutOfRangeException">The index is outside of the bounds of the nonterminal list.</exception>
-    public void RemoveNonterminalAt(int index)
+    public virtual void RemoveNonterminalAt(int index)
     {
         if (index < 0 || index >= _nonterminalsList.Count)
         {
