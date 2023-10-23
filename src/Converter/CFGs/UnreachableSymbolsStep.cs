@@ -1,12 +1,12 @@
 ﻿using NoWa.Common;
 using NoWa.Common.Logging;
 
-namespace NoWa.Converter;
+namespace NoWa.Converter.CFGs;
 
 /// <summary>
 /// A conversion step that eliminates any unreachable symbols.
 /// </summary>
-public sealed class UnreachableSymbolsStep : BaseConversionStep
+public sealed class UnreachableSymbolsStep : BaseConversionStep<CFG>
 {
     /// <inheritdoc/>
     public UnreachableSymbolsStep(ILogger logger) : base(logger) { }

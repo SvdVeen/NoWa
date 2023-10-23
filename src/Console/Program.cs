@@ -1,6 +1,8 @@
 ﻿using NoWa.Common;
 using NoWa.Common.Logging;
 using NoWa.Converter;
+using NoWa.Converter.CFGs;
+using NoWa.Converter.WAGs;
 using NoWa.Parser;
 using Con = System.Console;
 
@@ -56,11 +58,20 @@ Return codes:
         }
 
         ConsoleLogger logger = new() { DisplayLevel = logLevel };
+        CFG? result;
+        if (cfg)
+        {
+            CFG grammar = NoWaCFGParser.Parse(inPath!);
+            NoWaCFGConverter converter = new(logger);
+            result = converter.Convert(grammar);
+        }
+        else
+        {
+            WAG grammar = NoWaWAGParser.Parse(inPath!);
+            NoWaWAGConverter converter = new(logger);
+            result = converter.Convert(grammar);
+        }
 
-        CFG grammar = cfg ? NoWaCFGParser.Parse(inPath!) : NoWaWAGParser.Parse(inPath!);
-
-        NoWaConverter converter = new(logger);
-        CFG? result = converter.Convert(grammar, logLevel == LogLevel.Debug);
         if (result == null)
         {
             return 3;

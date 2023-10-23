@@ -9,12 +9,12 @@ namespace NoWa.Common;
 public class WAG : CFG
 {
     #region Weights
-    private readonly Dictionary<Production, double> _weights = new();
+    private readonly List<double> _weights = new();
 
     /// <summary>
-    /// Gets the weights for each production in the grammar.
+    /// Gets the weights in the WAG.
     /// </summary>
-    public IReadOnlyDictionary<Production, double> Weights { get => _weights; }
+    public IReadOnlyList<double> Weights { get => _weights; }
 
     /// <summary>
     /// Adds a production to the grammar and gives it a default weight of one.
@@ -23,8 +23,7 @@ public class WAG : CFG
     /// <param name="production">The production to add.</param>
     public override void AddProduction(Production production)
     {
-        base.AddProduction(production);
-        _weights.Add(production, 1);
+        AddProduction(production, 1);
     }
 
     /// <summary>
@@ -35,19 +34,37 @@ public class WAG : CFG
     public void AddProduction(Production production, double weight)
     {
         base.AddProduction(production);
-        _weights.Add(production, weight);
+        _weights.Add(weight);
+    }
+
+    /// <summary>
+    /// Gets the weight of the given production.
+    /// </summary>
+    /// <param name="production"></param>
+    /// <exception cref="ArgumentOutOfRangeException">The <paramref name="production"/> does not have an entry in in <see cref="_weights"/>.</exception>
+    public double GetWeight(Production production)
+    {
+        int index = _productions.IndexOf(production);
+        if (index < 0 || index >= _weights.Count)
+        {
+            throw new ArgumentOutOfRangeException(nameof(production));
+        }
+        return _weights[index];
     }
 
     /// <inheritdoc/>
     public override bool RemoveProduction(Production production)
     {
-        if (base.RemoveProduction(production))
+        int index = _productions.IndexOf(production);
+        if (index > -1)
         {
-            if (!_weights.Remove(production))
+            if (index >= _weights.Count)
             {
-                throw new InvalidOperationException($"{nameof(production)} does not have an assigned weight.");
+                throw new ArgumentOutOfRangeException(nameof(production));
             }
-            return true;
+            _weights.RemoveAt(index);
+            return base.RemoveProduction(production);
+
         }
         return false;
     }
@@ -59,12 +76,11 @@ public class WAG : CFG
         {
             throw new ArgumentOutOfRangeException(nameof(index));
         }
-
-        Production production = _productions[index];
-        if (!_weights.Remove(production))
+        if (index >= _weights.Count)
         {
-            throw new InvalidOperationException($"{nameof(production)} does not have an assigned weight.");
+            throw new InvalidOperationException($"Production {index} does not have an assigned weight.");
         }
+        _weights.RemoveAt(index);
         base.RemoveProductionAt(index);
     }
 
@@ -73,14 +89,15 @@ public class WAG : CFG
     /// </summary>
     /// <param name="production">The production to set the weight for.</param>
     /// <param name="weight">The weight to assign to the production.</param>
-    /// <exception cref="ArgumentOutOfRangeException">The <paramref name="production"/> does not exist in <see cref="_weights"/>.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">The <paramref name="production"/> does not have an entry in <see cref="_weights"/>.</exception>
     public void SetWeight(Production production, double weight)
     {
-        if (!_weights.ContainsKey(production))
+        int index = _productions.IndexOf(production);
+        if (index < 0 || index >= _weights.Count)
         {
             throw new ArgumentOutOfRangeException(nameof(production));
         }
-        _weights[production] = weight;
+        _weights[index] = weight;
     }
     #endregion Weights
 
@@ -253,7 +270,7 @@ public class WAG : CFG
     /// </summary>
     /// <param name="production">The production to get a representation of.</param>
     /// <returns>A formatted string representing the production.</returns>
-    private string ProductionToString(Production production) => $"{HeadToString(production.Head)} -{_weights[production].ToString(CultureInfo.InvariantCulture)}-> {BodyToString(production.Body)} ;";
+    private string ProductionToString(Production production) => $"{HeadToString(production.Head)} -{GetWeight(production).ToString(CultureInfo.InvariantCulture)}-> {BodyToString(production.Body)} ;";
 
     /// <summary>
     /// Gets a string representation of the head of a production.

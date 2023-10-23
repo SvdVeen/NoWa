@@ -75,7 +75,7 @@ public class Production
         int result = 17;
         foreach (var symbol in Body)
         {
-            result = HashCode.Combine(result, symbol);
+            result = result * 19 + symbol.GetHashCode();
         }
         return result;
     }

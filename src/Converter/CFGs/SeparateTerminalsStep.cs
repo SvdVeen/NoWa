@@ -1,12 +1,12 @@
 ﻿using NoWa.Common;
 using NoWa.Common.Logging;
 
-namespace NoWa.Converter;
+namespace NoWa.Converter.CFGs;
 
 /// <summary>
 /// A conversion step that separates all terminals into their own productions.
 /// </summary>
-public sealed class SeparateTerminalsStep : BaseConversionStep
+public sealed class SeparateTerminalsStep : BaseConversionStep<CFG>
 {
     /// <inheritdoc/>
     public SeparateTerminalsStep(ILogger logger) : base(logger) { }

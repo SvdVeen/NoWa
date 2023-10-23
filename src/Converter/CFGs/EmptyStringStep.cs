@@ -1,12 +1,12 @@
 ﻿using NoWa.Common;
 using NoWa.Common.Logging;
 
-namespace NoWa.Converter;
+namespace NoWa.Converter.CFGs;
 
 /// <summary>
 /// A conversion step that eliminates all ε-productions in a grammar.
 /// </summary>
-public sealed class EmptyStringStep : BaseConversionStep
+public sealed class EmptyStringStep : BaseConversionStep<CFG>
 {
     /// <inheritdoc/>
     public EmptyStringStep(ILogger logger) : base(logger) { }

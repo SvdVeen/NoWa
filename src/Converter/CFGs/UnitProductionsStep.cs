@@ -1,12 +1,12 @@
 ﻿using NoWa.Common;
 using NoWa.Common.Logging;
 
-namespace NoWa.Converter;
+namespace NoWa.Converter.CFGs;
 
 /// <summary>
 /// A conversion step that eliminates all unit productions in a grammar.
 /// </summary>
-public sealed class UnitProductionsStep : BaseConversionStep
+public sealed class UnitProductionsStep : BaseConversionStep<CFG>
 {
     /// <inheritdoc/>
     public UnitProductionsStep(ILogger logger) : base(logger) { }

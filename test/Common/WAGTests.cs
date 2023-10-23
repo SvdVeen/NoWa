@@ -21,7 +21,7 @@ namespace NoWa.Common.Tests
             wag.AddProduction(A);
 
             Assert.AreSame(A, wag.Productions[0]);
-            Assert.AreEqual(1, wag.Weights[A]);
+            Assert.AreEqual(1, wag.Weights[0]);
         }
 
         /// <summary>
@@ -35,7 +35,7 @@ namespace NoWa.Common.Tests
             wag.AddProduction(A, 5.2);
 
             Assert.AreSame(A, wag.Productions[0]);
-            Assert.AreEqual(5.2, wag.Weights[A]);
+            Assert.AreEqual(5.2, wag.Weights[0]);
         }
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace NoWa.Common.Tests
             wag.RemoveProduction(A);
 
             Assert.AreEqual(0, wag.Productions.Count);
-            Assert.AreEqual(false, wag.Weights.ContainsKey(A));
+            Assert.AreEqual(0, wag.Weights.Count);
         }
 
         /// <summary>
@@ -69,7 +69,8 @@ namespace NoWa.Common.Tests
 
             Assert.AreEqual(1, wag.Productions.Count);
             Assert.AreNotSame(B, wag.Productions[0]);
-            Assert.AreEqual(false, wag.Weights.ContainsKey(B));
+            Assert.AreEqual(1, wag.Weights.Count);
+            Assert.AreEqual(1, wag.Weights[0]);
         }
 
         [TestMethod]
@@ -81,7 +82,7 @@ namespace NoWa.Common.Tests
 
             wag.SetWeight(A, 0.53);
 
-            Assert.AreEqual(0.53, wag.Weights[A]);
+            Assert.AreEqual(0.53, wag.Weights[0]);
         }
         #endregion Weights
 
@@ -244,7 +245,7 @@ namespace NoWa.Common.Tests
             wag.AddSynthesizedAttribute(Nonterminal.Get("A"), 'q');
 
             Assert.AreEqual(
-                $"S -10-> A{{p, q}} C ;{Environment.NewLine}" +
+                $"S -10-> A{{p,q}} C ;{Environment.NewLine}" +
                 $"A{{p;q}} -4-> 'a' ;{Environment.NewLine}" +
                 $"A{{p;q}} -6-> 'b' ;{Environment.NewLine}" +
                 $"C -1-> 'c' ;", wag.ToString());

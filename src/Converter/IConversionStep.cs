@@ -6,7 +6,8 @@ namespace NoWa.Converter;
 /// <summary>
 /// Interface for conversion steps.
 /// </summary>
-public interface IConversionStep
+public interface IConversionStep<TGrammar>
+    where TGrammar : CFG
 {
     /// <summary>
     /// The <see cref="ILogger"/> used in this conversion step.
@@ -14,8 +15,8 @@ public interface IConversionStep
     public ILogger Logger { get; }
 
     /// <summary>
-    /// Performs the conversion step on the given <see cref="CFG"/>.
+    /// Performs the conversion step on the given grammar.
     /// </summary>
-    /// <param name="grammar">The <see cref="CFG"/> to convert.</param>
-    public void Convert(CFG grammar);
+    /// <param name="grammar">The grammar to convert.</param>
+    public void Convert(TGrammar grammar);
 }

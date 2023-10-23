@@ -8,12 +8,13 @@ namespace NoWa.Converter;
 /// 
 /// <para>Currently only works for grammars without weighted attributes.</para>
 /// </summary>
-public class NoWaConverter
+public abstract class NoWaConverter<TGrammar>
+    where TGrammar : CFG
 {
     /// <summary>
     /// The steps used in the conversion.
     /// </summary>
-    private readonly IList<IConversionStep> _steps;
+    protected IList<IConversionStep<TGrammar>> _steps;
 
     /// <summary>
     /// The logger used by the converter.
@@ -21,28 +22,21 @@ public class NoWaConverter
     public ILogger Logger { get; }
 
     /// <summary>
-    /// Create a new instance of the converter with the given <see cref="ILogger"/>.
+    /// Creates a new instance of the converter with the given <see cref="ILogger"/>.
     /// </summary>
-    /// <param name="logger">The <see cref="ILogger"/> to use for logging </param>
+    /// <param name="logger">The <see cref="ILogger"/> to use for logging.</param>
     public NoWaConverter(ILogger logger)
     {
         Logger = logger;
-        _steps = new List<IConversionStep>()
-        {
-            new EmptyStringStep(Logger),
-            new UnitProductionsStep(Logger),
-            new UnreachableSymbolsStep(Logger),
-            new SeparateTerminalsStep(Logger),
-            new SplitNonterminalsStep(Logger)
-        };
+        _steps = new List<IConversionStep<TGrammar>>();
     }
 
     /// <summary>
-    /// Convert the given <see cref="CFG"/> to Chomsky Normal Form.
+    /// Converts the given grammar to Chomsky Normal Form.
     /// </summary>
     /// <param name="grammar">The grammar to convert.</param>
     /// <returns>The converted grammar.</returns>
-    public CFG? Convert(CFG grammar, bool continueOnError = false)
+    public virtual CFG? Convert(TGrammar grammar, bool continueOnError = false)
     {
         CFG result = grammar;
         Logger.LogInfo("Starting CNF conversion...");

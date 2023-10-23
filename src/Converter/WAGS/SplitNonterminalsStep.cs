@@ -1,12 +1,12 @@
 ﻿using NoWa.Common;
 using NoWa.Common.Logging;
 
-namespace NoWa.Converter;
+namespace NoWa.Converter.WAGs;
 
 /// <summary>
 /// A conversion step that splits productions with more than two nonterminals into multiple substeps.
 /// </summary>
-public sealed class SplitNonterminalsStep : BaseConversionStep
+public sealed class SplitNonterminalsStep : BaseConversionStep<WAG>
 {
     /// <inheritdoc/>
     public SplitNonterminalsStep(ILogger logger) : base(logger) { }
@@ -15,7 +15,7 @@ public sealed class SplitNonterminalsStep : BaseConversionStep
     /// Splits all productions with more than two nonterminals into multiple substeps.
     /// </summary>
     /// <inheritdoc/>
-    public override void Convert(CFG grammar)
+    public override void Convert(WAG grammar)
     {
         Logger.LogInfo("Splitting production bodies longer than 2...");
         GrammarStats stats = new(grammar);
@@ -36,7 +36,7 @@ public sealed class SplitNonterminalsStep : BaseConversionStep
     /// <param name="grammar">The grammar to convert.</param>
     /// <param name="newNonterminals">The newly introduced nonterminals in the step.</param>
     /// <param name="production">The production to split.</param>
-    private void SplitProduction(CFG grammar, IDictionary<string, Nonterminal> newNonterminals, Production production)
+    private void SplitProduction(WAG grammar, IDictionary<string, Nonterminal> newNonterminals, Production production)
     {
         while (production.Body.Count > 2)
         {
