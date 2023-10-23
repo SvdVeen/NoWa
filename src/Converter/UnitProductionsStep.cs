@@ -22,12 +22,13 @@ public sealed class UnitProductionsStep : BaseConversionStep
 
         var unitPairs = GetUnitPairs(grammar);
 
+        List<Nonterminal> originalNonterminals = new(grammar.Nonterminals);
         List<Production> originalProductions = new(grammar.Productions);
         var lookup = originalProductions.ToLookup(p => p.Head);
 
         grammar.Clear();
 
-        foreach (var pair in unitPairs)
+        foreach (var pair in unitPairs.OrderBy(p => originalNonterminals.IndexOf(p.Item1)))
         {
             foreach(Production production in lookup[pair.Item2])
             {
