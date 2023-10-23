@@ -12,9 +12,14 @@ class Program
 @"Converts the given grammer to Chomsky Normal Form.
 The first rule in the grammar is assumed to be the start rule.
 
-Usage: NoWa.exe (-help | <input path> [-out <output path>] [-log <log level>])
--help displays this message.
+Usage:
+NoWa.exe -help
+Displays this message.
+
+NoWa.exe <input path> [-cfg] [-out <output path>] [-log <log level>]
+Converts a grammar to Chomsky Normal Form.
 input path: the path to the grammar file to parse.
+-cfg parses a normal context-free grammar instead of a context-free weighted attribute grammar.
 output path: the path to write the output to.
 log level: The log level to use for messages about parsing and conversion. Possible levels are:
     - none/-1: show no log messages.
@@ -40,7 +45,7 @@ Return codes:
     {
         WriteAppInfo();
 
-        if (!ValidateArguments(args, out bool help, out string? inPath, out string? outPath, out LogLevel logLevel))
+        if (!ValidateArguments(args, out bool help, out string? inPath, out bool cfg, out string? outPath, out LogLevel logLevel))
         {
             return 1;
         }
@@ -52,7 +57,7 @@ Return codes:
 
         ConsoleLogger logger = new() { DisplayLevel = logLevel };
 
-        CFG grammar = NoWaParser.Parse(inPath!);
+        CFG grammar = cfg ? NoWaCFGParser.Parse(inPath!) : NoWaWAGParser.Parse(inPath!);
 
         NoWaConverter converter = new(logger);
         CFG? result = converter.Convert(grammar, logLevel == LogLevel.Debug);
@@ -83,7 +88,7 @@ Return codes:
     static void WriteAppInfo()
     {
         Con.WriteLine("NoWa: a Chomsky Normal Form converter for Weighted Attrubute Grammars.");
-        Con.WriteLine("08-2023, Suzanne van der Veen, University of Twente");
+        Con.WriteLine("10-2023, Suzanne van der Veen, University of Twente");
         Con.WriteLine();
     }
 
@@ -93,13 +98,15 @@ Return codes:
     /// <param name="args">The arguments to validate.</param>
     /// <param name="help"><see langword="true"/> if the "-help" argument was passed; <see langword="false"/> otherwise.</param>
     /// <param name="inPath">The given input path if it was valid; <see langword="null"/> otherwise.</param>
+    /// <param name="cfg"><see langword="true"/> if "-cfg" was passed, <see langword="false"/> otherwise.</param>
     /// <param name="outPath">The given output path if it was valid; <see langword="null"/> if it was invalid or not specified.</param>
     /// <param name="logLevel">The given log level if it was valid; <see cref="LogLevel.Info"/> if it was invalid or not specified.</param>
     /// <returns><see langword="true"/> if the arguments were successfully validated; <see langword="false"/> otherwise.</returns>
-    static bool ValidateArguments(string[] args, out bool help, out string? inPath, out string? outPath, out LogLevel logLevel)
+    static bool ValidateArguments(string[] args, out bool help, out string? inPath, out bool cfg, out string? outPath, out LogLevel logLevel)
     {
         help = false;
         inPath = null;
+        cfg = false;
         outPath = null;
         logLevel = LogLevel.Info;
 
@@ -129,7 +136,11 @@ Return codes:
 
         for (int i = 1; i < args.Length; i++)
         {
-            if (string.Equals(args[i], "-out", StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(args[i], "-cfg", StringComparison.OrdinalIgnoreCase))
+            {
+                cfg = true;
+            }
+            else if (string.Equals(args[i], "-out", StringComparison.OrdinalIgnoreCase))
             {
                 if (++i == args.Length)
                 {

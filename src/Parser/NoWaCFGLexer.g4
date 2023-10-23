@@ -1,4 +1,4 @@
-lexer grammar NoWaLexer;
+lexer grammar NoWaCFGLexer;
 
 fragment UPPERCASE: [A-Z] ;
 fragment LOWERCASE: [a-z] ;

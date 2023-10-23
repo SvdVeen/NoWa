@@ -1,5 +1,5 @@
-parser grammar NoWaParser;
-options { tokenVocab = NoWaLexer; }
+parser grammar NoWaCFGParser;
+options { tokenVocab = NoWaCFGLexer; }
 
 grammar_: rules=rule+ EOF ;
 

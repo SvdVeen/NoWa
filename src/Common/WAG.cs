@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Globalization;
+using System.Text;
 
 namespace NoWa.Common;
 
@@ -252,7 +253,7 @@ public class WAG : CFG
     /// </summary>
     /// <param name="production">The production to get a representation of.</param>
     /// <returns>A formatted string representing the production.</returns>
-    private string ProductionToString(Production production) => $"{HeadToString(production.Head)} -{_weights[production]}-> {BodyToString(production.Body)} ;";
+    private string ProductionToString(Production production) => $"{HeadToString(production.Head)} -{_weights[production].ToString(CultureInfo.InvariantCulture)}-> {BodyToString(production.Body)} ;";
 
     /// <summary>
     /// Gets a string representation of the head of a production.
@@ -270,10 +271,10 @@ public class WAG : CFG
         else
         {
             return new StringBuilder($"{head}{{")
-                .AppendJoin(", ", inheritedAttributes)
-                .Append(";") // Lack of whitespace is intentional.
-                .AppendJoin(", ", synthesizedAttributes)
-                .Append("}")
+                .AppendJoin(',', inheritedAttributes)
+                .Append(';')
+                .AppendJoin(',', synthesizedAttributes)
+                .Append('}')
                 .ToString();
         }
     }
@@ -313,7 +314,7 @@ public class WAG : CFG
         }
         else
         {
-            return $"{nonterminal}{{{new StringBuilder().AppendJoin(", ", attributes)}}}";
+            return $"{nonterminal}{{{new StringBuilder().AppendJoin(',', attributes)}}}";
         }
     }
 }

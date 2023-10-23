@@ -1,6 +1,5 @@
-﻿S = S | A ;
-A = 'terminal' | 'terminal2' | B ;
-B = 'A' 'B' 'C' 'D' ;
-C = 'C' ;
-D = A ;
-E = '' ;
+﻿S --> A{p,q,r,s} ;
+S --> B{q} ;
+A{p,q,r;s} -2.5-> 'a' ; .
+A{p} -1-> 'also a' ;
+B{;q} -1-> 'b' ;
