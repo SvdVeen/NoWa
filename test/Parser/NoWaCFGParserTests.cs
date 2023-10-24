@@ -14,15 +14,15 @@ public class NoWaCFGParserTests
     /// </summary>
     /// <param name="file">The file to parse.</param>
     [DataTestMethod]
-    [DeploymentItem($@"TestFiles\{nameof(NoWaCFGParserTests)}\ValidGrammar1")]
-    [DataRow("ValidGrammar1")]
-    [DeploymentItem($@"TestFiles\{nameof(NoWaCFGParserTests)}\ValidGrammar2")]
-    [DataRow("ValidGrammar2")]
-    [DeploymentItem($@"TestFiles\{nameof(NoWaCFGParserTests)}\ValidGrammar3")]
-    [DataRow("ValidGrammar3")]
-    [DeploymentItem($@"TestFiles\{nameof(NoWaCFGParserTests)}\ValidGrammar4")]
-    [DataRow("ValidGrammar4")]
-    public void ParseValid(string file)
+    [DeploymentItem($@"TestFiles\{nameof(NoWaCFGParserTests)}\ValidCFG1")]
+    [DataRow("ValidCFG1")]
+    [DeploymentItem($@"TestFiles\{nameof(NoWaCFGParserTests)}\ValidCFG2")]
+    [DataRow("ValidCFG2")]
+    [DeploymentItem($@"TestFiles\{nameof(NoWaCFGParserTests)}\ValidCFG3")]
+    [DataRow("ValidCFG3")]
+    [DeploymentItem($@"TestFiles\{nameof(NoWaCFGParserTests)}\ValidCFG4")]
+    [DataRow("ValidCFG4")]
+    public void TestParseValid(string file)
     {
         CFG grammar = NoWaCFGParser.Parse(file);
         Assert.AreEqual(File.ReadAllText(file).TrimEnd(), grammar.ToString());

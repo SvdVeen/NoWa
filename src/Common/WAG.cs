@@ -255,12 +255,9 @@ public class WAG : CFG
         }
 
         StringBuilder sb = new();
-        foreach (Nonterminal nt in _nonterminalsList)
+        for (int i = 0; i < _productions.Count; i++)
         {
-            foreach(Production production in GetProductionsByHead(nt))
-            {
-                sb.AppendLine(ProductionToString(production));
-            }
+            sb.AppendLine(ProductionToString(_productions[i], _weights[i]));
         }
         return sb.ToString().TrimEnd(Environment.NewLine.ToCharArray());
     }
@@ -270,7 +267,7 @@ public class WAG : CFG
     /// </summary>
     /// <param name="production">The production to get a representation of.</param>
     /// <returns>A formatted string representing the production.</returns>
-    private string ProductionToString(Production production) => $"{HeadToString(production.Head)} -{GetWeight(production).ToString(CultureInfo.InvariantCulture)}-> {BodyToString(production.Body)} ;";
+    private string ProductionToString(Production production, double weight) => $"{HeadToString(production.Head)} -{weight.ToString(CultureInfo.InvariantCulture)}-> {BodyToString(production.Body)} ;";
 
     /// <summary>
     /// Gets a string representation of the head of a production.

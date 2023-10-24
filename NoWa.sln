@@ -27,7 +27,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nowa.Test.Common", "test\Co
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nowa.Test.Converter", "test\Converter\Nowa.Test.Converter.csproj", "{33E13489-3C26-4A36-BDFF-A8A10705464B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nowa.Test.Parser", "test\Parser\Nowa.Test.Parser.csproj", "{F5FC18E2-1ED2-4272-B631-6F3F624A8FDD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoWa.Test.Parser", "test\Parser\NoWa.Test.Parser.csproj", "{F5FC18E2-1ED2-4272-B631-6F3F624A8FDD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,0 +1,6 @@
+﻿START-RULE -2-> A B 'and a terminal' ;
+START-RULE -2-> C ;
+A -0.4-> 'a' ;
+A -0.6-> 'a but different' ;
+B -1-> 'b' ;
+C -1-> 'c also exists' ;
