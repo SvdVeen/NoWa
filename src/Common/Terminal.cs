@@ -40,7 +40,7 @@ public class Terminal : ISymbol
     /// <exception cref="ArgumentNullException">Thrown when an empty value is passed.</exception>
     private Terminal(string value)
     {
-        if (string.IsNullOrWhiteSpace(value))
+        if (string.IsNullOrEmpty(value))
         {
             throw new ArgumentNullException(nameof(value), "Cannot give an empty value to a terminal.");
         }

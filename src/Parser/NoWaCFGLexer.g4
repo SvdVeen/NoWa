@@ -1,16 +1,18 @@
 lexer grammar NoWaCFGLexer;
 
-fragment UPPERCASE: [A-Z] ;
-fragment LOWERCASE: [a-z] ;
-fragment DIGIT:		[0-9] ;
+// Fragments for reuse within the lexer grammar.
+fragment Uppercase		: [A-Z]								; // Any uppercase character.
+fragment Lowercase		: [a-z]								; // Any lowercase character.
+fragment Digit			: [0-9]								; // Any digit.
 
-// Single-character terminals
-WS:			' '  ;
-QUOTE:		'\'' ;
-PRODUCES:	'='  ;
-TERMINATOR: ';'  ;
-OR:			'|'  ;
-DASH:		'-'  ;
 
-ALPHA: (UPPERCASE | LOWERCASE | DIGIT)+ ; // Any alphanumeric character
-NEWLINE: [\r\n]+ -> skip ; // skip line breaks
+// Literals to be used by the parser.
+DASH		: '-'	; // A dash.
+EQUALS		: '='	; // An equals sign.
+PIPE		: '|'	; // A pipe, used to indicate the 'or'.
+QUOTE		: '\''	; // A single quote.
+SEMICOLON	: ';'	; // A semicolon, terminates rules.
+WS			: ' '	; // A single space.
+
+ALPHA	: (Uppercase | Lowercase | Digit)+	; // Any alphanumeric string.
+NEWLINE	: [\r\n]+ -> skip					; // skip line breaks

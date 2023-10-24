@@ -20,29 +20,32 @@ internal class NoWaCFGListener : Generated.NoWaCFGParserBaseListener
     /// </summary>
     public override void ExitRule([NotNull] Generated.NoWaCFGParser.RuleContext context)
     {
-        Nonterminal head = Nonterminal.Get(context.nonterminal.Text);
+        Nonterminal head = Nonterminal.Get(context.head.GetText());
 
-        foreach (var expr in context._exprs)
+        foreach (var prod in context._productions)
         {
             Production production = new(head);
 
-            foreach (var sym in expr._symbols)
+            if (prod._symbols.Count == 0 )
             {
-                if (sym is Generated.NoWaCFGParser.NonterminalContext nonterminal)
+                production.Body.Add(EmptyString.Instance);
+            }
+            else
+            {
+                foreach (var sym in prod._symbols)
                 {
-                    production.Body.Add(Nonterminal.Get(nonterminal.value.Text));
-                }
-                else if (sym is Generated.NoWaCFGParser.TerminalContext terminal)
-                {
-                    production.Body.Add(Terminal.Get(terminal.value.Text));
-                }
-                else if (sym is Generated.NoWaCFGParser.EmptyStringContext)
-                {
-                    production.Body.Add(EmptyString.Instance);
-                }
-                else
-                {
-                    throw new InvalidOperationException("Parsed symbol is invalid."); // This should not even be possible.
+                    if (sym is Generated.NoWaCFGParser.NonterminalContext nonterminal)
+                    {
+                        production.Body.Add(Nonterminal.Get(nonterminal.value.GetText()));
+                    }
+                    else if (sym is Generated.NoWaCFGParser.TerminalContext terminal)
+                    {
+                        production.Body.Add(Terminal.Get(terminal.value.GetText()));
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException("Parsed symbol is invalid."); // This should not even be possible.
+                    }
                 }
             }
 

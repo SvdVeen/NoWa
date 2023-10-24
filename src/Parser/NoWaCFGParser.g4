@@ -1,12 +1,14 @@
 parser grammar NoWaCFGParser;
 options { tokenVocab = NoWaCFGLexer; }
 
-grammar_: rules=rule+ EOF ;
+cfg: rules=rule+ EOF ;
 
-rule: nonterminal=(ALPHA | DASH)+ WS PRODUCES WS exprs+=expression (WS OR WS exprs+=expression)* WS TERMINATOR ;
+rule: head=nt WS EQUALS WS productions+=production (WS PIPE WS productions+=production)* WS SEMICOLON ;
 
-expression: symbols+=symbol (WS symbols+=symbol)* ;
+production: QUOTE QUOTE | symbols+=symbol (WS symbols+=symbol)* ;
 
-symbol: QUOTE QUOTE						#EmptyString
-	  | value=(ALPHA | DASH)+			#Nonterminal
-	  | QUOTE value=(ALPHA | WS)+ QUOTE	#Terminal ;
+symbol	: QUOTE value=t QUOTE	#Terminal
+		| value=nt				#Nonterminal ;
+
+nt	: ALPHA (DASH ALPHA)*	; // Nonterminals can be several alphanumeric strings separated with dashes.
+t	: (ALPHA | WS)+			; // Terminals can be any combination of alphanumeric strings and whitespaces.

@@ -29,7 +29,7 @@ public static class NoWaCFGParser
 
         var listener = new NoWaCFGListener();
         var walker = new ParseTreeWalker();
-        walker.Walk(listener, parser.grammar_());
+        walker.Walk(listener, parser.cfg());
 
         return listener.Grammar;
     }

@@ -26,15 +26,6 @@ public class TerminalTests
     }
 
     /// <summary>
-    /// Tests whether the <see cref="Terminal.Get(string)"/> method throws an <see cref="ArgumentNullException"/> if a whitespace value is passed.
-    /// </summary>
-    [TestMethod]
-    public void GetTestWhiteSpaceValue()
-    {
-        _ = Assert.ThrowsException<ArgumentNullException>(() => _ = Terminal.Get("    "));
-    }
-
-    /// <summary>
     /// Tests whether the <see cref="Terminal.Get(string)"/> method returns the same instance for the same value.
     /// </summary>
     [TestMethod]

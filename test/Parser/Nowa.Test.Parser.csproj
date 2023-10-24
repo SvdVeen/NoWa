@@ -26,4 +26,10 @@
     <Using Include="NoWa.Test.Shared" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="TestFiles\NoWaCFGParserTests\*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

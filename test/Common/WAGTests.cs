@@ -70,7 +70,7 @@ namespace NoWa.Common.Tests
             Assert.AreEqual(1, wag.Productions.Count);
             Assert.AreNotSame(B, wag.Productions[0]);
             Assert.AreEqual(1, wag.Weights.Count);
-            Assert.AreEqual(1, wag.Weights[0]);
+            Assert.AreEqual(5.2, wag.Weights[0]);
         }
 
         [TestMethod]
