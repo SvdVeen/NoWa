@@ -8,13 +8,12 @@ namespace NoWa.Converter;
 /// 
 /// <para>Currently only works for grammars without weighted attributes.</para>
 /// </summary>
-public abstract class NoWaConverter<TGrammar>
-    where TGrammar : CFG
+public class NoWaConverter
 {
     /// <summary>
     /// The steps used in the conversion.
     /// </summary>
-    protected IList<IConversionStep<TGrammar>> _steps;
+    private readonly IList<IConversionStep> _steps;
 
     /// <summary>
     /// The logger used by the converter.
@@ -28,7 +27,14 @@ public abstract class NoWaConverter<TGrammar>
     public NoWaConverter(ILogger logger)
     {
         Logger = logger;
-        _steps = new List<IConversionStep<TGrammar>>();
+         _steps = new List<IConversionStep>()
+        {
+            new EmptyStringStep(Logger),
+            new UnitProductionsStep(Logger),
+            new UnreachableSymbolsStep(Logger),
+            new SeparateTerminalsStep(Logger),
+            new SplitNonterminalsStep(Logger),
+        };
     }
 
     /// <summary>
@@ -36,9 +42,9 @@ public abstract class NoWaConverter<TGrammar>
     /// </summary>
     /// <param name="grammar">The grammar to convert.</param>
     /// <returns>The converted grammar.</returns>
-    public virtual CFG? Convert(TGrammar grammar, bool continueOnError = false)
+    public virtual Grammar? Convert(Grammar grammar, bool continueOnError = false)
     {
-        CFG result = grammar;
+        Grammar result = grammar;
         Logger.LogInfo("Starting CNF conversion...");
         Logger.LogDebug($"Initial grammar:{Environment.NewLine}{result}");
 

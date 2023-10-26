@@ -1,12 +1,12 @@
 ﻿using NoWa.Common;
 using NoWa.Common.Logging;
 
-namespace NoWa.Converter.CFGs;
+namespace NoWa.Converter;
 
 /// <summary>
 /// A conversion step that eliminates any unreachable symbols.
 /// </summary>
-public sealed class UnreachableSymbolsStep : BaseConversionStep<CFG>
+public sealed class UnreachableSymbolsStep : BaseConversionStep
 {
     /// <inheritdoc/>
     public UnreachableSymbolsStep(ILogger logger) : base(logger) { }
@@ -15,7 +15,7 @@ public sealed class UnreachableSymbolsStep : BaseConversionStep<CFG>
     /// Eliminates all unreachable ('useless') symbols from the given grammar.
     /// </summary>
     /// <inheritdoc/>
-    public override void Convert(CFG grammar)
+    public override void Convert(Grammar grammar)
     {
         Logger.LogInfo("Eliminating unreachable symbols...");
         GrammarStats stats = new(grammar);
@@ -29,12 +29,11 @@ public sealed class UnreachableSymbolsStep : BaseConversionStep<CFG>
     }
 
     #region Nongenerating symbols/productions
-
     /// <summary>
     /// Eliminates all nongenerating symbols and productions in a grammar.
     /// </summary>
     /// <param name="grammar">The grammar to remove symbols from.</param>
-    private void EliminateNonGenerating(CFG grammar)
+    private void EliminateNonGenerating(Grammar grammar)
     {
         if (grammar.Productions.Count == 0)
         {
@@ -78,7 +77,7 @@ public sealed class UnreachableSymbolsStep : BaseConversionStep<CFG>
     /// </summary>
     /// <param name="grammar">The grammar to find nongenerating symbols in.</param>
     /// <returns>A set with all nongenerating symbols in the grammar.</returns>
-    private ISet<Nonterminal> GetNongeneratingSymbols(CFG grammar)
+    private ISet<Nonterminal> GetNongeneratingSymbols(Grammar grammar)
     {
         ISet<ISymbol> generatingSymbols = GetGeneratingSymbols(grammar);
 
@@ -100,7 +99,7 @@ public sealed class UnreachableSymbolsStep : BaseConversionStep<CFG>
     /// </summary>
     /// <param name="grammar">The grammar to find generating symbols in.</param>
     /// <returns>A set with all generating symbols in the grammar.</returns>
-    private ISet<ISymbol> GetGeneratingSymbols(CFG grammar)
+    private ISet<ISymbol> GetGeneratingSymbols(Grammar grammar)
     {
         HashSet<ISymbol> generatingSymbols = new();
 
@@ -141,7 +140,7 @@ public sealed class UnreachableSymbolsStep : BaseConversionStep<CFG>
     /// <param name="grammar">The grammar to check in.</param>
     /// <param name="nonterminal">The nonterminal to check.</param>
     /// <returns><see langword="true"/> if the <paramref name="nonterminal"/> is generating, <see langword="false"/> otherwise.</returns>
-    private static bool IsNonterminalGenerating(ISet<ISymbol> generatingSymbols, CFG grammar, Nonterminal nonterminal)
+    private static bool IsNonterminalGenerating(ISet<ISymbol> generatingSymbols, Grammar grammar, Nonterminal nonterminal)
     {
         foreach (Production production in grammar.GetProductionsByHead(nonterminal))
         {
@@ -183,7 +182,7 @@ public sealed class UnreachableSymbolsStep : BaseConversionStep<CFG>
     /// </summary>
     /// <param name="nongeneratingSymbols">The set of nongenerating terminals.</param>
     /// <param name="grammar">The grammar to remove the nonterminals from.</param>
-    private void RemoveNongeneratingNonterminals(ISet<Nonterminal> nongeneratingSymbols, CFG grammar)
+    private void RemoveNongeneratingNonterminals(ISet<Nonterminal> nongeneratingSymbols, Grammar grammar)
     {
         for (int i = 0; i < grammar.Nonterminals.Count; i++)
         {
@@ -202,7 +201,7 @@ public sealed class UnreachableSymbolsStep : BaseConversionStep<CFG>
     /// Eliminates all unreachable symbols in the grammar.
     /// </summary>
     /// <param name="grammar">The grammar to eliminate symbols from.</param>
-    private void EliminateUnreachable(CFG grammar)
+    private void EliminateUnreachable(Grammar grammar)
     {
         if (grammar.Productions.Count == 0)
         {
@@ -251,7 +250,7 @@ public sealed class UnreachableSymbolsStep : BaseConversionStep<CFG>
     /// </summary>
     /// <param name="grammar">The grammar to find reachable symbols in.</param>
     /// <returns>A set of all reachable symbols in the grammar.</returns>
-    private ISet<ISymbol> GetReachableSymbols(CFG grammar)
+    private ISet<ISymbol> GetReachableSymbols(Grammar grammar)
     {
         HashSet<ISymbol> reachableSymbols = new();
 
@@ -284,6 +283,5 @@ public sealed class UnreachableSymbolsStep : BaseConversionStep<CFG>
 
         return reachableSymbols;
     }
-
     #endregion Unreachable symbols
 }

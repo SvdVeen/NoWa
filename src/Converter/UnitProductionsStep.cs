@@ -1,21 +1,21 @@
 ﻿using NoWa.Common;
 using NoWa.Common.Logging;
 
-namespace NoWa.Converter.CFGs;
+namespace NoWa.Converter;
 
 /// <summary>
 /// A conversion step that eliminates all unit productions in a grammar.
 /// </summary>
-public sealed class UnitProductionsStep : BaseConversionStep<CFG>
+public sealed class UnitProductionsStep : BaseConversionStep
 {
     /// <inheritdoc/>
     public UnitProductionsStep(ILogger logger) : base(logger) { }
 
     /// <summary>
-    /// Eliminates all unit productions in the given <see cref="CFG"/>.
+    /// Eliminates all unit productions in the given <see cref="WAG"/>.
     /// </summary>
     /// <inheritdoc/>
-    public override void Convert(CFG grammar)
+    public override void Convert(Grammar grammar)
     {
         Logger.LogInfo("Eliminating unit productions...");
         GrammarStats stats = new(grammar);
@@ -34,7 +34,16 @@ public sealed class UnitProductionsStep : BaseConversionStep<CFG>
             {
                 if (production.Body.Count > 1 || production.Body.Count == 1 && production.Body[0] is not Nonterminal)
                 {
-                    grammar.AddProduction(new(pair.Item1, production.Body.ToArray()));
+                    grammar.AddProduction(new(pair.Item1, production.Weight, production.Body));
+                    // Transfer the attributes of the original production's head to the new one's head.
+                    foreach (char attr in production.Head.InheritedAttributes)
+                    {
+                        pair.Item1.InheritedAttributes.Add(attr);
+                    }
+                    foreach (char attr in production.Head.SynthesizedAttributes)
+                    {
+                        pair.Item1.SynthesizedAttributes.Add(attr);
+                    }
                 }
             }
         }
@@ -48,7 +57,7 @@ public sealed class UnitProductionsStep : BaseConversionStep<CFG>
     /// </summary>
     /// <param name="grammar">The grammar to get unit pairs from.</param>
     /// <returns>A set of all unit pairs in the grammar.</returns>
-    private ISet<Tuple<Nonterminal,Nonterminal>> GetUnitPairs(CFG grammar)
+    private ISet<Tuple<Nonterminal,Nonterminal>> GetUnitPairs(Grammar grammar)
     {
         HashSet<Tuple<Nonterminal,Nonterminal>> pairs = new();
         // Base step: every nonterminal pairs with itself.

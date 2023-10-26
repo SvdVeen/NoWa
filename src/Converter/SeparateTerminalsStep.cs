@@ -1,12 +1,12 @@
 ﻿using NoWa.Common;
 using NoWa.Common.Logging;
 
-namespace NoWa.Converter.CFGs;
+namespace NoWa.Converter;
 
 /// <summary>
 /// A conversion step that separates all terminals into their own productions.
 /// </summary>
-public sealed class SeparateTerminalsStep : BaseConversionStep<CFG>
+public sealed class SeparateTerminalsStep : BaseConversionStep
 {
     /// <inheritdoc/>
     public SeparateTerminalsStep(ILogger logger) : base(logger) { }
@@ -15,7 +15,7 @@ public sealed class SeparateTerminalsStep : BaseConversionStep<CFG>
     /// Separates all terminals in productions of more than one symbol into their own productions.
     /// </summary>
     /// <inheritdoc/>
-    public override void Convert(CFG grammar)
+    public override void Convert(Grammar grammar)
     {
         Logger.LogInfo("Separating terminals from large bodies...");
         GrammarStats stats = new(grammar);
@@ -34,7 +34,7 @@ public sealed class SeparateTerminalsStep : BaseConversionStep<CFG>
     /// </summary>
     /// <param name="grammar">The grammar to separate the terminals in.</param>
     /// <param name="production">The production to separate the terminals in.</param>
-    private void SeparateTerminalsInProduction(CFG grammar, Production production)
+    private void SeparateTerminalsInProduction(Grammar grammar, Production production)
     {
         if (production.Body.Count <= 1)
         {
@@ -54,7 +54,7 @@ public sealed class SeparateTerminalsStep : BaseConversionStep<CFG>
     /// </summary>
     /// <param name="grammar">The grammar to replace the terminal in.</param>
     /// <param name="terminal">The terminal to replace.</param>
-    private void ReplaceTerminalInGrammar(CFG grammar, Terminal terminal)
+    private void ReplaceTerminalInGrammar(Grammar grammar, Terminal terminal)
     {
         Logger.LogDebug($"Replacing terminal: {terminal}");
         Production newProduction = new(Nonterminal.Get($"T-{terminal.Value}"), terminal);

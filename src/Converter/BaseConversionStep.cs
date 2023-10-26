@@ -6,8 +6,7 @@ namespace NoWa.Converter;
 /// <summary>
 /// Base class for conversion steps.
 /// </summary>
-public abstract class BaseConversionStep<TGrammar> : IConversionStep<TGrammar>
-    where TGrammar : CFG
+public abstract class BaseConversionStep : IConversionStep
 {
     /// <inheritdoc/>
     public ILogger Logger { get; private set; }
@@ -19,7 +18,7 @@ public abstract class BaseConversionStep<TGrammar> : IConversionStep<TGrammar>
     public BaseConversionStep(ILogger logger) => Logger = logger;
 
     /// <inheritdoc/>
-    public abstract void Convert(TGrammar grammar);
+    public abstract void Convert(Grammar grammar);
 
     /// <summary>
     /// Contains statistics about grammars and lets the step log them easily.
@@ -45,7 +44,7 @@ public abstract class BaseConversionStep<TGrammar> : IConversionStep<TGrammar>
         /// Initializes a new instance of the <see cref="GrammarStats"/> class.
         /// </summary>
         /// <param name="grammar">The grammar to save statistics for in this object.</param>
-        public GrammarStats(TGrammar grammar)
+        public GrammarStats(Grammar grammar)
         {
             Terminals = grammar.Terminals.Count;
             Nonterminals = grammar.Nonterminals.Count;
@@ -58,7 +57,7 @@ public abstract class BaseConversionStep<TGrammar> : IConversionStep<TGrammar>
         /// <param name="grammar">The grammar to compare to the statistics.</param>
         /// <param name="logger">The logger to log the difference with.</param>
         /// <param name="level">The log level to use when logging the difference.</param>
-        public void LogDiff(TGrammar grammar, ILogger logger, LogLevel level = LogLevel.Info)
+        public void LogDiff(Grammar grammar, ILogger logger, LogLevel level = LogLevel.Info)
         {
             if (Terminals != grammar.Terminals.Count)
             {

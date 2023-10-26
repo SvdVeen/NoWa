@@ -1,6 +1,6 @@
 ﻿using NoWa.Common;
 
-namespace NoWa.Converter.CFGs.Test;
+namespace NoWa.Converter.Test;
 
 /// <summary>
 /// Contains unit tests for the <see cref="EmptyStringStep"/>.

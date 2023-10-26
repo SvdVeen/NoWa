@@ -1,8 +1,6 @@
 ﻿using NoWa.Common;
 using NoWa.Common.Logging;
 using NoWa.Converter;
-using NoWa.Converter.CFGs;
-using NoWa.Converter.WAGs;
 using NoWa.Parser;
 using Con = System.Console;
 
@@ -58,19 +56,17 @@ Return codes:
         }
 
         ConsoleLogger logger = new() { DisplayLevel = logLevel };
-        CFG? result;
+        Grammar grammar;
         if (cfg)
         {
-            CFG grammar = NoWaCFGParser.Parse(inPath!);
-            NoWaCFGConverter converter = new(logger);
-            result = converter.Convert(grammar);
+            grammar = NoWaCFGParser.Parse(inPath!);
         }
         else
         {
-            WAG grammar = NoWaWAGParser.Parse(inPath!);
-            NoWaWAGConverter converter = new(logger);
-            result = converter.Convert(grammar);
+            grammar = NoWaWAGParser.Parse(inPath!);
         }
+        NoWaConverter converter = new(logger);
+        Grammar? result = converter.Convert(grammar);
 
         if (result == null)
         {
@@ -188,7 +184,7 @@ Return codes:
     /// <param name="outPath">The path to save the result to.</param>
     /// <param name="result">The result to save.</param>
     /// <returns><see langword="true"/> if the file was saved successfully; <see langword="false"/> otherwise.</returns>
-    private static bool SaveResultToFile(string outPath, CFG result)
+    private static bool SaveResultToFile(string outPath, Grammar result)
     {
         try
         {

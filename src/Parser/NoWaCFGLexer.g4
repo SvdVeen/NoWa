@@ -1,9 +1,9 @@
 lexer grammar NoWaCFGLexer;
 
 // Fragments for reuse within the lexer grammar.
-fragment Uppercase		: [A-Z]								; // Any uppercase character.
-fragment Lowercase		: [a-z]								; // Any lowercase character.
-fragment Digit			: [0-9]								; // Any digit.
+fragment Uppercase		: [A-Z]	; // Any uppercase character.
+fragment Lowercase		: [a-z]	; // Any lowercase character.
+fragment Digit			: [0-9]	; // Any digit.
 
 
 // Literals to be used by the parser.

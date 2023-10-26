@@ -44,15 +44,19 @@ internal class NoWaWAGListener : Generated.NoWaWAGParserBaseListener
         }
 
         Production production = new(head, symbols);
-
-        if (context.weight?.Text?.Length > 0)
+        string? weight = context.weight?.GetText();
+        if (weight != null)
         {
-            Grammar.AddProduction(production, double.Parse(context.weight.Text.Replace(',', '.'), CultureInfo.InvariantCulture));
+            if (weight[0] == '$' || weight[0] == '&')
+            {
+                production.Weight.Set(weight);
+            }
+            else
+            {
+                production.Weight.Set(double.Parse(weight.Replace(',', '.'), CultureInfo.InvariantCulture));
+            }
         }
-        else
-        {
-            Grammar.AddProduction(production);
-        }
+        Grammar.AddProduction(production);
     }
 
     /// <summary>
@@ -69,7 +73,7 @@ internal class NoWaWAGListener : Generated.NoWaWAGParserBaseListener
         {
             foreach (var attr in context.attrs.inheritedattrs._attrs)
             {
-                Grammar.AddInheritedAttribute(nonterminal, attr.Text[0]);
+                nonterminal.InheritedAttributes.Add(attr.Text[0]);
             }
         }
 
@@ -77,7 +81,7 @@ internal class NoWaWAGListener : Generated.NoWaWAGParserBaseListener
         {
             foreach (var attr in context.attrs.synthesizedattrs._attrs)
             {
-                Grammar.AddSynthesizedAttribute(nonterminal, attr.Text[0]);
+                nonterminal.SynthesizedAttributes.Add(attr.Text[0]);
             }
         }
     }

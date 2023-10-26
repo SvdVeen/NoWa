@@ -1,6 +1,7 @@
 ﻿using NoWa.Common;
+using NoWa.Converter;
 
-namespace NoWa.Converter.CFGs.Test;
+namespace Nowa.Test.Converter;
 
 /// <summary>
 /// Contains unit tests for the <see cref="UnitProductionsStep"/>.

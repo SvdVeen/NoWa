@@ -23,9 +23,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{BB0EBB34-3FC
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoWa.Test.Shared", "test\Shared\NoWa.Test.Shared.csproj", "{25FC72D8-285E-4C85-8BF1-7BD7B41C4F72}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nowa.Test.Common", "test\Common\Nowa.Test.Common.csproj", "{F26D9D80-57D4-4344-B69F-41CEF7E91AB7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoWa.Test.Common", "test\Common\NoWa.Test.Common.csproj", "{F26D9D80-57D4-4344-B69F-41CEF7E91AB7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nowa.Test.Converter", "test\Converter\Nowa.Test.Converter.csproj", "{33E13489-3C26-4A36-BDFF-A8A10705464B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoWa.Test.Converter", "test\Converter\NoWa.Test.Converter.csproj", "{33E13489-3C26-4A36-BDFF-A8A10705464B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoWa.Test.Parser", "test\Parser\NoWa.Test.Parser.csproj", "{F5FC18E2-1ED2-4272-B631-6F3F624A8FDD}"
 EndProject

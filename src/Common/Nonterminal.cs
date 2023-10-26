@@ -1,4 +1,7 @@
-﻿namespace NoWa.Common;
+﻿using System.Collections.Generic;
+using System.Text;
+
+namespace NoWa.Common;
 
 /// <summary>
 /// Represents a nonterminal symbol.
@@ -32,6 +35,18 @@ public class Nonterminal : ISymbol
     /// </summary>
     public string Value { get => _value; }
 
+    /// <summary>
+    /// Gets the list of inherited attributes belonging to this nonterminal.
+    /// </summary>
+    public ISet<char> InheritedAttributes { get; } = new HashSet<char>();
+
+    /// <summary>
+    /// Gets the list of synthesized attributes belonging to this nonterminal.
+    /// </summary>
+    public ISet<char> SynthesizedAttributes { get; } = new HashSet<char>();
+
+    public IReadOnlySet<char> StaticAttributes => InheritedAttributes.Union(SynthesizedAttributes).ToHashSet();
+    
     /// <summary>
     /// Construct a new nonterminal with the given value.
     /// </summary>
