@@ -41,7 +41,7 @@ public sealed class EmptyStringStep : BaseConversionStep<WAG>
                     newProduction.Body.RemoveAt(j);
                     if (newProduction.Body.Count > 0 && uniqueProductions.Add(newProduction))
                     {
-                        grammar.AddProduction(newProduction, originalWeights[originalProductions.IndexOf(production)]);
+                        grammar.AddProduction(newProduction, originalWeights[i]);
                     }
                 }
             }
@@ -129,14 +129,16 @@ public sealed class EmptyStringStep : BaseConversionStep<WAG>
     private void RemoveEmptyProductions(WAG grammar)
     {
         List<Production> originalProductions = new(grammar.Productions);
+        List<double> originalWeights = new(grammar.Weights);
 
         grammar.Clear();
 
-        foreach (Production production in originalProductions)
+        for (int i = 0; i < originalProductions.Count; i++)
         {
+            Production production = originalProductions[i];
             if (production.Body.Count > 1 || production.Body[0] is not EmptyString)
             {
-                grammar.AddProduction(production);
+                grammar.AddProduction(production, originalWeights[i]);
             }
             else
             {
