@@ -1,5 +1,4 @@
-﻿using System.Globalization;
-using System.Text;
+﻿using System.Text;
 
 namespace NoWa.Common;
 
@@ -71,6 +70,11 @@ public class WAG : Grammar
     /// <returns>A formatted string representing the production.</returns>
     private static string BodyToString(IEnumerable<ISymbol> body) => new StringBuilder().AppendJoin(' ', body.Select(SymbolToString)).ToString();
 
+    /// <summary>
+    /// Gets a string representation of a symbol in the body of a production in the WAG.
+    /// </summary>
+    /// <param name="symbol">The symbol to get a representation of.</param>
+    /// <returns>A formatted string representing the symbol.</returns>
     private static string SymbolToString(ISymbol symbol)
     {
         if (symbol is Nonterminal nonterminal)

@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Immutable;
 
 namespace NoWa.Common;
 
@@ -36,16 +35,19 @@ public class Nonterminal : ISymbol
     public string Value { get => _value; }
 
     /// <summary>
-    /// Gets the list of inherited attributes belonging to this nonterminal.
+    /// Gets the set of inherited attributes belonging to this nonterminal.
     /// </summary>
-    public ISet<char> InheritedAttributes { get; } = new HashSet<char>();
+    public ISet<char> InheritedAttributes { get; } = new SortedSet<char>();
 
     /// <summary>
-    /// Gets the list of synthesized attributes belonging to this nonterminal.
+    /// Gets the set of synthesized attributes belonging to this nonterminal.
     /// </summary>
-    public ISet<char> SynthesizedAttributes { get; } = new HashSet<char>();
+    public ISet<char> SynthesizedAttributes { get; } = new SortedSet<char>();
 
-    public IReadOnlySet<char> StaticAttributes => InheritedAttributes.Union(SynthesizedAttributes).ToHashSet();
+    /// <summary>
+    /// Gets the set of static attributes belonging to this nonterminal.
+    /// </summary>
+    public IReadOnlySet<char> StaticAttributes => InheritedAttributes.Union(SynthesizedAttributes).ToImmutableSortedSet();
     
     /// <summary>
     /// Construct a new nonterminal with the given value.

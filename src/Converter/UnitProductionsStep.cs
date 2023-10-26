@@ -35,14 +35,17 @@ public sealed class UnitProductionsStep : BaseConversionStep
                 if (production.Body.Count > 1 || production.Body.Count == 1 && production.Body[0] is not Nonterminal)
                 {
                     grammar.AddProduction(new(pair.Item1, production.Weight, production.Body));
-                    // Transfer the attributes of the original production's head to the new one's head.
-                    foreach (char attr in production.Head.InheritedAttributes)
+                    if (!pair.Item1.Equals(production.Head))
                     {
-                        pair.Item1.InheritedAttributes.Add(attr);
-                    }
-                    foreach (char attr in production.Head.SynthesizedAttributes)
-                    {
-                        pair.Item1.SynthesizedAttributes.Add(attr);
+                        // Transfer the attributes of the original production's head to the new one's head.
+                        foreach (char attr in production.Head.InheritedAttributes)
+                        {
+                            pair.Item1.InheritedAttributes.Add(attr);
+                        }
+                        foreach (char attr in production.Head.SynthesizedAttributes)
+                        {
+                            pair.Item1.SynthesizedAttributes.Add(attr);
+                        }
                     }
                 }
             }
