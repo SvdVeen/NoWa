@@ -29,6 +29,7 @@ public class NoWaConverter
         Logger = logger;
          _steps = new List<IConversionStep>()
         {
+            new ZeroWeightsStep(logger),
             new EmptyStringStep(Logger),
             new UnitProductionsStep(Logger),
             new UnreachableSymbolsStep(Logger),
