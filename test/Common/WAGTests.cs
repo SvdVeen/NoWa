@@ -114,13 +114,14 @@ namespace NoWa.Common.Tests
             wag.AddProduction(new(Nonterminal.Get("A"), 6, Terminal.Get("b")));
             wag.AddProduction(new(Nonterminal.Get("C"), Terminal.Get("c")));
 
-            Nonterminal.Get("A").InheritedAttributes.Add('p');
-            Nonterminal.Get("A").SynthesizedAttributes.Add('q');
+            wag.AddInheritedAttribute(Nonterminal.Get("A"), 'p');
+            wag.AddSynthesizedAttribute(Nonterminal.Get("A"), 'q');
+            wag.AddStaticAttribute(Nonterminal.Get("A"), 'r');
 
             Assert.AreEqual(
-                $"S -10-> A{{p,q}} C ;{Environment.NewLine}" +
-                $"A{{p;q}} -4-> 'a' ;{Environment.NewLine}" +
-                $"A{{p;q}} -6-> 'b' ;{Environment.NewLine}" +
+                $"S -10-> A{{p,q,r}} C ;{Environment.NewLine}" +
+                $"A{{p;q;r}} -4-> 'a' ;{Environment.NewLine}" +
+                $"A{{p;q;r}} -6-> 'b' ;{Environment.NewLine}" +
                 $"C -1-> 'c' ;", wag.ToString());
         }
     }

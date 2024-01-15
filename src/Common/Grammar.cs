@@ -238,7 +238,7 @@ public abstract class Grammar
     /// <summary>
     /// Clears all elements in the grammar.
     /// </summary>
-    public void Clear()
+    public virtual void Clear()
     {
         _terminalsSet.Clear();
         _terminalsList.Clear();

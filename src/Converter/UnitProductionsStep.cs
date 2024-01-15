@@ -1,5 +1,6 @@
 ﻿using NoWa.Common;
 using NoWa.Common.Logging;
+using System.Collections.Generic;
 
 namespace NoWa.Converter;
 
@@ -23,6 +24,16 @@ public sealed class UnitProductionsStep : BaseConversionStep
         var unitPairs = GetUnitPairs(grammar);
 
         List<Nonterminal> originalNonterminals = new(grammar.Nonterminals);
+        Dictionary<Nonterminal,IReadOnlySet<char>>? originalInheritedAttributes = null;
+        Dictionary<Nonterminal, IReadOnlySet<char>>? originalSynthesizedAttributes = null;
+        Dictionary<Nonterminal, IReadOnlySet<char>>? originalStaticAttributes = null;
+        WAG? wag = grammar as WAG;
+        if (wag != null)
+        {
+            originalInheritedAttributes = originalNonterminals.ToDictionary(nt => nt, wag.GetInheritedAttributes);
+            originalSynthesizedAttributes = originalNonterminals.ToDictionary(nt => nt, wag.GetSynthesizedAttributes);
+            originalStaticAttributes = originalNonterminals.ToDictionary(nt => nt, wag.GetStaticAttributes);
+        }
         List<Production> originalProductions = new(grammar.Productions);
         var lookup = originalProductions.ToLookup(p => p.Head);
 
@@ -38,13 +49,20 @@ public sealed class UnitProductionsStep : BaseConversionStep
                     if (!pair.Item1.Equals(production.Head))
                     {
                         // Transfer the attributes of the original production's head to the new one's head.
-                        foreach (char attr in production.Head.InheritedAttributes)
+                        if (wag != null)
                         {
-                            pair.Item1.InheritedAttributes.Add(attr);
-                        }
-                        foreach (char attr in production.Head.SynthesizedAttributes)
-                        {
-                            pair.Item1.SynthesizedAttributes.Add(attr);
+                            foreach (char attr in originalInheritedAttributes![production.Head])
+                            {
+                                wag.AddInheritedAttribute(pair.Item1, attr);
+                            }
+                            foreach (char attr in originalSynthesizedAttributes![production.Head])
+                            {
+                                wag.AddSynthesizedAttribute(pair.Item1, attr);
+                            }
+                            foreach (char attr in originalStaticAttributes![production.Head])
+                            {
+                                wag.AddStaticAttribute(pair.Item1, attr);
+                            }
                         }
                     }
                 }

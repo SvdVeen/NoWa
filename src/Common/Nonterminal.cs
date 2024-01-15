@@ -33,21 +33,6 @@ public class Nonterminal : ISymbol
     /// Gets the value of the nonterminal.
     /// </summary>
     public string Value { get => _value; }
-
-    /// <summary>
-    /// Gets the set of inherited attributes belonging to this nonterminal.
-    /// </summary>
-    public ISet<char> InheritedAttributes { get; } = new SortedSet<char>();
-
-    /// <summary>
-    /// Gets the set of synthesized attributes belonging to this nonterminal.
-    /// </summary>
-    public ISet<char> SynthesizedAttributes { get; } = new SortedSet<char>();
-
-    /// <summary>
-    /// Gets the set of static attributes belonging to this nonterminal.
-    /// </summary>
-    public IReadOnlySet<char> StaticAttributes => InheritedAttributes.Union(SynthesizedAttributes).ToImmutableSortedSet();
     
     /// <summary>
     /// Construct a new nonterminal with the given value.

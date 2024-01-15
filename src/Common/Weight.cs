@@ -73,7 +73,7 @@ public class Weight
     /// <returns><see langword="true"/> if the string is formatted as a valid attribute, <see langword="false"/> otherwise.</returns></returns>
     private static bool IsValidAttribute(string attribute)
     {
-        return attribute.Length == 2 && (attribute[0] == '&' || attribute[0] == '$') && char.IsLower(attribute[1]);
+        return attribute.Length == 2 && (attribute[0] == '&' || attribute[0] == '$' || attribute[0] == '*') && char.IsLower(attribute[1]);
     }
 
     /// <summary>

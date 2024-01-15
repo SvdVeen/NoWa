@@ -10,6 +10,7 @@ fragment Separator		: ',' | '.'	; // A decimal separator.
 // Literals to be used by the parser.
 AMPERSAND		: '&'		; // An ampersand.
 ARROW			: '>'		; // A right-facing arrowhead.
+ASTERISK		: '*'		; // An asterisk.
 BRACEOPEN		: '{'		; // An opening brace.
 BRACECLOSE		: '}'		; // A closing brace.
 CHAR			: Lowercase	; // A single lowercase character.

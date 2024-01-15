@@ -61,15 +61,15 @@ public abstract class BaseConversionStep : IConversionStep
         {
             if (Terminals != grammar.Terminals.Count)
             {
-                logger.Log(level, $"\t{DiffWord(Terminals, grammar.Terminals.Count)} {Math.Abs(Terminals - grammar.Terminals.Count)} terminals.");
+                logger.Log(level, $"\t{DiffWord(Terminals, grammar.Terminals.Count)} {Math.Abs(Terminals - grammar.Terminals.Count)} terminal(s).");
             }
             if (Nonterminals != grammar.Nonterminals.Count)
             {
-                logger.Log(level, $"\t{DiffWord(Nonterminals, grammar.Nonterminals.Count)} {Math.Abs(Nonterminals - grammar.Nonterminals.Count)} nonterminals.");
+                logger.Log(level, $"\t{DiffWord(Nonterminals, grammar.Nonterminals.Count)} {Math.Abs(Nonterminals - grammar.Nonterminals.Count)} nonterminal(s).");
             }
             if (Productions != grammar.Productions.Count)
             {
-                logger.Log(level, $"\t{DiffWord(Productions, grammar.Productions.Count)} {Math.Abs(Productions - grammar.Productions.Count)} productions.");
+                logger.Log(level, $"\t{DiffWord(Productions, grammar.Productions.Count)} {Math.Abs(Productions - grammar.Productions.Count)} production(s).");
             }
         }
 

@@ -73,7 +73,7 @@ internal class NoWaWAGListener : Generated.NoWaWAGParserBaseListener
         {
             foreach (var attr in context.attrs.inheritedattrs._attrs)
             {
-                nonterminal.InheritedAttributes.Add(attr.Text[0]);
+                Grammar.AddInheritedAttribute(nonterminal, attr.Text[0]);
             }
         }
 
@@ -81,7 +81,15 @@ internal class NoWaWAGListener : Generated.NoWaWAGParserBaseListener
         {
             foreach (var attr in context.attrs.synthesizedattrs._attrs)
             {
-                nonterminal.SynthesizedAttributes.Add(attr.Text[0]);
+                Grammar.AddSynthesizedAttribute(nonterminal, attr.Text[0]);
+            }
+        }
+
+        if (context.attrs?.staticattrs?._attrs != null)
+        {
+            foreach (var attr in context.attrs.staticattrs._attrs)
+            {
+                Grammar.AddStaticAttribute(nonterminal, attr.Text[0]);
             }
         }
     }
