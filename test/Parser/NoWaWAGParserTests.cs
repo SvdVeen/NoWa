@@ -22,6 +22,8 @@ public class NoWaWAGParserTests
     [DataRow("ValidWAG3")]
     [DeploymentItem($@"TestFiles\{nameof(NoWaWAGParserTests)}\ValidWAG4")]
     [DataRow("ValidWAG4")]
+    [DeploymentItem($@"TestFiles\{nameof(NoWaWAGParserTests)}\ValidWAG5")]
+    [DataRow("ValidWAG5")]
     public void TestParseValid(string file)
     {
         WAG grammar = NoWaWAGParser.Parse(file);
