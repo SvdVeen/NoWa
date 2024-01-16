@@ -3,7 +3,7 @@ options { tokenVocab = NoWaWAGLexer; }
 
 wag: productions=production+ EOF ;
 
-production: head=productionhead WS DASH (weight=wt)? DASH ARROW WS body=productionbody WS SEMICOLON ;
+production: head=productionhead WS DASH (weight=wt)? DASH ARROW WS body=productionbody (WS exprs=productionexprs)? WS SEMICOLON ;
 
 productionhead	: nonterminal=nt (attrs=headattributes)? ;
 headattributes	: BRACEOPEN inheritedattrs=attributes SEMICOLON synthesizedattrs=attributes SEMICOLON staticattrs=attributes BRACECLOSE	// Inherited, synthesized, and static attributes, with a semicolon in between.
@@ -14,6 +14,8 @@ headattributes	: BRACEOPEN inheritedattrs=attributes SEMICOLON synthesizedattrs=
 				| BRACEOPEN SEMICOLON synthesizedattrs=attributes SEMICOLON? BRACECLOSE													// Only synthesized attributes, which are always preceded by a semicolon and may be succeeded by a semicolon.
 				| BRACEOPEN SEMICOLON SEMICOLON staticattrs=attributes BRACECLOSE ;														// Only static attributes, which are always preceded by two semicolons.
 
+productionexprs : PARENOPEN exprs+=expression (WS? COMMA exprs+=expression)* PARENCLOSE	;
+expression		: attr=attrref WS op=operator WS val=DECIMAL								;
 
 productionbody	: (QUOTE QUOTE | symbols+=symbol (WS symbols+=symbol)*)				;
 symbol			: QUOTE value=t QUOTE								#Terminal
@@ -22,6 +24,8 @@ symbol			: QUOTE value=t QUOTE								#Terminal
 
 alpha		: ALPHA | DECIMAL | CHAR							; // An alphanumeric can be either an ALPHA, a DECIMAL, or a CHAR because of ambiguity in the lexer grammar.
 attributes	: attrs+=CHAR (COMMA attrs+=CHAR)*					; // Attributes are simply characters.
+attrref		: (DOLLAR | AMPERSAND | EXCLAMATION) CHAR			; // An attribute reference.
 nt			: alpha (DASH alpha)*								; // A nonterminal expressed as an alphanumeric string with dashes.
 t			: (alpha | WS)+										; // A terminal expressed as an alphanumeric string with spaces.
-wt			: DECIMAL | (DOLLAR | AMPERSAND | ASTERISK) CHAR	; // A weight can either be a decimal number, or an attribute reference.
+wt			: DECIMAL | attrref									; // A weight can either be a decimal number, or an attribute reference.
+operator	: PLUS | DASH | EQUALS								; // Valid operators are plus, minus (dash), and equals.

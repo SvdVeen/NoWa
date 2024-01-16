@@ -30,7 +30,7 @@ public sealed class EmptyStringStep : BaseConversionStep
             {
                 if (nullables.Contains(production.Body[j]))
                 {
-                    Production newProduction = new(production.Head, production.Weight, production.Body);
+                    Production newProduction = production.Clone();
                     newProduction.Body.RemoveAt(j);
                     if (newProduction.Body.Count > 0 && !grammar.Productions.Contains(newProduction))
                     {

@@ -236,6 +236,24 @@ public abstract class Grammar
     #endregion Productions
 
     /// <summary>
+    /// Gets the start symbol of this grammar; the first symbol in the list of nonterminals.
+    /// </summary>
+    public Nonterminal? StartSymbol
+    {
+        get
+        {
+            if (_nonterminalsList.Count == 0)
+            {
+                return null;
+            }
+            else
+            {
+                return _nonterminalsList[0];
+            }
+        }
+    }
+
+    /// <summary>
     /// Clears all elements in the grammar.
     /// </summary>
     public virtual void Clear()
@@ -246,5 +264,33 @@ public abstract class Grammar
         _nonterminalsList.Clear();
         _productions.Clear();
         _productionsByHead.Clear();
+    }
+
+    /// <summary>
+    /// Create a deep copy of this grammar.
+    /// </summary>
+    /// <returns>A deep copy of the grammar.</returns>
+    public abstract Grammar Clone();
+
+    /// <summary>
+    /// Clone the symbols and productions in this grammar to another.
+    /// </summary>
+    /// <param name="other">The grammar to clone this grammar into.</param>
+    protected void CloneTo(Grammar other)
+    {
+        foreach (Production prod in _productions)
+        {
+            other.AddProduction(prod.Clone());
+        }
+
+        foreach(Terminal terminal in _terminalsSet)
+        {
+            other.AddTerminal(terminal);
+        }
+
+        foreach(Nonterminal nonterminal in _nonterminalsSet)
+        {
+            other.AddNonterminal(nonterminal);
+        }
     }
 }

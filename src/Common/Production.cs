@@ -23,16 +23,23 @@ public class Production
     public IList<ISymbol> Body { get; }
 
     /// <summary>
+    /// Gets the list of expressions attached to this rule.
+    /// </summary>
+    public IList<Expressions.Expression> Expressions { get; }
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="Production"/> class.
     /// </summary>
     /// <param name="head">The head of the production rule.</param>
     /// <param name="weight">The weight of the production rule.</param>
     /// <param name="body">The body of the production rule.</param>
-    private Production(Nonterminal head, Weight weight, List<ISymbol> body)
+    /// <param name="expressions">The expressions attached to the production rule.</param>
+    private Production(Nonterminal head, Weight weight, List<ISymbol> body, List<Expressions.Expression> expressions)
     {
         Head = head;
         Body = body;
         Weight = weight;
+        Expressions = expressions;
     }
 
     /// <summary>
@@ -41,7 +48,18 @@ public class Production
     /// <param name="head">The head of the production rule.</param>
     /// <param name="weight">The weight of the production rule.</param>
     /// <param name="body">The body of the production rule.</param>
-    public Production(Nonterminal head, Weight weight, IEnumerable<ISymbol> body) : this(head, weight, new List<ISymbol>(body)) { }
+    /// <param name="expressions">The expressions attached to the production rule.</param>
+    public Production(Nonterminal head, Weight weight, IEnumerable<ISymbol> body, IEnumerable<Expressions.Expression> expressions)
+        : this(head, weight, new List<ISymbol>(body), new List<Expressions.Expression>(expressions)) { }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Production"/> class.
+    /// </summary>
+    /// <param name="head">The head of the production rule.</param>
+    /// <param name="weight">The weight of the production rule.</param>
+    /// <param name="body">The body of the production rule.</param>
+    public Production(Nonterminal head, Weight weight, IEnumerable<ISymbol> body)
+        : this(head, weight, new List<ISymbol>(body), new List<Expressions.Expression>()) { }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Production"/> class.
@@ -96,6 +114,15 @@ public class Production
     /// <param name="weight">The weight of the production rule.</param>
     /// <param name="body">The body of the production rule.</param>
     public Production(Nonterminal head, string weight, params ISymbol[] body) : this(head, new Weight(weight), body) { }
+
+    /// <summary>
+    /// Make a clone of a given production.
+    /// </summary>
+    /// <returns>A deep copy of this production.</returns>
+    public Production Clone()
+    {
+        return new(Head, new(Weight), Body, Expressions);
+    }
 
     /// <inheritdoc/>
     public override string ToString()

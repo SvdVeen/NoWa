@@ -6,6 +6,9 @@ using Con = System.Console;
 
 namespace NoWa.Console;
 
+/// <summary>
+/// Main program class, contains the application entry point.
+/// </summary>
 class Program
 {
     private const string HELPINFO =
@@ -40,7 +43,7 @@ Return codes:
     /// Main entry point for NoWa.
     /// </summary>
     /// <param name="args">Command-line arguments.</param>
-    /// <returns></returns>
+    /// <returns>Exit code: 0 for success, 1 for invalid arguments, 2 for parse failure, 3 for conversion failure, 4 for file write failure.</returns>
     static int Main(string[] args)
     {
         WriteAppInfo();
@@ -95,7 +98,7 @@ Return codes:
     static void WriteAppInfo()
     {
         Con.WriteLine("NoWa: a Chomsky Normal Form converter for Weighted Attrubute Grammars.");
-        Con.WriteLine("10-2023, Suzanne van der Veen, University of Twente");
+        Con.WriteLine("01-2024, Suzanne van der Veen, University of Twente");
         Con.WriteLine();
     }
 

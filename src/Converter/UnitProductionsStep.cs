@@ -1,6 +1,5 @@
 ﻿using NoWa.Common;
 using NoWa.Common.Logging;
-using System.Collections.Generic;
 
 namespace NoWa.Converter;
 
@@ -23,43 +22,32 @@ public sealed class UnitProductionsStep : BaseConversionStep
 
         var unitPairs = GetUnitPairs(grammar);
 
-        List<Nonterminal> originalNonterminals = new(grammar.Nonterminals);
-        Dictionary<Nonterminal,IReadOnlySet<char>>? originalInheritedAttributes = null;
-        Dictionary<Nonterminal, IReadOnlySet<char>>? originalSynthesizedAttributes = null;
-        Dictionary<Nonterminal, IReadOnlySet<char>>? originalStaticAttributes = null;
-        WAG? wag = grammar as WAG;
-        if (wag != null)
-        {
-            originalInheritedAttributes = originalNonterminals.ToDictionary(nt => nt, wag.GetInheritedAttributes);
-            originalSynthesizedAttributes = originalNonterminals.ToDictionary(nt => nt, wag.GetSynthesizedAttributes);
-            originalStaticAttributes = originalNonterminals.ToDictionary(nt => nt, wag.GetStaticAttributes);
-        }
-        List<Production> originalProductions = new(grammar.Productions);
-        var lookup = originalProductions.ToLookup(p => p.Head);
+        Grammar originalGrammar = grammar.Clone();
+        var lookup = originalGrammar.Productions.ToLookup(p => p.Head);
 
         grammar.Clear();
 
-        foreach (var pair in unitPairs.OrderBy(p => originalNonterminals.IndexOf(p.Item1)))
+        foreach (var pair in unitPairs.OrderBy(p => originalGrammar.Nonterminals.ToList().IndexOf(p.Item1)))
         {
             foreach(Production production in lookup[pair.Item2])
             {
                 if (production.Body.Count > 1 || production.Body.Count == 1 && production.Body[0] is not Nonterminal)
                 {
-                    grammar.AddProduction(new(pair.Item1, production.Weight, production.Body));
+                    grammar.AddProduction(new(pair.Item1, production.Weight, production.Body, production.Expressions));
                     if (!pair.Item1.Equals(production.Head))
                     {
                         // Transfer the attributes of the original production's head to the new one's head.
-                        if (wag != null)
+                        if (grammar is WAG wag)
                         {
-                            foreach (char attr in originalInheritedAttributes![production.Head])
+                            foreach (char attr in ((WAG)originalGrammar).GetInheritedAttributes(production.Head))
                             {
                                 wag.AddInheritedAttribute(pair.Item1, attr);
                             }
-                            foreach (char attr in originalSynthesizedAttributes![production.Head])
+                            foreach (char attr in ((WAG)originalGrammar).GetSynthesizedAttributes(production.Head))
                             {
                                 wag.AddSynthesizedAttribute(pair.Item1, attr);
                             }
-                            foreach (char attr in originalStaticAttributes![production.Head])
+                            foreach (char attr in ((WAG)originalGrammar).GetStaticAttributes(production.Head))
                             {
                                 wag.AddStaticAttribute(pair.Item1, attr);
                             }

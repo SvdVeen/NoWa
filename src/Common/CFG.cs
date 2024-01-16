@@ -8,6 +8,14 @@ namespace NoWa.Common;
 public class CFG : Grammar
 {
     /// <inheritdoc/>
+    public override Grammar Clone()
+    {
+        CFG clone = new CFG();
+        CloneTo(clone);
+        return clone;
+    }
+
+    /// <inheritdoc/>
     public override string ToString()
     {
         if (_productions.Count == 0)

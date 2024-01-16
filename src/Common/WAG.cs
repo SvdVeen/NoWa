@@ -214,6 +214,34 @@ public class WAG : Grammar
         _staticattributes.Clear();
     }
 
+    public override Grammar Clone()
+    {
+        WAG clone = new WAG();
+        CloneTo(clone);
+        foreach (var pair in _inheritedattributes)
+        {
+            foreach (char attr in pair.Value)
+            {
+                AddInheritedAttribute(pair.Key, attr);
+            }
+        }
+        foreach (var pair in _synthesizedattributes)
+        {
+            foreach (char attr in pair.Value)
+            {
+                AddSynthesizedAttribute(pair.Key, attr);
+            }
+        }
+        foreach (var pair in _staticattributes)
+        {
+            foreach (char attr in pair.Value)
+            {
+                AddStaticAttribute(pair.Key, attr);
+            }
+        }
+        return clone;
+    }
+
     #region ToString
     /// <inheritdoc/>
     public override string ToString()
@@ -237,7 +265,7 @@ public class WAG : Grammar
     /// <param name="production">The production to get a representation of.</param>
     /// <returns>A formatted string representing the production.</returns>
     private string ProductionToString(Production production)
-        => $"{HeadToString(production.Head)} -{production.Weight}-> {BodyToString(production.Body)} ;";
+        => $"{HeadToString(production.Head)} -{production.Weight}-> {BodyToString(production.Body)}{ExprsToString(production.Expressions)} ;";
 
     /// <summary>
     /// Gets a string representation of the head of a production.
@@ -271,6 +299,15 @@ public class WAG : Grammar
     /// <param name="body">The body to get a representation of.</param>
     /// <returns>A formatted string representing the production.</returns>
     private string BodyToString(IEnumerable<ISymbol> body) => new StringBuilder().AppendJoin(' ', body.Select(SymbolToString)).ToString();
+
+    private string ExprsToString(IList<Expressions.Expression> exprs)
+    {
+        if (exprs.Count > 0)
+        {
+            return new StringBuilder(" (").AppendJoin(',', exprs).Append(')').ToString();
+        }
+        return string.Empty;
+    }
 
     /// <summary>
     /// Gets a string representation of a symbol in the body of a production in the WAG.

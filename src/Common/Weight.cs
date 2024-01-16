@@ -16,6 +16,16 @@ public class Weight
     public Weight() { }
 
     /// <summary>
+    /// Create a copy of a different weight.
+    /// </summary>
+    /// <param name="other">The weight to copy.</param>
+    public Weight(Weight other)
+    {
+        _attributeValue = other._attributeValue;
+        _doubleValue = other._doubleValue;
+    }
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="Weight"/> class with an attribute value.
     /// </summary>
     /// <param name="value">The value of the weight.</param>
@@ -73,7 +83,7 @@ public class Weight
     /// <returns><see langword="true"/> if the string is formatted as a valid attribute, <see langword="false"/> otherwise.</returns></returns>
     private static bool IsValidAttribute(string attribute)
     {
-        return attribute.Length == 2 && (attribute[0] == '&' || attribute[0] == '$' || attribute[0] == '*') && char.IsLower(attribute[1]);
+        return attribute.Length == 2 && (attribute[0] == '&' || attribute[0] == '$' || attribute[0] == '!') && char.IsLower(attribute[1]);
     }
 
     /// <summary>

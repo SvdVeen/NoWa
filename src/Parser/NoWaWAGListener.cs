@@ -1,5 +1,6 @@
 ﻿using Antlr4.Runtime.Misc;
 using NoWa.Common;
+using NoWa.Common.Expressions;
 using System.Globalization;
 
 namespace NoWa.Parser;
@@ -47,7 +48,7 @@ internal class NoWaWAGListener : Generated.NoWaWAGParserBaseListener
         string? weight = context.weight?.GetText();
         if (weight != null)
         {
-            if (weight[0] == '$' || weight[0] == '&')
+            if (weight[0] == '&' || weight[0] == '$' || weight[0] == '!')
             {
                 production.Weight.Set(weight);
             }
@@ -56,6 +57,18 @@ internal class NoWaWAGListener : Generated.NoWaWAGParserBaseListener
                 production.Weight.Set(double.Parse(weight.Replace(',', '.'), CultureInfo.InvariantCulture));
             }
         }
+
+        if (context.exprs != null)
+        {
+            foreach (var expr in context.exprs._exprs)
+            {
+                string attr = expr.attr.GetText();
+                string op = expr.op.GetText();
+                string val = expr.val.Text.Replace(",", ".");
+                production.Expressions.Add(new(attr, OperatorParser.ParseString(op), double.Parse(val, CultureInfo.InvariantCulture)));
+            }
+        }
+
         Grammar.AddProduction(production);
     }
 

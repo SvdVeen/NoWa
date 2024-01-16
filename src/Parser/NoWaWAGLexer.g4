@@ -10,13 +10,17 @@ fragment Separator		: ',' | '.'	; // A decimal separator.
 // Literals to be used by the parser.
 AMPERSAND		: '&'		; // An ampersand.
 ARROW			: '>'		; // A right-facing arrowhead.
-ASTERISK		: '*'		; // An asterisk.
 BRACEOPEN		: '{'		; // An opening brace.
 BRACECLOSE		: '}'		; // A closing brace.
 CHAR			: Lowercase	; // A single lowercase character.
 COMMA			: ','		; // A comma.
-DASH			: '-'		; // A dash.
+DASH			: '-'		; // A dash or minus.
 DOLLAR			: '$'		; // A dollar sign.
+EQUALS			: '='		; // An equals sign.
+EXCLAMATION		: '!'		; // An exclamation mark.
+PARENOPEN		: '('		; // An opening parenthesis.
+PARENCLOSE		: ')'		; // A closing parenthesis.
+PLUS			: '+'		; // A plus sign
 QUOTE			: '\''		; // A single quote.
 SEMICOLON		: ';'		; // A semicolon.
 WS				: ' '		; // A single space.
