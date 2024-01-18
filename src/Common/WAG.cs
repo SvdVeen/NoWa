@@ -27,7 +27,8 @@ public class WAG : Grammar
     }
 
     #region Inherited
-    private readonly Dictionary<Nonterminal, HashSet<char>> _inheritedattributes = new();
+    private readonly HashSet<char> _inheritedAttributes = new();
+    private readonly Dictionary<Nonterminal, HashSet<char>> _inheritedAttributesByNonterminal = new();
 
     /// <summary>
     /// Gets the set of inherited attributes for a nonterminal.
@@ -35,7 +36,13 @@ public class WAG : Grammar
     /// <param name="nonterminal">The nonterminal to get inherited attributes for.</param>
     /// <returns>The set of inherited attributes for the given nonterminal.</returns>
     private HashSet<char> GetInheritedAttributesInternal(Nonterminal nonterminal)
-        => GetOrCreateAttributesSet(_inheritedattributes, nonterminal);
+        => GetOrCreateAttributesSet(_inheritedAttributesByNonterminal, nonterminal);
+
+    /// <summary>
+    /// Gets the set of all inherited attributes.
+    /// </summary>
+    /// <returns>The set of all inherited attributes.</returns>
+    public IReadOnlySet<char> GetInheritedAttributes() => _inheritedAttributes;
 
     /// <summary>
     /// Gets the set of inherited attributes for a nonterminal.
@@ -55,9 +62,13 @@ public class WAG : Grammar
     /// <returns><see langword="true"/> if the attribute could be added, <see langword="false"/> if it already existed for this nonterminal.</returns>
     public bool AddInheritedAttribute(Nonterminal nonterminal, char attribute)
     {
-        HashSet<char> attributes = GetInheritedAttributesInternal(nonterminal);
-        return
-            attributes.Add(attribute);
+        if (!_synthesizedAttributes.Contains(attribute) && !_staticAttributes.Contains(attribute))
+        {
+            HashSet<char> attributes = GetInheritedAttributesInternal(nonterminal);
+            _ = _inheritedAttributes.Add(attribute);
+            return attributes.Add(attribute);
+        }
+        return false;
     }
 
     /// <summary>
@@ -69,12 +80,18 @@ public class WAG : Grammar
     public bool RemoveInheritedAttribute(Nonterminal nonterminal, char attribute)
     {
         HashSet<char> attributes = GetInheritedAttributesInternal(nonterminal);
-        return attributes.Remove(attribute);
+        bool result = attributes.Remove(attribute);
+        if (!_inheritedAttributesByNonterminal.Any(p => p.Value.Contains(attribute)))
+        {
+            _ = _inheritedAttributes.Remove(attribute);
+        }
+        return result;
     }
     #endregion Inherited
 
     #region Synthesized
-    private readonly Dictionary<Nonterminal, HashSet<char>> _synthesizedattributes = new();
+    private readonly HashSet<char> _synthesizedAttributes = new();
+    private readonly Dictionary<Nonterminal, HashSet<char>> _synthesizedAttributesByNonterminal = new();
 
     /// <summary>
     /// Gets the set of synthesized attributes for a nonterminal.
@@ -82,7 +99,13 @@ public class WAG : Grammar
     /// <param name="nonterminal">The nonterminal to get synthesized attributes for.</param>
     /// <returns>The set of synthesized attributes for the given nonterminal.</returns>
     private HashSet<char> GetSynthesizedAttributesInternal(Nonterminal nonterminal)
-        => GetOrCreateAttributesSet(_synthesizedattributes, nonterminal);
+        => GetOrCreateAttributesSet(_synthesizedAttributesByNonterminal, nonterminal);
+
+    /// <summary>
+    /// Gets the set of all synthesized attributes.
+    /// </summary>
+    /// <returns>The set of all synthesized attributes.</returns>
+    public IReadOnlySet<char> GetSynthesizedAttributes() => _synthesizedAttributes;
 
     /// <summary>
     /// Gets the set of synthesized attributes for a nonterminal.
@@ -102,8 +125,13 @@ public class WAG : Grammar
     /// <returns><see langword="true"/> if the attribute could be added, <see langword="false"/> if it already existed for this nonterminal.</returns>
     public bool AddSynthesizedAttribute(Nonterminal nonterminal, char attribute)
     {
-        HashSet<char> attributes = GetSynthesizedAttributesInternal(nonterminal);
-        return attributes.Add(attribute);
+        if (!_inheritedAttributes.Contains(attribute) && !_staticAttributes.Contains(attribute))
+        {
+            HashSet<char> attributes = GetSynthesizedAttributesInternal(nonterminal);
+            _ = _synthesizedAttributes.Add(attribute);
+            return attributes.Add(attribute);
+        }
+        return false;
     }
 
     /// <summary>
@@ -115,13 +143,19 @@ public class WAG : Grammar
     public bool RemoveSynthesizedAttribute(Nonterminal nonterminal, char attribute)
     {
         HashSet<char> attributes = GetSynthesizedAttributesInternal(nonterminal);
-        return attributes.Remove(attribute);
+        bool result = attributes.Remove(attribute);
+        if (!_synthesizedAttributesByNonterminal.Any(p => p.Value.Contains(attribute)))
+        {
+            _ = _synthesizedAttributes.Remove(attribute);
+        }
+        return result;
     }
 
     #endregion Synthesized
 
     #region Static
-    private readonly Dictionary<Nonterminal, HashSet<char>> _staticattributes = new();
+    private readonly HashSet<char> _staticAttributes = new();
+    private readonly Dictionary<Nonterminal, HashSet<char>> _staticAttributesByNonterminal = new();
 
     /// <summary>
     /// Gets the set of static attributes for a nonterminal.
@@ -129,7 +163,13 @@ public class WAG : Grammar
     /// <param name="nonterminal">The static to get synthesized attributes for.</param>
     /// <returns>The set of static attributes for the given nonterminal.</returns>
     private HashSet<char> GetStaticAttributesInternal(Nonterminal nonterminal)
-        => GetOrCreateAttributesSet(_staticattributes, nonterminal);
+        => GetOrCreateAttributesSet(_staticAttributesByNonterminal, nonterminal);
+
+    /// <summary>
+    /// Gets the set of all static attributes.
+    /// </summary>
+    /// <returns>The set of all static attributes.</returns>
+    public IReadOnlySet<char> GetStaticAttributes() => _staticAttributes;
 
     /// <summary>
     /// Gets the set of static attributes for a nonterminal.
@@ -149,8 +189,13 @@ public class WAG : Grammar
     /// <returns><see langword="true"/> if the attribute could be added, <see langword="false"/> if it already existed for this nonterminal.</returns>
     public bool AddStaticAttribute(Nonterminal nonterminal, char attribute)
     {
-        HashSet<char> attributes = GetStaticAttributesInternal(nonterminal);
-        return attributes.Add(attribute);
+        if (!_inheritedAttributes.Contains(attribute) && !_synthesizedAttributes.Contains(attribute))
+        {
+            HashSet<char> attributes = GetStaticAttributesInternal(nonterminal);
+            _ = _staticAttributes.Add(attribute);
+            return attributes.Add(attribute);
+        }
+        return false;
     }
 
     /// <summary>
@@ -162,10 +207,27 @@ public class WAG : Grammar
     public bool RemoveStaticAttribute(Nonterminal nonterminal, char attribute)
     {
         HashSet<char> attributes = GetStaticAttributesInternal(nonterminal);
-        return attributes.Remove(attribute);
+        bool result = attributes.Remove(attribute);
+        if (!_staticAttributesByNonterminal.Any(p => p.Value.Contains(attribute)))
+        {
+            _ = _staticAttributes.Remove(attribute);
+        }
+        return result;
     }
 
     #endregion Static
+
+    /// <summary>
+    /// Gets the set of all attributes.
+    /// </summary>
+    /// <returns>The set of all attributes.</returns>
+    public IReadOnlySet<char> GetAllAttributes()
+    {
+        return _inheritedAttributes
+            .Union(_synthesizedAttributes)
+            .Union(_staticAttributes)
+            .ToImmutableSortedSet();
+    }
 
     /// <summary>
     /// Get the set of all attributes for a nonterminal.
@@ -199,9 +261,9 @@ public class WAG : Grammar
             throw new ArgumentOutOfRangeException(nameof(index));
         }
         Nonterminal nt = Nonterminals[index];
-        _inheritedattributes.Remove(nt);
-        _synthesizedattributes.Remove(nt);
-        _staticattributes.Remove(nt);
+        _inheritedAttributesByNonterminal.Remove(nt);
+        _synthesizedAttributesByNonterminal.Remove(nt);
+        _staticAttributesByNonterminal.Remove(nt);
         base.RemoveNonterminalAt(index);
     }
 
@@ -209,30 +271,30 @@ public class WAG : Grammar
     public override void Clear()
     {
         base.Clear();
-        _inheritedattributes.Clear();
-        _synthesizedattributes.Clear();
-        _staticattributes.Clear();
+        _inheritedAttributesByNonterminal.Clear();
+        _synthesizedAttributesByNonterminal.Clear();
+        _staticAttributesByNonterminal.Clear();
     }
 
     public override Grammar Clone()
     {
         WAG clone = new WAG();
         CloneTo(clone);
-        foreach (var pair in _inheritedattributes)
+        foreach (var pair in _inheritedAttributesByNonterminal)
         {
             foreach (char attr in pair.Value)
             {
                 AddInheritedAttribute(pair.Key, attr);
             }
         }
-        foreach (var pair in _synthesizedattributes)
+        foreach (var pair in _synthesizedAttributesByNonterminal)
         {
             foreach (char attr in pair.Value)
             {
                 AddSynthesizedAttribute(pair.Key, attr);
             }
         }
-        foreach (var pair in _staticattributes)
+        foreach (var pair in _staticAttributesByNonterminal)
         {
             foreach (char attr in pair.Value)
             {
@@ -300,6 +362,11 @@ public class WAG : Grammar
     /// <returns>A formatted string representing the production.</returns>
     private string BodyToString(IEnumerable<ISymbol> body) => new StringBuilder().AppendJoin(' ', body.Select(SymbolToString)).ToString();
 
+    /// <summary>
+    /// Converts a list of expressions to a string.
+    /// </summary>
+    /// <param name="exprs">The expressions to convert to a string.</param>
+    /// <returns>The comma-separated list of expressions in parentheses, or an empty string if there are none.</returns>
     private string ExprsToString(IList<Expressions.Expression> exprs)
     {
         if (exprs.Count > 0)

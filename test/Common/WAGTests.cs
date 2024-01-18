@@ -68,20 +68,146 @@ namespace NoWa.Common.Tests
         #endregion Weights
 
         #region Attributes
+        #region Inherited
         /// <summary>
-        /// Tests the <see cref="WAG.AddNonterminal(Nonterminal)"/> method.
+        /// Tests adding an inherited attribute.
+        /// Checks if it is part of the set of all inherited attributes,
+        /// and part of the set of attributes for the nonterminal it was added to.
         /// </summary>
         [TestMethod]
-        public void AddNonterminalTest()
+        public void TestAddInheritedAttribute()
         {
             WAG wag = new();
 
-            Assert.IsTrue(wag.AddNonterminal(Nonterminal.Get("A")));
-            Assert.AreEqual(1, wag.Nonterminals.Count);
-            Assert.AreSame(Nonterminal.Get("A"), wag.Nonterminals[0]);
+            wag.AddNonterminal(Nonterminal.Get("S"));
 
-            Assert.IsFalse(wag.AddNonterminal(Nonterminal.Get("A")));
+            Assert.IsTrue(wag.AddInheritedAttribute(Nonterminal.Get("S"), 'a'));
+            Assert.IsTrue(wag.GetInheritedAttributes().Contains('a'));
+            Assert.IsTrue(wag.GetInheritedAttributes(Nonterminal.Get("S")).Contains('a'));
         }
+
+        /// <summary>
+        /// Tests that an inherited attribute cannot also be added as a synthesized attribute.
+        /// </summary>
+        [TestMethod]
+        public void TestAddInheritedAsSynthesized()
+        {
+            WAG wag = new();
+
+            wag.AddNonterminal(Nonterminal.Get("S"));
+
+            wag.AddInheritedAttribute(Nonterminal.Get("S"), 'a');
+            Assert.IsFalse(wag.AddSynthesizedAttribute(Nonterminal.Get("S"), 'a'));
+        }
+
+        /// <summary>
+        /// Tests that an inherited attribute cannot also be added as a static attribute.
+        /// </summary>
+        [TestMethod]
+        public void TestAddInheritedAsStatic()
+        {
+            WAG wag = new();
+
+            wag.AddNonterminal(Nonterminal.Get("S"));
+
+            wag.AddInheritedAttribute(Nonterminal.Get("S"), 'a');
+            Assert.IsFalse(wag.AddStaticAttribute(Nonterminal.Get("S"), 'a'));
+        }
+        #endregion Inherited
+
+        #region Synthesized
+        /// <summary>
+        /// Tests adding a synthesized attribute.
+        /// Checks if it is part of the set of all synthesized attributes,
+        /// and part of the set of attributes for the nonterminal it was added to.
+        /// </summary>
+        [TestMethod]
+        public void TestAddSynthesizedAttribute()
+        {
+            WAG wag = new();
+
+            wag.AddNonterminal(Nonterminal.Get("S"));
+
+            Assert.IsTrue(wag.AddSynthesizedAttribute(Nonterminal.Get("S"), 'a'));
+            Assert.IsTrue(wag.GetSynthesizedAttributes().Contains('a'));
+            Assert.IsTrue(wag.GetSynthesizedAttributes(Nonterminal.Get("S")).Contains('a'));
+        }
+
+        /// <summary>
+        /// Tests that a synthesized attribute cannot also be added as an inherited attribute.
+        /// </summary>
+        [TestMethod]
+        public void TestAddSynthesizedAsInherited()
+        {
+            WAG wag = new();
+
+            wag.AddNonterminal(Nonterminal.Get("S"));
+
+            wag.AddSynthesizedAttribute(Nonterminal.Get("S"), 'a');
+            Assert.IsFalse(wag.AddInheritedAttribute(Nonterminal.Get("S"), 'a'));
+        }
+
+        /// <summary>
+        /// Tests that a synthesized attribute cannot also be added as a static attribute.
+        /// </summary>
+        [TestMethod]
+        public void TestAddSynthesizedAsStatic()
+        {
+            WAG wag = new();
+
+            wag.AddNonterminal(Nonterminal.Get("S"));
+
+            wag.AddSynthesizedAttribute(Nonterminal.Get("S"), 'a');
+            Assert.IsFalse(wag.AddStaticAttribute(Nonterminal.Get("S"), 'a'));
+        }
+        #endregion Synthesized
+
+        #region Static
+        /// <summary>
+        /// Tests adding a static attribute.
+        /// Checks if it is part of the set of all static attributes,
+        /// and part of the set of attributes for the nonterminal it was added to.
+        /// </summary>
+        [TestMethod]
+        public void TestAddStaticAttribute()
+        {
+            WAG wag = new();
+
+            wag.AddNonterminal(Nonterminal.Get("S"));
+
+            Assert.IsTrue(wag.AddStaticAttribute(Nonterminal.Get("S"), 'a'));
+            Assert.IsTrue(wag.GetStaticAttributes().Contains('a'));
+            Assert.IsTrue(wag.GetStaticAttributes(Nonterminal.Get("S")).Contains('a'));
+        }
+
+        /// <summary>
+        /// Tests that a static attribute cannot also be added as an inherited attribute.
+        /// </summary>
+        [TestMethod]
+        public void TestAddStaticAsInherited()
+        {
+            WAG wag = new();
+
+            wag.AddNonterminal(Nonterminal.Get("S"));
+
+            wag.AddStaticAttribute(Nonterminal.Get("S"), 'a');
+            Assert.IsFalse(wag.AddInheritedAttribute(Nonterminal.Get("S"), 'a'));
+        }
+
+        /// <summary>
+        /// Tests that a static attribute cannot also be added as a synthesized attribute.
+        /// </summary>
+        [TestMethod]
+        public void TestAddStaticAsSynthesized()
+        {
+            WAG wag = new();
+
+            wag.AddNonterminal(Nonterminal.Get("S"));
+
+            wag.AddStaticAttribute(Nonterminal.Get("S"), 'a');
+            Assert.IsFalse(wag.AddSynthesizedAttribute(Nonterminal.Get("S"), 'a'));
+        }
+        #endregion Static
         #endregion Attributes
 
         /// <summary>
