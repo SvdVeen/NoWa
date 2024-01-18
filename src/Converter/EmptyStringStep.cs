@@ -110,13 +110,14 @@ public sealed class EmptyStringStep : BaseConversionStep
     private void RemoveEmptyProductions(Grammar grammar)
     {
         List<Production> originalProductions = new(grammar.Productions);
-        Nonterminal startsymbol = grammar.Nonterminals[0];
+        Nonterminal? startSymbol = grammar.StartSymbol;
         grammar.Clear();
+        grammar.StartSymbol = startSymbol;
 
         for (int i = 0; i < originalProductions.Count; i++)
         {
             Production production = originalProductions[i];
-            if (production.Body.Count > 1 || production.Body[0] is not EmptyString || production.Head == startsymbol)
+            if (production.Body.Count > 1 || production.Body[0] is not EmptyString || production.Head == grammar.StartSymbol)
             {
                 grammar.AddProduction(production);
             }

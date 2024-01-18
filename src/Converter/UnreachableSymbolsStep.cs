@@ -255,8 +255,12 @@ public sealed class UnreachableSymbolsStep : BaseConversionStep
         HashSet<ISymbol> reachableSymbols = new();
 
         // The start rule is assumed to be reachable.
-        Logger.LogDebug($"Found reachable symbol: {grammar.Nonterminals[0]}");
-        reachableSymbols.Add(grammar.Nonterminals[0]);
+        if (grammar.StartSymbol == null)
+        {
+            return reachableSymbols;
+        }
+        Logger.LogDebug($"Found reachable symbol: {grammar.StartSymbol}");
+        reachableSymbols.Add(grammar.StartSymbol);
 
         // We inductively find further reachable symbols. This could have been a DFS or BFS, but we're sticking with the pattern in the book for now.
         int lastReachableCount;

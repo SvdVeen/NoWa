@@ -25,7 +25,9 @@ public sealed class UnitProductionsStep : BaseConversionStep
         Grammar originalGrammar = grammar.Clone();
         var lookup = originalGrammar.Productions.ToLookup(p => p.Head);
 
+        Nonterminal? StartSymbol = grammar.StartSymbol;
         grammar.Clear();
+        grammar.StartSymbol = StartSymbol;
 
         foreach (var pair in unitPairs.OrderBy(p => originalGrammar.Nonterminals.ToList().IndexOf(p.Item1)))
         {
@@ -86,18 +88,16 @@ public sealed class UnitProductionsStep : BaseConversionStep
             oldPairs = new(pairs);
             foreach (var pair in oldPairs)
             {
-                foreach (Production producion in grammar.GetProductionsByHead(pair.Item2))
+                foreach (Production production in grammar.GetProductionsByHead(pair.Item2))
                 {
-                    if (producion.Body.Count == 1 && producion.Body[0] is Nonterminal nonterminal)
+                    if (production.Body.Count == 1 && production.Body[0] is Nonterminal nonterminal)
                     {
                         Tuple<Nonterminal, Nonterminal> newPair = new(pair.Item1, nonterminal);
                         if (pairs.Add(newPair))
                         {
                             Logger.LogDebug($"Adding unit pair {newPair}");
                         }
-
                     }
-
                 }
             }
         } while (oldPairs.Count < pairs.Count);

@@ -13,6 +13,8 @@ public class CFGTests
     public void TestEmptyGrammar()
     {
         CFG grammar = new();
+
+        Assert.IsNull(grammar.StartSymbol, "The start symbol is not null.");
         Assert.AreEqual(0, grammar.Productions.Count, "Production count does not match.");
         Assert.AreEqual(0, grammar.Nonterminals.Count, "Nonterminal count does not match.");
         Assert.AreEqual(0, grammar.Terminals.Count, "Terminal count does not match.");
@@ -32,6 +34,7 @@ public class CFGTests
 
         grammar.Clear();
 
+        Assert.IsNull(grammar.StartSymbol, "The start symbol is not null.");
         Assert.AreEqual(0, grammar.Productions.Count, "Production count does not match.");
         Assert.AreEqual(0, grammar.Nonterminals.Count, "Nonterminal count does not match.");
         Assert.AreEqual(0, grammar.Terminals.Count, "Terminal count does not match.");
@@ -435,4 +438,31 @@ public class CFGTests
         Assert.IsFalse(grammar.RemoveProduction(new(Nonterminal.Get("A"), Terminal.Get("a"))));
     }
     #endregion Productions
+
+    /// <summary>
+    /// Tests whether adding the first production properly sets the start symbol.
+    /// </summary>
+    [TestMethod]
+    public void TestAddProductionStartSymbol()
+    {
+        CFG grammar = new();
+
+        grammar.AddProduction(new Production(Nonterminal.Get("S"), EmptyString.Instance));
+
+        Assert.AreSame(Nonterminal.Get("S"), grammar.StartSymbol);
+    }
+
+    /// <summary>
+    /// Tests whether adding a second production keeps the start symbol the same.
+    /// </summary>
+    [TestMethod]
+    public void TestAddSecondProductionStartSymbol()
+    {
+        CFG grammar = new();
+
+        grammar.AddProduction(new Production(Nonterminal.Get("S"), EmptyString.Instance));
+        grammar.AddProduction(new Production(Nonterminal.Get("A"), EmptyString.Instance));
+
+        Assert.AreSame(Nonterminal.Get("S"), grammar.StartSymbol);
+    }
 }

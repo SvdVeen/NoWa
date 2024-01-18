@@ -128,6 +128,10 @@ public abstract class Grammar
     /// <param name="production">The production to add.</param>
     public virtual void AddProduction(Production production)
     {
+        if (StartSymbol == null)
+        {
+            StartSymbol = production.Head;
+        }
         _productions.Add(production);
         AddProductionByHead(production);
         AddSymbols(production);
@@ -236,22 +240,9 @@ public abstract class Grammar
     #endregion Productions
 
     /// <summary>
-    /// Gets the start symbol of this grammar; the first symbol in the list of nonterminals.
+    /// Gets or sets the start symbol of this grammar.
     /// </summary>
-    public Nonterminal? StartSymbol
-    {
-        get
-        {
-            if (_nonterminalsList.Count == 0)
-            {
-                return null;
-            }
-            else
-            {
-                return _nonterminalsList[0];
-            }
-        }
-    }
+    public Nonterminal? StartSymbol { get; set; } = null;
 
     /// <summary>
     /// Clears all elements in the grammar.
@@ -264,6 +255,7 @@ public abstract class Grammar
         _nonterminalsList.Clear();
         _productions.Clear();
         _productionsByHead.Clear();
+        StartSymbol = null;
     }
 
     /// <summary>
@@ -278,6 +270,8 @@ public abstract class Grammar
     /// <param name="other">The grammar to clone this grammar into.</param>
     protected void CloneTo(Grammar other)
     {
+        other.StartSymbol = StartSymbol;
+
         foreach (Production prod in _productions)
         {
             other.AddProduction(prod.Clone());

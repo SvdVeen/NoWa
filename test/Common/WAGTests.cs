@@ -85,6 +85,33 @@ namespace NoWa.Common.Tests
         #endregion Attributes
 
         /// <summary>
+        /// Tests whether adding the first production properly sets the start symbol.
+        /// </summary>
+        [TestMethod]
+        public void TestAddProductionStartSymbol()
+        {
+            WAG grammar = new();
+
+            grammar.AddProduction(new Production(Nonterminal.Get("S"), EmptyString.Instance));
+
+            Assert.AreSame(Nonterminal.Get("S"), grammar.StartSymbol);
+        }
+
+        /// <summary>
+        /// Tests whether adding a second production keeps the start symbol the same.
+        /// </summary>
+        [TestMethod]
+        public void TestAddSecondProductionStartSymbol()
+        {
+            WAG grammar = new();
+
+            grammar.AddProduction(new Production(Nonterminal.Get("S"), EmptyString.Instance));
+            grammar.AddProduction(new Production(Nonterminal.Get("A"), EmptyString.Instance));
+
+            Assert.AreSame(Nonterminal.Get("S"), grammar.StartSymbol);
+        }
+
+        /// <summary>
         /// Tests the <see cref="WAG.Clear()"/> method.
         /// </summary>
         [TestMethod]
@@ -96,6 +123,7 @@ namespace NoWa.Common.Tests
 
             wag.Clear();
 
+            Assert.IsNull(wag.StartSymbol);
             Assert.AreEqual("Empty WAG", wag.ToString());
             Assert.AreEqual(0, wag.Productions.Count);
             Assert.AreEqual(0, wag.Nonterminals.Count);
