@@ -20,7 +20,10 @@ public sealed class ZeroWeightsStep : BaseConversionStep
         Logger.LogInfo("Eliminating zero-weight productions...");
         GrammarStats stats = new(grammar);
 
-        EliminateZeroWeights(grammar);
+        if (grammar.Terminals.Count > 0)
+        {
+            EliminateZeroWeights(grammar);
+        }
 
         Logger.LogInfo("Zero-weight productions eliminated.");
         stats.LogDiff(grammar, Logger);
@@ -32,11 +35,6 @@ public sealed class ZeroWeightsStep : BaseConversionStep
     /// <param name="grammar">The grammar to remove productions from.</param>
     private static void EliminateZeroWeights(Grammar grammar)
     {
-        if (grammar.Productions.Count == 0)
-        {
-            return;
-        }
-
         for (int i = 0; i < grammar.Productions.Count; i++)
         {
             if (grammar.Productions[i].Weight.GetDouble(out double weight) && weight == 0)

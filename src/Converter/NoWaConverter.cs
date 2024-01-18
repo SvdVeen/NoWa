@@ -56,6 +56,11 @@ public class NoWaConverter
             {
                 _steps[i].Convert(grammar);
                 Logger.LogDebug($"Intermediate grammar:{Environment.NewLine}{result}");
+                if (grammar.Productions.Count == 0)
+                {
+                    Logger.LogInfo("No productions remaining, stopping conversion early...");
+                    break;
+                }
             }
             catch (Exception ex)
             {

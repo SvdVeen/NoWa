@@ -12,7 +12,7 @@ public sealed class EmptyStringStep : BaseConversionStep
     public EmptyStringStep(ILogger logger) : base(logger) { }
 
     /// <summary>
-    /// Eliminates all empty string productions in the given <see cref="WAG"/>.
+    /// Eliminates all empty string productions in the given <see cref="Grammar"/>.
     /// </summary>
     /// <inheritdoc/>
     public override void Convert(Grammar grammar)
@@ -20,6 +20,21 @@ public sealed class EmptyStringStep : BaseConversionStep
         Logger.LogInfo("Eliminating ε-productions...");
         GrammarStats stats = new(grammar);
 
+        if (grammar.Productions.Count > 0 )
+        {
+            EliminateEmptyStringProductions(grammar);
+        }
+
+        Logger.LogInfo("Eliminated ε-productions.");
+        stats.LogDiff(grammar, Logger);
+    }
+
+    /// <summary>
+    /// Eliminates empty string productions in a given <see cref="Grammar"/>.
+    /// </summary>
+    /// <param name="grammar"></param>
+    private void EliminateEmptyStringProductions(Grammar grammar)
+    {
         ISet<Nonterminal> nullables = GetNullableSymbols(grammar);
 
         RemoveEmptyProductions(grammar);
@@ -39,9 +54,6 @@ public sealed class EmptyStringStep : BaseConversionStep
                 }
             }
         }
-
-        Logger.LogInfo("Eliminated ε-productions.");
-        stats.LogDiff(grammar, Logger);
     }
 
     /// <summary>

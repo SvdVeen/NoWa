@@ -12,7 +12,7 @@ public sealed class UnitProductionsStep : BaseConversionStep
     public UnitProductionsStep(ILogger logger) : base(logger) { }
 
     /// <summary>
-    /// Eliminates all unit productions in the given <see cref="WAG"/>.
+    /// Eliminates all unit productions in the given <see cref="Grammar"/>.
     /// </summary>
     /// <inheritdoc/>
     public override void Convert(Grammar grammar)
@@ -20,18 +20,34 @@ public sealed class UnitProductionsStep : BaseConversionStep
         Logger.LogInfo("Eliminating unit productions...");
         GrammarStats stats = new(grammar);
 
+        if (grammar.Productions.Count > 0 )
+        {
+            ElminateUnitProductions(grammar);
+        }
+
+        Logger.LogInfo("Elminated unit productions.");
+        stats.LogDiff(grammar, Logger);
+    }
+
+    /// <summary>
+    /// Eliminates all unit productions in the given <see cref="Grammar"/>.
+    /// </summary>
+    /// <param name="grammar">The grammar to eliminate unit productions from.</param>
+    private void ElminateUnitProductions(Grammar grammar)
+    {
         var unitPairs = GetUnitPairs(grammar);
 
         Grammar originalGrammar = grammar.Clone();
         var lookup = originalGrammar.Productions.ToLookup(p => p.Head);
 
-        Nonterminal? StartSymbol = grammar.StartSymbol;
+        // Clear the grammar but carry over the start symbol.
+        Nonterminal? startSymbol = grammar.StartSymbol;
         grammar.Clear();
-        grammar.StartSymbol = StartSymbol;
+        grammar.StartSymbol = startSymbol;
 
         foreach (var pair in unitPairs.OrderBy(p => originalGrammar.Nonterminals.ToList().IndexOf(p.Item1)))
         {
-            foreach(Production production in lookup[pair.Item2])
+            foreach (Production production in lookup[pair.Item2])
             {
                 if (production.Body.Count > 1 || production.Body.Count == 1 && production.Body[0] is not Nonterminal)
                 {
@@ -58,9 +74,6 @@ public sealed class UnitProductionsStep : BaseConversionStep
                 }
             }
         }
-
-        Logger.LogInfo("Elminated unit productions.");
-        stats.LogDiff(grammar, Logger);
     }
 
     /// <summary>
