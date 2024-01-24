@@ -121,14 +121,13 @@ public sealed class EmptyStringStep : BaseConversionStep
     /// <param name="grammar">The grammar to remove the ε-productions from.</param>
     private void RemoveEmptyProductions(Grammar grammar)
     {
-        List<Production> originalProductions = new(grammar.Productions);
-        Nonterminal? startSymbol = grammar.StartSymbol;
+        Grammar originalGrammar = grammar.Clone();
         grammar.Clear();
-        grammar.StartSymbol = startSymbol;
+        grammar.StartSymbol = originalGrammar.StartSymbol;
 
-        for (int i = 0; i < originalProductions.Count; i++)
+        for (int i = 0; i < originalGrammar.Productions.Count; i++)
         {
-            Production production = originalProductions[i];
+            Production production = originalGrammar.Productions[i];
             if (production.Body.Count > 1 || production.Body[0] is not EmptyString || production.Head == grammar.StartSymbol)
             {
                 grammar.AddProduction(production);
@@ -136,6 +135,25 @@ public sealed class EmptyStringStep : BaseConversionStep
             else
             {
                 Logger.LogDebug($"Omitting production {production}.");
+            }
+        }
+        if (grammar is WAG wag)
+        {
+            WAG originalWag = (WAG)originalGrammar;
+            foreach (var nonterminal in grammar.Nonterminals)
+            {
+                foreach (char inheritedattr in originalWag.GetInheritedAttributes(nonterminal))
+                {
+                    wag.AddInheritedAttribute(nonterminal, inheritedattr);
+                }
+                foreach (char synthesizedattr in originalWag.GetSynthesizedAttributes(nonterminal))
+                {
+                    wag.AddSynthesizedAttribute(nonterminal, synthesizedattr);
+                }
+                foreach (char staticattr in originalWag.GetStaticAttributes(nonterminal))
+                {
+                    wag.AddStaticAttribute(nonterminal, staticattr);
+                }
             }
         }
     }

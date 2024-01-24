@@ -52,23 +52,21 @@ public sealed class UnitProductionsStep : BaseConversionStep
                 if (production.Body.Count > 1 || production.Body.Count == 1 && production.Body[0] is not Nonterminal)
                 {
                     grammar.AddProduction(new(pair.Item1, production.Weight, production.Body, production.Expressions));
-                    if (!pair.Item1.Equals(production.Head))
+                    // Transfer the attributes of the original production's head to the new one's head.
+                    if (grammar is WAG wag)
                     {
-                        // Transfer the attributes of the original production's head to the new one's head.
-                        if (grammar is WAG wag)
+                        WAG originalWag = (WAG)originalGrammar;
+                        foreach (char attr in originalWag.GetInheritedAttributes(production.Head))
                         {
-                            foreach (char attr in ((WAG)originalGrammar).GetInheritedAttributes(production.Head))
-                            {
-                                wag.AddInheritedAttribute(pair.Item1, attr);
-                            }
-                            foreach (char attr in ((WAG)originalGrammar).GetSynthesizedAttributes(production.Head))
-                            {
-                                wag.AddSynthesizedAttribute(pair.Item1, attr);
-                            }
-                            foreach (char attr in ((WAG)originalGrammar).GetStaticAttributes(production.Head))
-                            {
-                                wag.AddStaticAttribute(pair.Item1, attr);
-                            }
+                            wag.AddInheritedAttribute(pair.Item1, attr);
+                        }
+                        foreach (char attr in originalWag.GetSynthesizedAttributes(production.Head))
+                        {
+                            wag.AddSynthesizedAttribute(pair.Item1, attr);
+                        }
+                        foreach (char attr in originalWag.GetStaticAttributes(production.Head))
+                        {
+                            wag.AddStaticAttribute(pair.Item1, attr);
                         }
                     }
                 }

@@ -284,21 +284,21 @@ public class WAG : Grammar
         {
             foreach (char attr in pair.Value)
             {
-                AddInheritedAttribute(pair.Key, attr);
+                clone.AddInheritedAttribute(pair.Key, attr);
             }
         }
         foreach (var pair in _synthesizedAttributesByNonterminal)
         {
             foreach (char attr in pair.Value)
             {
-                AddSynthesizedAttribute(pair.Key, attr);
+                clone.AddSynthesizedAttribute(pair.Key, attr);
             }
         }
         foreach (var pair in _staticAttributesByNonterminal)
         {
             foreach (char attr in pair.Value)
             {
-                AddStaticAttribute(pair.Key, attr);
+                clone.AddStaticAttribute(pair.Key, attr);
             }
         }
         return clone;
