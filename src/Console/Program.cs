@@ -26,10 +26,10 @@ input path: the path to the grammar file to parse.
 output path: the path to write the output to.
 log level: The log level to use for messages about parsing and conversion. Possible levels are:
     - none/-1: show no log messages.
-    - debug/0: show debug messages and all other types of messages. When this level is used, errors are ignored where possible.
-    - info/1: show informational messages, warnings, and errors. This is the default level.
-    - warning/2: show warnings and errors.
-    - error/3: show error messages only.
+    - error/0: show error messages only.
+    - warning/1: show warnings and errors.
+    - info/2: show informational messages, warnings, and errors. This is the default level.
+    - debug/3: show debug messages and all other types of messages. When this level is used, errors are ignored where possible.
 
 Return codes:
     - 0: success.
@@ -191,7 +191,7 @@ Return codes:
     {
         try
         {
-            File.WriteAllText(outPath, result.ToString());
+            File.WriteAllText(outPath, result.ToString() + Environment.NewLine);
         }
         catch (Exception ex)
         {
