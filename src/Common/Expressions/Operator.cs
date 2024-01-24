@@ -34,18 +34,13 @@ public static class OperatorExtensions
     /// <exception cref="InvalidOperationException">The operator was not valid (should not occur).</exception>
     public static char GetOperatorChar(this Operator @operator)
     {
-        switch (@operator)
+        return @operator switch
         {
-            case Operator.Equals:
-                return '=';
-            case Operator.Plus:
-                return '+';
-            case Operator.Minus:
-                return '-';
-            default:
-                // This should only ever happen if code is changed incorrectly.
-                throw new InvalidOperationException("Operator is invalid.");
-        }
+            Operator.Equals => '=',
+            Operator.Plus => '+',
+            Operator.Minus => '-',
+            _ => throw new InvalidOperationException("Operator is invalid."),// This should only ever happen if code is changed incorrectly.
+        };
     }
 }
 
@@ -62,17 +57,13 @@ public static class OperatorParser
     /// <exception cref="ArgumentException">The input is not a valid operator.</exception>
     public static Operator ParseChar(char input)
     {
-        switch (input)
+        return input switch
         {
-            case '=':
-                return Operator.Equals;
-            case '+':
-                return Operator.Plus;
-            case '-':
-                return Operator.Minus;
-            default:
-                throw new ArgumentException("Could not parse operator from input.", nameof(input));
-        }
+            '=' => Operator.Equals,
+            '+' => Operator.Plus,
+            '-' => Operator.Minus,
+            _ => throw new ArgumentException("Could not parse operator from input.", nameof(input)),
+        };
     }
 
     /// <summary>

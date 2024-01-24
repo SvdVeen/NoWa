@@ -143,11 +143,13 @@ public abstract class Grammar
     /// <param name="production">The production to add.</param>
     private void AddProductionByHead(Production production)
     {
-        if (!_productionsByHead.ContainsKey(production.Head))
+        if (!_productionsByHead.TryGetValue(production.Head, out List<Production>? value))
         {
-            _productionsByHead.Add(production.Head, new());
+            value = new();
+            _productionsByHead.Add(production.Head, value);
         }
-        _productionsByHead[production.Head].Add(production);
+
+        value.Add(production);
     }
 
     /// <summary>

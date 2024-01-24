@@ -278,7 +278,7 @@ public class WAG : Grammar
 
     public override Grammar Clone()
     {
-        WAG clone = new WAG();
+        WAG clone = new();
         CloneTo(clone);
         foreach (var pair in _inheritedAttributesByNonterminal)
         {
@@ -367,7 +367,7 @@ public class WAG : Grammar
     /// </summary>
     /// <param name="exprs">The expressions to convert to a string.</param>
     /// <returns>The comma-separated list of expressions in parentheses, or an empty string if there are none.</returns>
-    private string ExprsToString(IList<Expressions.Expression> exprs)
+    private static string ExprsToString(IList<Expressions.Expression> exprs)
     {
         if (exprs.Count > 0)
         {

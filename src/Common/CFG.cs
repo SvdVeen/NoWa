@@ -10,7 +10,7 @@ public class CFG : Grammar
     /// <inheritdoc/>
     public override Grammar Clone()
     {
-        CFG clone = new CFG();
+        CFG clone = new();
         CloneTo(clone);
         return clone;
     }
